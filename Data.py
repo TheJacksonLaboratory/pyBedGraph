@@ -1,143 +1,125 @@
-from Chromosome import Chromosome
-import math
+from ChromosomeNumpy import ChromosomeNumpy
+import numpy as np
+import pyBigWig
 
 CHROM_NAME_INDEX = 0
 
 
 class Data:
 
-    def __init__(self, data_file_name, bin_size):
+    def __init__(self, data_file_name, chromosome_name=None):
 
         current = None
 
         # could make chromosomes a map if there are many
         self.chromosomes = {}
+        self.bins = None
+
+        print(f"Reading in {data_file_name}...")
 
         with open(data_file_name, 'r') as data_file:
 
             for line in data_file:
                 data = line.split("\t")
 
+                if chromosome_name is not None and chromosome_name != data[CHROM_NAME_INDEX]:
+
+                    # have not created chromosome and added data to it yet
+                    if current is None:
+                        continue
+
+                    # done with adding data, stop now
+                    else:
+                        break
+
+                # update current to be the chromosome to add data to
                 if current is None or data[CHROM_NAME_INDEX] != current.name:
-                    current = Chromosome(data[CHROM_NAME_INDEX])
+                    current = ChromosomeNumpy(data[CHROM_NAME_INDEX])
                     self.chromosomes[current.name] = current
 
                 current.add_data(data)
 
-        print(f"Finished reading in {data_file_name}")
+        print(f"Finished")
 
-        # contains floats
-        self.bins = []
-        self.bin_size = 0
+        """
+        # Tests if chromosome is inputted correctly for bin size 1
+        bw = pyBigWig.open('data/P2MC7N8HCE3K.bw')
+        ranges = bw.intervals("chr2L", 0, 1000001)
+        range_length = len(ranges)
+        for i in range(range_length):
+            for j in range(ranges[i][0], ranges[i][1]):
+                if current.bins[j] != ranges[i][2]:
+                    print(ranges[i], current.bins[j])
+        exit(-1)
+        """
 
-    def split_bins(self, bin_size):
-        self.bins.clear()
+    def get_coverage(self, chromosome_name, start, end):
+        chrom = self.chromosomes[chromosome_name]
 
-        chromosome = self.chromosomes["chr2L"]
+        my_range = chrom.values[start:end][chrom.values[start:end] > -1]
+        orig_range = end - start
+        return 1.0 - (orig_range - my_range.size) / orig_range
 
-        total_size = chromosome.windows[-1].end
-        numb_bins = math.ceil(total_size / bin_size)
-        self.bin_size = bin_size
-        print(f"Bin size: {self.bin_size}")
-        print(f"# of bins: {numb_bins}")
+    def get_exact_average(self, chromosome_name, start, end):
+        chrom = self.chromosomes[chromosome_name]
 
-        # keeps track of current window
-        data_index = 0
+        wanted_range = chrom.values[start:end]
+        cleaned_range = wanted_range[wanted_range > -1]
+        if cleaned_range.size == 0:
+            return None
 
-        done = False
+        return np.mean(cleaned_range)
 
-        current_window = chromosome.windows[data_index]
-        for bin_index in range(numb_bins):
+    def get_approx_average(self, chromosome_name, start, end):
+        chrom = self.chromosomes[chromosome_name]
 
-            average_value = 0
-            numb_values = 0
-            i = 0
+        self.bins = chrom.bins
+        bins = self.bins
+        bin_size = chrom.bin_size
 
-            while i < self.bin_size:
-                allele_index = i + bin_index * self.bin_size
+        bin_start = int(start / bin_size)
+        bin_end = int(end / bin_size)
 
-                # nothing to do before, so go to the start of the window
-                if allele_index < current_window.start:
-                    i = current_window.start - bin_index * self.bin_size
-                    continue
+        """
+        # only works for numpy arrays
+        my_range = (bins[bin_start:bin_end])[bins[bin_start:bin_end] > -1]
+        if my_range.size == 0:
+            return None
 
-                # go to the next window
-                if allele_index >= current_window.end:
-                    data_index += 1
+        return np.mean(my_range)
+        """
 
-                    # no more windows
-                    if len(chromosome.windows) == data_index:
-                        done = True
-                        break
-
-                    current_window = chromosome.windows[data_index]
-
-                    if allele_index > current_window.end:
-                        print("ERROR in finding current_window")
-
-                    continue
-
-                # if bin_index < 52:
-                # print(f"{i} | {allele_index}: {current_window.value}")
-
-                average_value += current_window.value
-                numb_values += 1
-
-                i += 1
-
-            if numb_values > 0:
-                average_value /= numb_values
-                self.bins.append(average_value)
-
-            else:
-                self.bins.append(-1)
-
-            #if bin_index > 5120:
-            #    print(f"From: average{bin_index * bin_size} -> {bin_index * bin_size + bin_size} | Bin value: {self.bins[-1]}")
-
-            if done:
-
-                # pad the rest of the list with empty bins
-                while len(self.bins) < numb_bins:
-                    self.bins.append(-1)
-
-                break
-
-    def get_average(self, chromosome_name, start, end):
-        chromosome = self.chromosomes[chromosome_name]
-
-        start_bin_index = int(start / self.bin_size)
-        end_bin_index = int(end / self.bin_size)
-
-        bin_index = start_bin_index
+        bin_index = bin_start
 
         # special case where interval is within a bin
-        if start_bin_index == end_bin_index:
-            return self.bins[bin_index]
+        if bin_start == bin_end:
+            return bins[bin_index]
 
         average_value = 0
         numb_value = 0
 
         # first bin
-        if self.bins[bin_index] != -1:
-            weight = (bin_index + 1) * self.bin_size - start
-            average_value += weight * self.bins[bin_index]
+        if bins[bin_index] != -1:
+            weight = (bin_index + 1) * bin_size - start
+            average_value += weight * bins[bin_index]
             numb_value += weight
 
         # middle bins
-        weight = self.bin_size
+        weight = bin_size
         bin_index += 1
-        while bin_index < end_bin_index:
-            if self.bins[bin_index] != -1:
-                average_value += weight * self.bins[bin_index]
+        tries = 0
+        while bin_index < bin_end:
+            if bins[bin_index] != -1:
+                average_value += weight * bins[bin_index]
                 numb_value += weight
 
             bin_index += 1
+            tries += 1
 
         # last bin
-        if self.bins[end_bin_index] != -1:
-            weight = end - end_bin_index * self.bin_size
-            average_value += weight * self.bins[end_bin_index]
+        if bins[bin_end] != -1:
+            weight = end - bin_end * bin_size
+            average_value += weight * bins[bin_end]
             numb_value += weight
 
         if average_value == 0:
