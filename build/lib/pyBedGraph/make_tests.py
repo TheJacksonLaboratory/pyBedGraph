@@ -51,3 +51,13 @@ with open('data/test_files/random_test.bedgraph', 'w') as test:
 
 with open('data/test_files/myChrom.sizes', 'w') as test:
     test.write(f"chr1\t{MAX_CHROM_SIZE}")
+
+with open('intervals.txt', 'w') as test:
+    output = ""
+    for i in range(NUMB_TEST_CASES):
+        start = i * 100 + 1
+        end = start + 99
+        output += f"{start}\t{end}\n"
+
+    test.write(output)
+

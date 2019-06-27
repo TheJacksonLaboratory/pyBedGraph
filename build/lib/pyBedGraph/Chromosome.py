@@ -33,13 +33,6 @@ class Chromosome:
 
         self.size = end
 
-    def get_average(self, start, end):
-        my_range = self.values[start:end][self.values[start:end] > -1]
-        if my_range.size == 0:
-            return -1
-
-        return np.mean(my_range)
-
     def split_bins(self, max_bin_size):
 
         print(f"Splitting bins for {self.name}...")
@@ -66,12 +59,15 @@ class Chromosome:
             print(f"# of bins: {numb_bins}")
 
             for bin_index in range(numb_bins):
-                self.bins[i][bin_index] = self.get_average(bin_index * bin_size,
-                                                           (bin_index + 1) * bin_size)
+                mean = self.get_exact_mean(bin_index * bin_size,
+                                           (bin_index + 1) * bin_size)
+                if mean is None:
+                    mean = -1
+                self.bins[i][bin_index] = mean
 
         print("Finished\n")
 
-    def get_exact_average(self, start, end):
+    def get_exact_mean(self, start, end):
         wanted_range = self.values[start:end]
         cleaned_range = wanted_range[wanted_range > -1]
         if cleaned_range.size == 0:
@@ -79,7 +75,7 @@ class Chromosome:
 
         return np.mean(cleaned_range)
 
-    def get_approx_average(self, start, end):
+    def get_approx_mean(self, start, end):
         bin_start = int(start / self.max_bin_size)
         bin_end = int(end / self.max_bin_size)
 
@@ -89,15 +85,17 @@ class Chromosome:
 
         # special case where interval is within a single bin
         if bin_start == bin_end:
+            if max_size_bin[bin_index] == -1:
+                return None
             return max_size_bin[bin_index]
 
-        average_value = 0
+        mean_value = 0
         numb_value = 0
 
         # first bin
         if max_size_bin[bin_index] != -1:
             weight = (bin_index + 1) * self.max_bin_size - start
-            average_value += weight * max_size_bin[bin_index]
+            mean_value += weight * max_size_bin[bin_index]
             numb_value += weight
 
         # middle self.bins
@@ -106,7 +104,7 @@ class Chromosome:
         tries = 0
         while bin_index < bin_end:
             if max_size_bin[bin_index] != -1:
-                average_value += weight * max_size_bin[bin_index]
+                mean_value += weight * max_size_bin[bin_index]
                 numb_value += weight
 
             bin_index += 1
@@ -115,16 +113,16 @@ class Chromosome:
         # last bin
         if max_size_bin[bin_end] != -1:
             weight = end - bin_end * self.max_bin_size
-            average_value += weight * max_size_bin[bin_end]
+            mean_value += weight * max_size_bin[bin_end]
             numb_value += weight
 
-        if average_value == 0:
+        if mean_value == 0:
             return None
 
-        average_value /= numb_value
-        return average_value
+        mean_value /= numb_value
+        return mean_value
 
-    def get_mod_approx_average(self, start, end):
+    def get_mod_approx_mean(self, start, end):
         bin_start = int(start / self.max_bin_size)
         bin_end = int(end / self.max_bin_size)
 
@@ -134,9 +132,11 @@ class Chromosome:
 
         # special case where interval is within a single bin
         if bin_start == bin_end:
+            if max_size_bin[bin_index] == -1:
+                return None
             return max_size_bin[bin_index]
 
-        average_value = 0
+        mean_value = 0
         numb_value = 0
 
         # first bin
@@ -148,10 +148,10 @@ class Chromosome:
                     print(weight, (small_bin_index + 1) * self.max_bin_size / 2 - start)
                     exit(-1)
                 if self.bins[0][small_bin_index] != -1:
-                    average_value += weight * self.bins[0][small_bin_index]
+                    mean_value += weight * self.bins[0][small_bin_index]
                     numb_value += weight
             else:
-                average_value += weight * max_size_bin[bin_index]
+                mean_value += weight * max_size_bin[bin_index]
                 numb_value += weight
 
         # middle self.bins
@@ -160,7 +160,7 @@ class Chromosome:
         tries = 0
         while bin_index < bin_end:
             if max_size_bin[bin_index] != -1:
-                average_value += weight * max_size_bin[bin_index]
+                mean_value += weight * max_size_bin[bin_index]
                 numb_value += weight
 
             bin_index += 1
@@ -169,16 +169,40 @@ class Chromosome:
         # last bin
         if max_size_bin[bin_end] != -1:
             weight = end - bin_end * self.max_bin_size
-            average_value += weight * max_size_bin[bin_end]
-            numb_value += weight
+            if weight < self.max_bin_size / 2:
+                small_bin_index = bin_end * 2
+                if self.bins[0][small_bin_index] != -1:
+                    mean_value += weight * self.bins[0][small_bin_index]
+                    numb_value += weight
+            else:
+                mean_value += weight * max_size_bin[bin_end]
+                numb_value += weight
 
-        if average_value == 0:
+        if mean_value == 0:
             return None
 
-        average_value /= numb_value
-        return average_value
+        mean_value /= numb_value
+        return mean_value
 
     def get_coverage(self, start, end):
         my_range = self.values[start:end][self.values[start:end] > -1]
         orig_range = end - start
         return 1.0 - (orig_range - my_range.size) / orig_range
+
+    def get_max(self, start, end):
+        my_range = self.values[start:end][self.values[start:end] > -1]
+        if my_range.size == 0:
+            return None
+        return np.amax(my_range)
+
+    def get_min(self, start, end):
+        my_range = self.values[start:end][self.values[start:end] > -1]
+        if my_range.size == 0:
+            return None
+        return np.amin(my_range)
+
+    def get_std(self, start, end):
+        my_range = self.values[start:end][self.values[start:end] > -1]
+        if my_range.size == 0:
+            return None
+        return np.std(my_range)
