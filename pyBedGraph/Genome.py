@@ -5,7 +5,7 @@ CHROM_NAME_INDEX = 0
 
 class Genome:
 
-    def __init__(self, data_file_name, chromosome_name=None):
+    def __init__(self, data_file_name, chromosome_name=None, bin_size=64):
 
         self.chromosome = None
 
@@ -38,6 +38,8 @@ class Genome:
 
         print("Finished\n")
 
+        self.chromosome.split_bins(bin_size)
+
     def get_method(self, stat):
         if stat == "mean":
             return self.chromosome.get_exact_mean
@@ -67,7 +69,7 @@ class Genome:
 
         return results
 
-    def search(self, interval_file, output_file=None, stat="mean"):
+    def stats_from_file(self, interval_file, output_file=None, stat="mean"):
         output = ""
         method = self.get_method(stat)
         with open(interval_file) as in_file:
