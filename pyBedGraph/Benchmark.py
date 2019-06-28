@@ -11,7 +11,7 @@ MOD_APPROX_MEAN_INDEX = 2
 
 class Benchmark:
 
-    def __init__(self, genome, num_tests, bin_size, interval_size, bigWig_file, test='full'):
+    def __init__(self, genome, num_tests, interval_size, bigWig_file, test='full'):
         self.stats = [
             "mean",
             "approx_mean",
@@ -42,8 +42,7 @@ class Benchmark:
         self.num_tests = num_tests
         self.genome = genome
 
-        print(f"Benchmark for interval size: {interval_size} | bin size: {bin_size}")
-        genome.chromosome.split_bins(bin_size)
+        print(f"Benchmark for interval size: {interval_size}")
 
         self.create_test_cases(interval_size)
         self.find_actual_values()
@@ -62,13 +61,9 @@ class Benchmark:
             my_values = self.self_values[stat]
             my_time = self.self_times[stat]
 
-            if stat == MOD_APPROX_MEAN_INDEX or stat == APPROX_MEAN_INDEX:
-                baseline_name = 'exact_mean'
-                baseline_time = self.self_times[EXACT_MEAN_INDEX]
-                baseline_values = self.actual_values[EXACT_MEAN_INDEX]
-
             if baseline_values is None:
-                continue
+                baseline_values = self.actual_values[EXACT_MEAN_INDEX]
+                baseline_time = self.pyBigWig_times[EXACT_MEAN_INDEX]
 
             print(f"Results for {self.stats[stat]}:")
 
@@ -95,13 +90,16 @@ class Benchmark:
                 actual_error_values.append(actual_error)
 
                 # equation from stackoverflow, calculating relative error when true value is 0
-                percent_error = abs((actual - predicted) / (actual + predicted) * 2)
+                if actual - predicted == 0:
+                    percent_error = 0
+                else:
+                    percent_error = abs((actual - predicted) / (actual + predicted) * 2)
                 percent_error_values.append(percent_error)
 
             print(f"Getting {self.stats[stat]} values takes"
                   f" {round(my_time / baseline_time * 100, 2)}% of {baseline_name}'s time")
             print(f"Squared Error: {np.mean(actual_error_values)}")
-            print(f"Squared Error Standard Deviation: {np.std(actual_error_values)}\n")
+            print(f"Squared Error Standard Deviation: {np.std(actual_error_values)}")
             print(f"Percent Error: {round(np.mean(percent_error_values) * 100, 2)}%")
             print(f"Percent Error Standard Deviation: {round(np.std(percent_error_values) * 100, 2)}\n")
 

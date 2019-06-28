@@ -1,14 +1,17 @@
 import setuptools
 
+NAME = 'pyBedGraph'
+VERSION = '0.3.1'
+
 with open("README.md", "r") as fh:
 
     long_description = fh.read()
 
 setuptools.setup(
 
-    name='pyBedGraph',  
+    name=NAME,
 
-    version='0.1',
+    version=VERSION,
 
     author="Henry Zhang",
 

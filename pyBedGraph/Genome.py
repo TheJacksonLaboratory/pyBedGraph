@@ -1,3 +1,7 @@
+# .Dependency for uploading to pypi
+#from .Chromosome import Chromosome
+
+# normal import for local use
 from Chromosome import Chromosome
 
 CHROM_NAME_INDEX = 0
@@ -36,8 +40,11 @@ class Genome:
                 print(f"{chromosome_name} was not found in {data_file_name}")
                 exit(-1)
 
-        print("Finished\n")
+        print("Done\n")
 
+        self.split_bins(bin_size)
+
+    def split_bins(self, bin_size):
         self.chromosome.split_bins(bin_size)
 
     def get_method(self, stat):

@@ -65,7 +65,7 @@ class Chromosome:
                     mean = -1
                 self.bins[i][bin_index] = mean
 
-        print("Finished\n")
+        print("Done.\n")
 
     def get_exact_mean(self, start, end):
         wanted_range = self.values[start:end]
@@ -199,6 +199,7 @@ class Chromosome:
         my_range = self.values[start:end][self.values[start:end] > -1]
         if my_range.size == 0:
             return None
+
         return np.amin(my_range)
 
     def get_std(self, start, end):

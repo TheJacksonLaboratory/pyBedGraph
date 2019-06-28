@@ -1,7 +1,8 @@
-from Genome import Genome
-from Benchmark import Benchmark
-import sys
+from .Chromosome import Chromosome
+from .Genome import Genome
+from .Benchmark import Benchmark
 
+'''
 NUM_TESTS = 10000
 
 MIN_INTERVAL_SIZE = 100
@@ -11,7 +12,6 @@ INTERVAL_STEP = 300
 MIN_BIN_SIZE = 50
 MAX_BIN_SIZE = 500
 BIN_STEP = 100
-'''
 # List of arguments (required)
 # arg1 - bedgraph file
 # arg2 - name of chromosome
