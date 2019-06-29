@@ -6,21 +6,23 @@ END_INDEX = 2
 VALUE_INDEX = 3
 
 CHROM_MAX_SIZE = 250000000
-NUMB_BIN_LIST = 2
+MAX_NUMB_BIN_LIST = 6
+MIN_BIN_SIZE = 64
 
 
-class Chromosome:
+class Chrom_Data:
 
-    def __init__(self, name):
+    def __init__(self, name, size):
         self.name = name
+        self.size = size
 
-        self.values = np.full(CHROM_MAX_SIZE, -1, dtype=np.float64)
+        self.values = np.full(size, -1, dtype=np.float64)
+        self.value_indexes = np.full(size, -1, dtype=np.uint32)
         self.size = 0
 
         self.max_bin_size = None
         self.bins = []
-        for i in range(NUMB_BIN_LIST):
-            self.bins.append([])
+        self.bin_list_numb = MAX_NUMB_BIN_LIST
 
         print(f"Created {name}")
 
@@ -38,32 +40,69 @@ class Chromosome:
         print(f"Splitting bins for {self.name}...")
 
         self.max_bin_size = max_bin_size
+        bin_size_divisor = 2 ** (MAX_NUMB_BIN_LIST - 1)
 
-        for i in range(NUMB_BIN_LIST):
+        prev_bin_list = None
+        for i in range(MAX_NUMB_BIN_LIST):
 
             # should always be an integer, if not, make sure max_bin_size can be divided
-            bin_size = max_bin_size / (NUMB_BIN_LIST - i)
+            bin_size = max_bin_size / bin_size_divisor
+            bin_size_divisor /= 2
 
             if bin_size != int(bin_size):
                 print(f"Bin size: {bin_size} must be an integer")
                 exit(-1)
             bin_size = int(bin_size)
 
+            if bin_size < MIN_BIN_SIZE:
+                self.bin_list_numb -= 1
+                continue
+
             numb_bins = math.ceil(self.size / bin_size)
 
             # normal python array seems faster
-            self.bins[i] = [-1.0] * numb_bins
-            # self.bins = np.full(int(CHROM_SIZE / bin_size), -1, dtype=np.float64)
+            bins = np.full(numb_bins, -1, dtype=np.float64)
 
             print(f"Bin size: {bin_size}")
             print(f"# of bins: {numb_bins}")
 
             for bin_index in range(numb_bins):
-                mean = self.get_exact_mean(bin_index * bin_size,
-                                           (bin_index + 1) * bin_size)
+                mean = None
+
+                # first bin
+                if len(self.bins) == 0:
+                    mean = self.get_exact_mean(bin_index * bin_size,
+                                               (bin_index + 1) * bin_size)
+                else:
+                    new_index = bin_index * 2
+
+                    bin1_value = prev_bin_list[new_index]
+                    bin1_start = bin_index * bin_size
+                    bin1_end = bin1_start + bin_size // 2
+                    bin1_coverage = self.get_coverage(bin1_start, bin1_end)
+
+                    bin2_value = -1
+                    bin2_coverage = -1
+                    if new_index + 1 < prev_bin_list.size:
+                        bin2_value = prev_bin_list[new_index + 1]
+                        bin2_start = bin1_end
+                        bin2_end = bin2_start + bin_size // 2
+                        bin2_coverage = self.get_coverage(bin2_start, bin2_end)
+
+                    if bin1_value != -1 and bin2_value != -1:
+                        mean = (bin2_value * bin2_coverage + bin1_value * bin1_coverage) /\
+                               (bin2_coverage + bin1_coverage)
+                    elif bin2_value == -1:
+                        mean = bin1_value
+                    elif bin1_value == -1:
+                        mean = bin2_value
+
                 if mean is None:
                     mean = -1
-                self.bins[i][bin_index] = mean
+                bins[bin_index] = mean
+
+            self.bins.append(bins)
+            prev_bin_list = bins
 
         print("Done.\n")
 
@@ -79,7 +118,7 @@ class Chromosome:
         bin_start = int(start / self.max_bin_size)
         bin_end = int(end / self.max_bin_size)
 
-        max_size_bin = self.bins[NUMB_BIN_LIST - 1]
+        max_size_bin = self.bins[self.bin_list_numb - 1]
 
         bin_index = bin_start
 
@@ -98,7 +137,7 @@ class Chromosome:
             mean_value += weight * max_size_bin[bin_index]
             numb_value += weight
 
-        # middle self.bins
+        # middle bins
         weight = self.max_bin_size
         bin_index += 1
         tries = 0
@@ -126,56 +165,65 @@ class Chromosome:
         bin_start = int(start / self.max_bin_size)
         bin_end = int(end / self.max_bin_size)
 
-        max_size_bin = self.bins[NUMB_BIN_LIST - 1]
+        max_size_bin = self.bins[self.bin_list_numb - 1]
 
-        bin_index = bin_start
+        max_bin_index = bin_start
 
         # special case where interval is within a single bin
         if bin_start == bin_end:
-            if max_size_bin[bin_index] == -1:
+            if max_size_bin[max_bin_index] == -1:
                 return None
-            return max_size_bin[bin_index]
+            return max_size_bin[max_bin_index]
 
         mean_value = 0
         numb_value = 0
 
         # first bin
-        if max_size_bin[bin_index] != -1:
-            weight = (bin_index + 1) * self.max_bin_size - start
-            if weight < self.max_bin_size / 2:
-                small_bin_index = int(start / (self.max_bin_size / 2))
-                if (small_bin_index + 1) * self.max_bin_size / 2 - start != weight:
-                    print(weight, (small_bin_index + 1) * self.max_bin_size / 2 - start)
-                    exit(-1)
-                if self.bins[0][small_bin_index] != -1:
-                    mean_value += weight * self.bins[0][small_bin_index]
-                    numb_value += weight
-            else:
-                mean_value += weight * max_size_bin[bin_index]
+        if max_size_bin[max_bin_index] != -1:
+            weight = (max_bin_index + 1) * self.max_bin_size - start
+
+            current_bin_size = self.max_bin_size
+            bin_size_index = self.bin_list_numb - 1
+            bin_index = max_bin_index
+            while weight < current_bin_size / 2:
+                current_bin_size /= 2
+                bin_size_index -= 1
+                bin_index = bin_index * 2 + 1
+
+                if bin_size_index == 0:
+                    break
+
+            if self.bins[bin_size_index][bin_index] != -1:
+                mean_value += weight * self.bins[bin_size_index][bin_index]
                 numb_value += weight
 
-        # middle self.bins
+        # middle bins
         weight = self.max_bin_size
-        bin_index += 1
-        tries = 0
-        while bin_index < bin_end:
-            if max_size_bin[bin_index] != -1:
-                mean_value += weight * max_size_bin[bin_index]
+        max_bin_index += 1
+        while max_bin_index < bin_end:
+            if max_size_bin[max_bin_index] != -1:
+                mean_value += weight * max_size_bin[max_bin_index]
                 numb_value += weight
 
-            bin_index += 1
-            tries += 1
+            max_bin_index += 1
 
         # last bin
-        if max_size_bin[bin_end] != -1:
-            weight = end - bin_end * self.max_bin_size
-            if weight < self.max_bin_size / 2:
-                small_bin_index = bin_end * 2
-                if self.bins[0][small_bin_index] != -1:
-                    mean_value += weight * self.bins[0][small_bin_index]
-                    numb_value += weight
-            else:
-                mean_value += weight * max_size_bin[bin_end]
+        if max_size_bin[max_bin_index] != -1:
+            weight = end - max_bin_index * self.max_bin_size
+
+            current_bin_size = self.max_bin_size
+            bin_size_index = self.bin_list_numb - 1
+            bin_index = max_bin_index
+            while weight < current_bin_size / 2:
+                current_bin_size /= 2
+                bin_size_index -= 1
+                bin_index = bin_index * 2
+
+                if bin_size_index == 0:
+                    break
+
+            if self.bins[bin_size_index][bin_index] != -1:
+                mean_value += weight * self.bins[bin_size_index][bin_index]
                 numb_value += weight
 
         if mean_value == 0:

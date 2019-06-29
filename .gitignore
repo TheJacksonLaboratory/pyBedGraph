@@ -2,6 +2,9 @@
 
 !.gitignore
 !LICENSE
+!MANIFEST.in
 !README.md
 
-!*.py
+!setup.py
+!pyBedGraph/
+!pyBedGraph/*.py

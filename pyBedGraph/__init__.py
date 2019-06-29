@@ -1,5 +1,5 @@
-from .Chromosome import Chromosome
-from .Genome import Genome
+from .Chrom_Data import Chrom_Data
+from .BedGraph import BedGraph
 from .Benchmark import Benchmark
 
 '''
