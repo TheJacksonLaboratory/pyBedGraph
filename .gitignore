@@ -8,3 +8,9 @@
 !setup.py
 !pyBedGraph/
 !pyBedGraph/*.py
+!pyBedGraph/data/
+!pyBedGraph/data/chrom_sizes/
+!pyBedGraph/data/chrom_sizes/*.sizes
+!test/
+!test/*
+!test/graphs/

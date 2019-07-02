@@ -4,14 +4,14 @@ pyBedGraph is an alternative to pyBigWig.
 
 # Features:
 
-  - Finds mean, approximate mean, max, min, coverage, and standard deviation
+  - Finds mean, approximate mean, median, max, min, coverage, and standard deviation
 
 # Improvements:
   - Much faster
 
 # Usage:
 Create the object:
-In general, a smaller bin size (relative to the interval size) will be more accurate but slower compared to a larger bin size. Also, bin sizes should be powers of two.
+In general, a smaller bin size (relative to the interval size) will be more accurate but slower compared to a larger bin size.
 ```python
 from pyBedGraph import BedGraph
 
@@ -51,6 +51,7 @@ Choose a specific statistic:
   - `'mean'`
   - `'approx_mean'` - an approximate mean that is around 5x faster
   - `'mod_approx_mean'` - a slightly slower but almost halves the error in `'approx_mean'`
+  - `'median'`
   - `'max'`
   - `'min'`
   - `'coverage'`
@@ -65,10 +66,8 @@ Actual values are found from the `intervals` function in pyBigWig. Times are com
 from pyBedGraph import Benchmark
 
 # arg1 - BedGraph object
-# arg2 - number of tests
-# arg3 - interval size
-# arg4 - bigwig file
-# arg5 - (optional) test (not working)
+# arg2 - bigwig file
 bedGraph = BedGraph('P2MC7N8HCE3K.bedgraph')
-Benchmark(bedGraph, 10000, 128, 'P2MC7N8HCE3K.bw')
+bench = Benchmark(bedGraph, 'P2MC7N8HCE3K.bw')
+result = bench.benchmark(num_test, interval_size, chrom_name, bin_size, stats=None)
 ```

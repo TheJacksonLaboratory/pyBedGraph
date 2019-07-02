@@ -6,50 +6,108 @@ import numpy as np
 EXACT_MEAN_INDEX = 0
 APPROX_MEAN_INDEX = 1
 MOD_APPROX_MEAN_INDEX = 2
+RANDOM_SEED = 1
+
+mean_names = [
+    'pyBigWig_exact',
+    'pyBigWig_approx',
+    'pyBedGraph_exact',
+    'pyBedGraph_approx',
+    'pyBedGraph_mod_approx'
+]
+
+ALL_STATS = [
+    "mean",
+    "approx_mean",
+    "mod_approx_mean",
+    "max",
+    "min",
+    "coverage",
+    "std"
+]
+
 
 
 class Benchmark:
 
-    def __init__(self, genome, num_tests, interval_size, bigWig_file, test='full'):
-        self.stats = [
-            "mean",
-            "approx_mean",
-            "mod_approx_mean",
-            "max",
-            "min",
-            "coverage",
-            "std"
-        ]
-
-        if test == 'approx':
-            self.stats = [
-                "mean",
-                "approx_mean",
-                "mod_approx_mean"
-            ]
+    def __init__(self, bedGraph, bigWig_file):
 
         self.bw = pyBigWig.open(bigWig_file)
-        self.pyBigWig_times = []
+        self.bedGraph = bedGraph
 
-        self.actual_values = []
-        self.self_values = []
-        self.self_times = []
-
-        self.test_cases = []
         self.intervals_list = []
 
-        self.num_tests = num_tests
-        self.genome = genome
+        self.num_tests = 0
+        self.test_cases = []
 
-        print(f"Benchmark for interval size: {interval_size}")
+        self.chromosome = None
 
-        self.create_test_cases(interval_size)
-        self.find_intervals()
-        self.benchmark_pyBigWig()
-        self.benchmark_self()
+    def benchmark(self, num_tests, interval_size, chrom_name, bin_size, stats=None):
 
-        self.output_results()
+        print("Benchmarking:\n"
+              f"Number of tests: {num_tests}\n"
+              f"Interval size: {interval_size}\n"
+              f"Chromosome name: {chrom_name}\n"
+              f"Bin size: {bin_size}\n")
 
+        # self.find_intervals()
+
+        self.bedGraph.load_chrom_data(chrom_name)
+        self.chromosome = self.bedGraph.chromosome_map[chrom_name]
+        if bin_size is not None:
+            self.chromosome.split_bins(bin_size)
+
+        self.create_test_cases(num_tests, interval_size)
+
+        # benchmark all stats if none given
+        if stats is None:
+            stats = ALL_STATS
+
+        results = {}
+        actual = {}
+        predictions = {}
+
+        for stat_name in stats:
+
+            results[stat_name] = {}
+
+            # actual value for approx_mean/mod_approx_mean is mean
+            actual_stat_name = stat_name
+            if 'mean' in stat_name and stat_name != 'mean':
+                actual_stat_name = 'mean'
+            pyBigWig_name = 'pyBigWig_' + actual_stat_name
+
+            if pyBigWig_name not in results:
+                results[pyBigWig_name] = {}
+
+            # get actual value of the stat
+            if actual_stat_name not in actual:
+                results[pyBigWig_name]['exact_run_time'], actual[actual_stat_name] = self.benchmark_pyBigWig(actual_stat_name)
+
+            # get corresponding pyBigWig non-exact stat
+            if pyBigWig_name not in predictions:
+                results[pyBigWig_name]['approx_run_time'], predictions[pyBigWig_name]\
+                    = self.benchmark_pyBigWig(actual_stat_name, False)
+
+            # get stat from pyBedGraph
+            results[stat_name]['run_time'], predictions[stat_name] =\
+                self.benchmark_self(stat_name)
+
+        # find error
+        for stat_name in predictions:
+            actual_stat_name = stat_name
+            if 'mean' in stat_name and stat_name != 'mean':
+                actual_stat_name = 'mean'
+
+            if 'pyBigWig_' in stat_name:
+                actual_stat_name = stat_name[9:]  # get rid of the pyBigWig tag
+
+            results[stat_name]['error'] = self.get_error(predictions[stat_name],
+                                                         actual[actual_stat_name])
+
+        return results
+
+    # do not call
     def output_results(self):
 
         for stat in range(len(self.stats)):
@@ -86,7 +144,8 @@ class Benchmark:
                     print(f"Correct value is ({actual}) for the range"
                           f" ({self.test_cases[i][0]} - {self.test_cases[i][1]}),"
                           f" but {self.stats[stat]} found ({predicted})")
-                    print(self.intervals_list[i])
+                    if len(self.intervals_list) > 0:
+                        print(self.intervals_list[i])
                     predicted = 0
 
                 mean_squared_error = (actual - predicted) * (actual - predicted)
@@ -118,66 +177,97 @@ class Benchmark:
                 print(f"Standard Deviation: {np.std(not_0_values)}")
             print()
 
-    def create_test_cases(self, interval_size):
+    def create_test_cases(self, num_tests, interval_size):
+
+        # random.seed(RANDOM_SEED)
+
+        self.test_cases = []
+
         # test[0]: start of interval
         # test[1]: end of interval
-        for i in range(self.num_tests):
+        for i in range(num_tests):
             test_case = {
-                0: random.randint(1, self.genome.chromosome.size - interval_size)
+                0: random.randint(1, self.chromosome.max_index - interval_size)
             }
             test_case[1] = test_case[0] + interval_size
 
             self.test_cases.append(test_case)
 
+        self.num_tests = num_tests
+
     def find_intervals(self):
 
-        print("Finding actual values using bigWig's intervals function...")
+        self.intervals_list.clear()
+
+        print("Finding intervals using pyBigWig's interval function...")
         start_time = time.time()
 
         for i in range(self.num_tests):
-            intervals = self.bw.intervals(self.genome.chromosome.name, self.test_cases[i][0], self.test_cases[i][1])
+            intervals = self.bw.intervals(self.chrom_name, self.test_cases[i][0], self.test_cases[i][1])
             self.intervals_list.append(intervals)
 
         time_taken = time.time() - start_time
         print(f"Time taken to get intervals: {time_taken} seconds")
 
-    def benchmark_pyBigWig(self):
+    def benchmark_pyBigWig(self, stat, want_exact=True):
 
-        for stat_name in self.stats:
-            if stat_name == "approx_mean" or stat_name == "mod_approx_mean":
-                self.pyBigWig_times.append(None)
-                self.actual_values.append(None)
+        if want_exact is False:
+            print(f"Finding benchmark for pyBigWig's approximate {stat}...")
+        else:
+            print(f"Finding benchmark for pyBigWig's exact {stat}...")
+
+        values = []
+        start_time = time.time()
+        for i in range(self.num_tests):
+            value = self.bw.stats(self.chromosome.name, self.test_cases[i][0], self.test_cases[i][1],
+                                   type=stat, exact=want_exact)
+            values.append(value[0])
+        time_taken = time.time() - start_time
+
+        print(f"Time for {stat}: {time_taken} seconds for {self.num_tests} trials\n")
+        return time_taken, values
+
+    def benchmark_self(self, stat):
+
+        print(f"Finding pyBedGraph benchmark for {stat}...")
+
+        method = self.bedGraph.get_method(self.chromosome.name, stat)
+        values = []
+
+        start_time = time.time()
+        for i in range(self.num_tests):
+            value = method(self.test_cases[i][0], self.test_cases[i][1])
+            values.append(value)
+        time_taken = time.time() - start_time
+
+        print(f"Time for {stat}: {time_taken} seconds for {self.num_tests} trials\n")
+        return time_taken, values
+
+    @staticmethod
+    def get_error(predicted_values, actual_values):
+
+        if len(predicted_values) != len(actual_values):
+            print(f"Length of predicted values: {len(predicted_values)}, does"
+                  f"not equal length of actual values: {len(actual_values)}")
+            return
+
+        percent_error_values = []
+        for i in range(len(predicted_values)):
+            actual = actual_values[i]
+            predicted = predicted_values[i]
+
+            if actual is None:
+                actual = 0
+
+            if predicted is None:
+                predicted = 0
+
+            if actual == 0 and predicted != 0:
                 continue
+            elif predicted == 0:
+                percent_error_values.append(0)
+            else:
+                percent_error = abs(actual - predicted) / actual
+                percent_error_values.append(percent_error)
 
-            print(f"Finding benchmark for pyBigWig's {stat_name}...")
-
-            start_time = time.time()
-            values = []
-            for i in range(self.num_tests):
-                value = self.bw.stats(self.genome.chromosome.name, self.test_cases[i][0], self.test_cases[i][1],
-                              type=stat_name, exact=True)
-                values.append(value[0])
-            time_taken = time.time() - start_time
-
-            self.pyBigWig_times.append(time_taken)
-            self.actual_values.append(values)
-
-            print(f"Time for {stat_name}: {time_taken} seconds for {self.num_tests} trials\n")
-
-    def benchmark_self(self):
-        for stat in self.stats:
-            print(f"Finding self benchmark for {stat}...")
-
-            method = self.genome.get_method(stat)
-            values = []
-
-            start_time = time.time()
-            for i in range(self.num_tests):
-                value = method(self.test_cases[i][0], self.test_cases[i][1])
-                values.append(value)
-            time_taken = time.time() - start_time
-
-            self.self_values.append(values)
-            self.self_times.append(time_taken)
-
-            print(f"Time for {stat}: {time_taken} seconds for {self.num_tests} trials\n")
+        return np.mean(percent_error_values)
