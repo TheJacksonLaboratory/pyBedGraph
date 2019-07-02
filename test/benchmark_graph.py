@@ -112,8 +112,8 @@ with open('test_numbers.txt') as in_file:
         test_numbers[chrom_size_file]['intervals'] = intervals
         test_numbers[chrom_size_file]['bin_sizes'] = bin_sizes
 
-bin_size_test_list = test_numbers[sys.argv[1]]['bin_sizes']
-interval_test_list = test_numbers[sys.argv[1]]['intervals']
+bin_size_test_list = test_numbers[Path(sys.argv[1]).stem + '.sizes']['bin_sizes']
+interval_test_list = test_numbers[Path(sys.argv[1]).stem + '.sizes']['intervals']
 
 interval_size_error_benchmark()
 # runtime_benchmark()
