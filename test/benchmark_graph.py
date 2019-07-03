@@ -10,6 +10,7 @@ import generate_images
 MIN_NUM_TEST = 100
 MAX_NUM_TEST = 10000000
 
+total_start_time = time.time()
 
 def interval_size_error_benchmark():
     num_tests = 100000
@@ -22,6 +23,8 @@ def interval_size_error_benchmark():
         result = bench.benchmark(num_tests, interval_size, chrom_name, None, ['mean'])
         interval_error_results['pyBigWig_approx'].append(result['pyBigWig_mean']['error'])
 
+        print(f"Total time taken so far (min): {(time.time() - total_start_time) / 60}")
+
     stats_to_bench = ['approx_mean', 'mod_approx_mean']
     for bin_size in bin_size_test_list:
         interval_error_results['pyBedGraph_approx_' + str(bin_size)] = []
@@ -30,6 +33,8 @@ def interval_size_error_benchmark():
             result = bench.benchmark(num_tests, interval_size, chrom_name, bin_size, stats_to_bench)
             interval_error_results['pyBedGraph_approx_' + str(bin_size)].append(result['approx_mean']['error'])
             interval_error_results['pyBedGraph_mod_approx_' + str(bin_size)].append(result['mod_approx_mean']['error'])
+
+            print(f"Total time taken so far (min): {(time.time() - total_start_time) / 60}")
 
     print(interval_error_results)
     with open(f'graphs/{data_name}/interval_error_results.txt', 'w') as out:
@@ -65,6 +70,8 @@ def runtime_benchmark():
         run_time_results['pyBigWig_exact'].append(result['pyBigWig_mean']['exact_run_time'])
         run_time_results['pyBigWig_approx'].append(result['pyBigWig_mean']['approx_run_time'])
 
+        print(f"Total time taken so far (min): {(time.time() - total_start_time) / 60}")
+
     stats_to_bench = ['approx_mean', 'mod_approx_mean']
     for bin_size in bin_size_test_list:
         run_time_results['pyBedGraph_approx_' + str(bin_size)] = []
@@ -74,6 +81,8 @@ def runtime_benchmark():
                                      stats_to_bench, True, False)
             run_time_results['pyBedGraph_approx_' + str(bin_size)].append(result['approx_mean']['run_time'])
             run_time_results['pyBedGraph_mod_approx_' + str(bin_size)].append(result['mod_approx_mean']['run_time'])
+
+            print(f"Total time taken so far (min): {(time.time() - total_start_time) / 60}")
 
     print(run_time_results)
     with open(f'graphs/{data_name}/run_time_results.txt', 'w') as out:
@@ -128,5 +137,5 @@ with open('test_numbers.txt') as in_file:
 bin_size_test_list = test_numbers[Path(sys.argv[1]).stem + '.sizes']['bin_sizes']
 interval_test_list = test_numbers[Path(sys.argv[1]).stem + '.sizes']['intervals']
 
-#interval_size_error_benchmark()
+interval_size_error_benchmark()
 runtime_benchmark()
