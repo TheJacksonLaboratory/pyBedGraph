@@ -15,8 +15,8 @@ do
 done
 
 # dm3 fruit fly
-files=(ENCFF651QPJ ENCFF487MJL)
-for file in ${files[*]}
-do
-	python3 benchmark_graph.py "../pyBedGraph/data/chrom_sizes/dm3.chrom.sizes" "../pyBedGraph/data/$file.bedGraph" "../pyBedGraph/data/$file.bigWig" chr3R
-done
+#files=(ENCFF651QPJ ENCFF487MJL)
+#for file in ${files[*]}
+#do
+#	python3 benchmark_graph.py "../pyBedGraph/data/chrom_sizes/dm3.chrom.sizes" "../pyBedGraph/data/$file.bedGraph" "../pyBedGraph/data/$file.bigWig" chr3R
+#done
