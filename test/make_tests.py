@@ -1,9 +1,9 @@
 import random
 
-NUMB_TEST_CASES = 10000
-MAX_CHROM_SIZE = 250000000
+NUMB_TEST_CASES = 1000000
+MAX_CHROM_SIZE = 195471971  # mouse chr1
 
-with open('test_files/sequential_test_same.bedgraph', 'w') as test:
+'''with open('test_files/sequential_test_same.bedgraph', 'w') as test:
     output = ""
     value = 0.1
     for i in range(NUMB_TEST_CASES):
@@ -47,16 +47,17 @@ with open('test_files/random_test.bedgraph', 'w') as test:
             print(f"Cannot create a chromosome above size: {MAX_CHROM_SIZE}")
             exit(-1)
 
-    test.write(output)
+    test.write(output)'''
 
 with open('test_files/myChrom.sizes', 'w') as test:
     test.write(f"chr1\t{MAX_CHROM_SIZE}")
 
-with open('test_files/intervals.txt', 'w') as test:
+with open('test_files/lots_intervals.txt', 'w') as test:
     output = ""
     for i in range(NUMB_TEST_CASES):
-        start = i * 100 + 1
-        end = start + 99
-        output += f"chr2L\t{start}\t{end}\n"
+        interval_size = random.randint(1, 5000)
+        start = random.randint(1, MAX_CHROM_SIZE - interval_size)
+        end = start + interval_size
+        output += f"chr1\t{start}\t{end}\n"
 
     test.write(output)

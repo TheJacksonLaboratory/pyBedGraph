@@ -1,4 +1,3 @@
-import random
 import pyBigWig
 import time
 import numpy as np
@@ -6,7 +5,7 @@ import numpy as np
 EXACT_MEAN_INDEX = 0
 APPROX_MEAN_INDEX = 1
 MOD_APPROX_MEAN_INDEX = 2
-RANDOM_SEED = 1
+RANDOM_SEED = 10000
 
 mean_names = [
     'pyBigWig_exact',
@@ -27,7 +26,6 @@ ALL_STATS = [
 ]
 
 
-
 class Benchmark:
 
     def __init__(self, bedGraph, bigWig_file):
@@ -43,7 +41,8 @@ class Benchmark:
         self.chromosome = None
 
     def benchmark(self, num_tests, interval_size, chrom_name, bin_size,
-                  stats=None, only_runtime=False, bench_pyBigWig=True):
+                  stats=None, only_runtime=False, bench_pyBigWig=True,
+                  pyBigWig_baseline=True):
 
         # benchmark all stats if none given
         if stats is None:
@@ -56,14 +55,15 @@ class Benchmark:
               f"Bin size: {bin_size}\n"
               f"Stats to bench: {stats}\n"
               f"Only bench run time: {only_runtime}\n"
-              f"Bench pyBigWig: {bench_pyBigWig}\n")
+              f"Bench pyBigWig: {bench_pyBigWig}\n"
+              f"Baseline is pyBigWig: {pyBigWig_baseline}")
 
         # self.find_intervals()
 
-        self.bedGraph.load_chrom_data(chrom_name)
         self.chromosome = self.bedGraph.chromosome_map[chrom_name]
-        if bin_size is not None:
-            self.chromosome.split_bins(bin_size)
+        self.bedGraph.load_chrom_data(chrom_name)
+        if self.bedGraph.like_pyBigWig:
+            self.bedGraph.load_chrom_bins(chrom_name, bin_size)
 
         self.create_test_cases(num_tests, interval_size)
 
@@ -75,30 +75,46 @@ class Benchmark:
 
             results[stat_name] = {}
 
-            if bench_pyBigWig:
-                # actual value for approx_mean/mod_approx_mean is mean
-                actual_stat_name = stat_name
-                if 'mean' in stat_name and stat_name != 'mean':
-                    actual_stat_name = 'mean'
-                pyBigWig_name = 'pyBigWig_' + actual_stat_name
+            actual_stat_name = stat_name
+            if 'mean' in stat_name and stat_name != 'mean':
+                actual_stat_name = 'mean'
 
+            # get actual value of the stat from pyBedGraph if wanted
+            if actual_stat_name not in actual:
+                if not pyBigWig_baseline:
+                    actual[actual_stat_name] = \
+                        self.bedGraph.stats(actual_stat_name,
+                                            start_list=self.test_cases[0],
+                                            end_list=self.test_cases[1],
+                                            chrom_name=chrom_name)
+
+            pyBigWig_name = 'pyBigWig_' + actual_stat_name
+            if bench_pyBigWig:
                 if pyBigWig_name not in results:
                     results[pyBigWig_name] = {}
-
-                # get actual value of the stat
-                if actual_stat_name not in actual:
-                    results[pyBigWig_name]['exact_run_time'], actual[actual_stat_name] = self.benchmark_pyBigWig(actual_stat_name)
 
                 # get corresponding pyBigWig non-exact stat
                 if pyBigWig_name not in predictions:
                     results[pyBigWig_name]['approx_run_time'], predictions[pyBigWig_name]\
                         = self.benchmark_pyBigWig(actual_stat_name, False)
 
-            # get stat from pyBedGraph
-            results[stat_name]['run_time'], predictions[stat_name] =\
-                self.benchmark_self(stat_name)
+            # get actual stat from pyBigWig if haven't gotten it yet
+            if actual_stat_name not in actual:
+                if pyBigWig_name not in results:
+                    results[pyBigWig_name] = {}
 
-        if only_runtime or not bench_pyBigWig:
+                results[pyBigWig_name]['exact_run_time'], actual[actual_stat_name] = \
+                    self.benchmark_pyBigWig(actual_stat_name)
+
+            # get stat from pyBedGraph
+            start_time = time.time()
+            predictions[stat_name] = self.bedGraph.stats(stat_name,
+                                                         start_list=self.test_cases[0],
+                                                         end_list=self.test_cases[1],
+                                                         chrom_name=chrom_name)
+            results[stat_name]['run_time'] = time.time() - start_time
+
+        if only_runtime:
             return results
 
         # find error
@@ -107,23 +123,26 @@ class Benchmark:
             if 'mean' in stat_name and stat_name != 'mean':
                 actual_stat_name = 'mean'
 
+            care_about_high_error = True
             if 'pyBigWig_' in stat_name:
                 actual_stat_name = stat_name[9:]  # get rid of the pyBigWig tag
+                care_about_high_error = False
 
             results[stat_name]['error'] = self.get_error(predictions[stat_name],
-                                                         actual[actual_stat_name])
+                                                         actual[actual_stat_name],
+                                                         care_about_high_error)
 
         return results
 
     def create_test_cases(self, num_tests, interval_size):
 
-        random.seed(RANDOM_SEED)
+        np.random.seed(RANDOM_SEED)
 
         self.num_tests = num_tests
-        test_cases = np.random.randint(2, self.chromosome.max_index, num_tests,
-                                       dtype=np.int32)
+        # change maximum to chrom size file
+        test_cases = np.random.randint(0, self.chromosome.max_index - interval_size,
+                                       num_tests, dtype=np.int32)
         self.test_cases = np.vstack((test_cases, test_cases + interval_size))
-
 
     def find_intervals(self):
 
@@ -174,7 +193,7 @@ class Benchmark:
         return time_taken, values
 
     @staticmethod
-    def get_error(predicted_values, actual_values):
+    def get_error(predicted_values, actual_values, care_about_high_error):
 
         if len(predicted_values) != len(actual_values):
             print(f"Length of predicted values: {len(predicted_values)}, does"
@@ -189,7 +208,7 @@ class Benchmark:
             if actual is None:
                 actual = 0
 
-            if predicted is None:
+            if predicted is None or predicted is -1:
                 predicted = 0
 
             if actual == 0 and predicted != 0:
@@ -198,6 +217,10 @@ class Benchmark:
                 percent_error_values.append(0)
             else:
                 percent_error = abs(actual - predicted) / actual
+
+                # if care_about_high_error and percent_error > 0.0001:
+                #   print(percent_error)
+
                 percent_error_values.append(percent_error)
 
         return np.mean(percent_error_values)

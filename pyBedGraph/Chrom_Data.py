@@ -1,18 +1,19 @@
 import numpy as np
-import time
 import math
+import time
+from .ignore_blank_stats import *
 
 START_INDEX = 1
 END_INDEX = 2
 VALUE_INDEX = 3
 
-MAX_NUMB_BIN_LIST = 6
+MAX_NUMB_BIN_LIST = 2
 MIN_BIN_SIZE = 3
 
 
 class Chrom_Data:
 
-    def __init__(self, name, size, max_bin_size=None):
+    def __init__(self, name, size):
         self.name = name
         self.size = size
 
@@ -20,7 +21,7 @@ class Chrom_Data:
         self.value_list = None
         self.test_value_list = None
 
-        # length is # of intervals in bedgraph file for the chromosome
+        # length is # of intervals in bedGraph file for the chromosome
         self.value_map = np.zeros(size, dtype=np.float64)
         self.intervals = [
             np.zeros(size, dtype=np.uint32),
@@ -31,17 +32,17 @@ class Chrom_Data:
         self.loaded_value_list = False
         self.loaded_bins = False
 
-        self.max_bin_size = max_bin_size
+        self.max_bin_size = None
         self.bins_list = []
         self.bins_list_coverages = []
         self.bin_list_numb = 0
 
-        print(f"Initialized {name}.")
+        print(f"Reading in {name}...")
 
     def add_data(self, data):
         start = int(data[START_INDEX])
         end = int(data[END_INDEX])
-        value = float(data[VALUE_INDEX].strip())
+        value = float(data[VALUE_INDEX])
 
         self.intervals[0][self.current_index] = start
         self.intervals[1][self.current_index] = end
@@ -72,113 +73,86 @@ class Chrom_Data:
             end = self.intervals[1][i]
             self.value_list[start:end] = self.value_map[i]
 
-        if not self.loaded_bins and self.max_bin_size is not None:
-            self.split_bins()
-
         self.loaded_value_list = True
 
         print(f"Done with loading {self.name}")
 
-    # approximate
     def free_value_array(self):
         self.value_list = None
         self.loaded_value_list = False
         print(f"Freed memory for {self.name}'s value_list")
 
-    def split_bins(self, max_bin_size=None):
+    def load_bins(self, max_bin_size):
 
-        if max_bin_size is not None:
-            if max_bin_size == self.max_bin_size:
-                print(f"Already has split bins for: {max_bin_size}")
-                return
+        if max_bin_size is None:
+            print("Did not specify max_bin_size")
+            return
 
-            self.max_bin_size = max_bin_size
+        if max_bin_size == self.max_bin_size and self.loaded_bins is True:
+            print(f"Already loaded bins for: {max_bin_size}")
+            return
 
-        print(f"Splitting bins for {self.name} into size: {self.max_bin_size}...")
+        self.max_bin_size = max_bin_size
 
         self.bins_list.clear()
         self.bins_list_coverages.clear()
 
-        bin_size_divisor = 2 ** (MAX_NUMB_BIN_LIST - 1)
+        bin_size = max_bin_size
+        for i in range(MAX_NUMB_BIN_LIST - 1):
+            if bin_size % 2 == 0:
+                bin_size /= 2
+            else:
+                break
+        bin_size = int(bin_size)
 
-        self.bin_list_numb = 0
-        for i in range(MAX_NUMB_BIN_LIST):
+        # Loading smallest bins
+        print(f"Loading bins of size: {bin_size} for {self.name}...")
+        print(f"Number of bins: {math.ceil(self.value_list.size / bin_size)}")
+        prev_bins_list, prev_bins_coverage_list = load_smallest_bins(self.value_list, bin_size)
+        self.bins_list.append(prev_bins_list)
+        self.bins_list_coverages.append(prev_bins_coverage_list)
+        bin_size *= 2
 
-            # should always be an integer, if not, make sure max_bin_size can be divided
-            bin_size = self.max_bin_size / bin_size_divisor
-            bin_size_divisor /= 2
+        # Load larger bins
+        while bin_size <= max_bin_size:
 
-            if bin_size < MIN_BIN_SIZE or bin_size != int(bin_size):
-                continue
+            print(f"Loading bins of size: {bin_size} for {self.name}...")
+            print(f"Number of bins: {math.ceil(self.value_list.size / bin_size)}")
 
-            bin_size = int(bin_size)
+            bins_list, bins_coverage_list = load_bins(prev_bins_list,
+                                                      prev_bins_coverage_list)
+            prev_bins_list = bins_list
+            prev_bins_coverage_list = bins_coverage_list
 
-            numb_bins = math.ceil(self.size / bin_size)
+            self.bins_list.append(bins_list)
+            self.bins_list_coverages.append(bins_coverage_list)
 
-            # normal python array is twice as fast
-            # bins = np.full(numb_bins, -1, dtype=np.float)
-            # bins_coverage = np.full(numb_bins, -1, dtype=np.float)
-            bins = [-1.0] * numb_bins
-            bins_coverage = [-1.0] * numb_bins
+            bin_size *= 2
 
-            print(f"Bin size: {bin_size}")
-            print(f"# of bins: {numb_bins}")
-
-            for current_bin_index in range(numb_bins):
-                mean = None
-                coverage = None
-
-                # first (smallest) bin list
-                if len(self.bins_list) == 0:
-                    start = current_bin_index * bin_size
-                    end = start + bin_size
-                    mean = self.get_exact_mean(start, end)
-                    coverage = self.get_coverage(start, end)
-                else:
-                    smaller_bin_index = current_bin_index * 2
-
-                    bin1_value = self.bins_list[self.bin_list_numb - 1][smaller_bin_index]
-                    bin1_coverage = self.bins_list_coverages[self.bin_list_numb - 1][smaller_bin_index]
-
-                    # might not have a bin2 for the last bigger bin to make
-                    bin2_value = -1
-                    bin2_coverage = 0
-                    if smaller_bin_index + 1 < len(self.bins_list[self.bin_list_numb - 1]):
-                        bin2_value = self.bins_list[self.bin_list_numb - 1][smaller_bin_index + 1]
-                        bin2_coverage = self.bins_list_coverages[self.bin_list_numb - 1][smaller_bin_index + 1]
-
-                    if bin1_value != -1 and bin2_value != -1:
-                        mean = (bin2_value * bin2_coverage + bin1_value * bin1_coverage) /\
-                               (bin2_coverage + bin1_coverage)
-                    elif bin2_value == -1:
-                        mean = bin1_value
-                    elif bin1_value == -1:
-                        mean = bin2_value
-
-                    coverage = (bin1_coverage + bin2_coverage) / 2
-
-                if mean is None:
-                    mean = -1
-
-                bins[current_bin_index] = float(mean)
-                bins_coverage[current_bin_index] = coverage
-
-            self.bins_list.append(bins)
-            self.bins_list_coverages.append(bins_coverage)
-            self.bin_list_numb += 1
-
+        self.bin_list_numb = len(self.bins_list)
         self.loaded_bins = True
         print("Done with splitting bins")
 
-    def get_exact_mean(self, start, end):
-        wanted_range = self.value_list[start:end]
-        cleaned_range = wanted_range[wanted_range > -1]
-        if cleaned_range.size == 0:
-            return None
+        for i in range(self.bin_list_numb):
+            bin_size /= 2
 
-        return np.mean(cleaned_range)
+        # test if bins were made correctly
+        '''for bin_list_index in range(self.bin_list_numb):
+            bin_list = self.bins_list[bin_list_index]
+            print(bin_list_index)
+            for bin_index in range(len(bin_list)):
+                start = bin_index * bin_size
+                end = start + bin_size
+                test_avg = get_bin_mean(self.value_list, start, end)
+                if abs(bin_list[bin_index] - test_avg) > 0.000001:
+                    print(bin_index, bin_list[bin_index], test_avg)
+                    exit(-1)
+            bin_size *= 2'''
 
-    def get_approx_mean(self, start, end):
+    def get_exact_mean(self, start_list, end_list):
+        return get_exact_means(self.value_list, start_list, end_list)
+
+    '''def get_approx_mean(self, start_list, end_list):
         bin_start = int(start / self.max_bin_size)
         bin_end = int(end / self.max_bin_size)
 
@@ -223,7 +197,7 @@ class Chrom_Data:
         mean_value /= numb_value
         return mean_value
 
-    def get_mod_approx_mean(self, start, end):
+    def get_mod_approx_mean(self, start_list, end_list):
         bin_start = int(start / self.max_bin_size)
         bin_end = int(end / self.max_bin_size)
 
@@ -288,7 +262,7 @@ class Chrom_Data:
         mean_value /= numb_value
         return mean_value
 
-    def get_mod2_approx_mean(self, start, end):
+    def get_mod2_approx_mean(self, start_list, end_list):
         bin_start = int(start / self.max_bin_size)
         bin_end = int(end / self.max_bin_size)
 
@@ -327,7 +301,7 @@ class Chrom_Data:
         max_bin_index += 1
         while max_bin_index < bin_end:
             if max_size_bin[max_bin_index] != -1:
-                #bin_weight = weight * self.bins_list_coverages[self.bin_list_numb - 1][max_bin_index]
+                bin_weight = weight * self.bins_list_coverages[self.bin_list_numb - 1][max_bin_index]
                 #print(self.bins_list_coverages[self.bin_list_numb - 1][max_bin_index])
                 bin_weight = weight
                 mean_value += bin_weight * max_size_bin[max_bin_index]
@@ -358,59 +332,33 @@ class Chrom_Data:
         mean_value /= numb_value
         return mean_value
 
-    def get_median(self, start, end):
-        my_range = self.value_list[start:end][self.value_list[start:end] > -1]
-        if my_range.size == 0:
-            return None
-        return np.median(my_range)
-
-    def get_coverage(self, start, end):
-        my_range = self.value_list[start:end][self.value_list[start:end] > -1]
-        orig_range = end - start
-        return 1.0 - (orig_range - my_range.size) / orig_range
-
-    def get_max(self, start, end):
-        my_range = self.value_list[start:end][self.value_list[start:end] > -1]
-        if my_range.size == 0:
-            return None
-        return np.amax(my_range)
-
-    def get_min(self, start, end):
-        my_range = self.value_list[start:end][self.value_list[start:end] > -1]
-        if my_range.size == 0:
-            return None
-
-        return np.amin(my_range)
-
-    def get_std(self, start, end):
-        my_range = self.value_list[start:end][self.value_list[start:end] > -1]
-        if my_range.size == 0:
-            return None
-        return np.std(my_range)
-
     '''
-    def get_all_mean(self, test_cases):
-        length_arr = []
-        start_list = [i[0] for i in test_cases]
-        end_list = [i[1] for i in test_cases]
-        for i in range(len(test_cases) + 1):
-            length_arr.append([])
 
-        start_time = time.time()
-        for i in range(len(test_cases)):
-            start = start_list[i]
-            end = end_list[i]
-            wanted_arr = self.value_list[start:end][self.value_list[start:end] > -1]
-            length_arr[wanted_arr.size].append(wanted_arr)
+    def get_approx_mean(self, start_list, end_list):
+        return get_approx_means(self.bins_list[self.bin_list_numb - 1],
+                                self.max_bin_size, start_list, end_list)
 
-        print(time.time() - start_time)
-        count = 0
-        for i in range(len(length_arr)):
-            if len(length_arr[i]) == 0:
-                continue
-            if i == 0:
-                continue
-            count += 1
-            np.std(length_arr[i], axis=1)
+    def get_mod_approx_mean(self, start_list, end_list):
+        return get_mod_approx_means(self.bins_list, self.max_bin_size,
+                                    self.bin_list_numb, start_list, end_list)
 
-        print(count)'''
+    # TODO
+    def get_median(self, start_list, end_list):
+        return None
+
+    def get_coverage(self, start_list, end_list):
+        return get_coverages(self.value_list, start_list, end_list)
+
+    def get_max(self, start_list, end_list):
+        return get_maximums(self.value_list, start_list, end_list)
+
+    def get_min(self, start_list, end_list):
+        return get_minimums(self.value_list, start_list, end_list)
+
+    # TODO
+    def get_std(self, start_list, end_list):
+        # my_range = self.value_list[start:end][self.value_list[start:end] > -1]
+        # if my_range.size == 0:
+        #    return None
+        # return np.std(my_range)
+        return None
