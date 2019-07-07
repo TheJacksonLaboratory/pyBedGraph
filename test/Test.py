@@ -16,12 +16,12 @@ if len(sys.argv) != 6:
           "arg 5 - bigWig_file")
     exit(-1)
 
-bin_size = 128
+bin_size = 200
 test_intervals = []
-num_tests = 50000
+num_tests = 1000000
 interval_size = 500
 chrom_name = 'chr1'
-stats = ['mean', 'min', 'max', 'coverage', 'approx_mean', 'mod_approx_mean']
+stats = ['mean', 'approx_mean', 'mod_approx_mean']
 
 bedGraph = BedGraph(sys.argv[1], sys.argv[2], chrom_name)
 bench = Benchmark(bedGraph, sys.argv[5])

@@ -7,7 +7,7 @@ START_INDEX = 1
 END_INDEX = 2
 VALUE_INDEX = 3
 
-MAX_NUMB_BIN_LIST = 2
+MAX_NUMB_BIN_LIST = 5
 MIN_BIN_SIZE = 3
 
 
@@ -33,6 +33,7 @@ class Chrom_Data:
         self.loaded_bins = False
 
         self.max_bin_size = None
+        self.min_bin_size = None
         self.bins_list = []
         self.bins_list_coverages = []
         self.bin_list_numb = 0
@@ -104,6 +105,7 @@ class Chrom_Data:
             else:
                 break
         bin_size = int(bin_size)
+        self.min_bin_size = bin_size
 
         # Loading smallest bins
         print(f"Loading bins of size: {bin_size} for {self.name}...")
@@ -149,55 +151,7 @@ class Chrom_Data:
                     exit(-1)
             bin_size *= 2'''
 
-    def get_exact_mean(self, start_list, end_list):
-        return get_exact_means(self.value_list, start_list, end_list)
-
-    '''def get_approx_mean(self, start_list, end_list):
-        bin_start = int(start / self.max_bin_size)
-        bin_end = int(end / self.max_bin_size)
-
-        max_size_bin = self.bins_list[self.bin_list_numb - 1]
-
-        bin_index = bin_start
-
-        # special case where interval is within a single bin
-        if bin_start == bin_end:
-            if max_size_bin[bin_index] == -1:
-                return None
-            return max_size_bin[bin_index]
-
-        mean_value = 0
-        numb_value = 0
-
-        # first bin
-        if max_size_bin[bin_index] != -1:
-            weight = (bin_index + 1) * self.max_bin_size - start
-            mean_value += weight * max_size_bin[bin_index]
-            numb_value += weight
-
-        # middle bins
-        weight = self.max_bin_size
-        bin_index += 1
-        while bin_index < bin_end:
-            if max_size_bin[bin_index] != -1:
-                mean_value += weight * max_size_bin[bin_index]
-                numb_value += weight
-
-            bin_index += 1
-
-        # last bin
-        if max_size_bin[bin_end] != -1:
-            weight = end - bin_end * self.max_bin_size
-            mean_value += weight * max_size_bin[bin_end]
-            numb_value += weight
-
-        if mean_value == 0:
-            return None
-
-        mean_value /= numb_value
-        return mean_value
-
-    def get_mod_approx_mean(self, start_list, end_list):
+    '''def get_mod_approx_mean(self, start_list, end_list):
         bin_start = int(start / self.max_bin_size)
         bin_end = int(end / self.max_bin_size)
 
@@ -335,12 +289,19 @@ class Chrom_Data:
     '''
 
     def get_approx_mean(self, start_list, end_list):
-        return get_approx_means(self.bins_list[self.bin_list_numb - 1],
-                                self.max_bin_size, start_list, end_list)
+        return get_approx_means(self.bins_list[0],
+                                self.min_bin_size, start_list, end_list)
 
     def get_mod_approx_mean(self, start_list, end_list):
         return get_mod_approx_means(self.bins_list, self.max_bin_size,
                                     self.bin_list_numb, start_list, end_list)
+
+    def get_exact_mean(self, start_list, end_list):
+        return get_exact_means(self.value_list,
+                               self.bins_list[self.bin_list_numb - 1],
+                               self.max_bin_size,
+                               self.bins_list_coverages[self.bin_list_numb - 1],
+                               start_list, end_list)
 
     # TODO
     def get_median(self, start_list, end_list):

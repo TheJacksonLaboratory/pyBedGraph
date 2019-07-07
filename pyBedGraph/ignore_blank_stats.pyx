@@ -2,6 +2,7 @@ import numpy as np
 cimport cython
 from libc.float cimport DBL_MAX, DBL_MIN
 from libc.math cimport ceil
+from libc.stdlib cimport malloc, free
 
 def load_smallest_bins(double[:] value_list, unsigned int bin_size):
     cdef size_t value_list_size = value_list.size
@@ -83,7 +84,7 @@ def load_bins(double[:] prev_bin_level_mean, double[:] prev_bin_level_coverage):
 
     return bins, bins_coverage
 
-def get_bin_mean(double[:] value_list, size_t start, size_t end):
+cdef get_bin_mean(double[:] value_list, size_t start, size_t end):
     cdef double total = 0
     cdef unsigned int num_counted = 0
     cdef size_t i
@@ -104,46 +105,96 @@ def get_bin_mean(double[:] value_list, size_t start, size_t end):
 
     return total / num_counted
 
-def get_exact_means(double[:] value_list, int[:] start_list, int[:] end_list):
+cdef get_values(double[:] value_list, start, end):
+
+    cdef double total = 0, value
+    cdef unsigned int num_counted = 0
+    cdef size_t i
+
+    for i in range(start, end, 1):
+        value = value_list[i]
+        if value < 0:
+            continue
+
+        total += value
+        num_counted += 1
+
+    return total, num_counted
+
+def get_exact_means(double[:] value_list, double[:] bin_list, int bin_size,
+                         double[:] bin_coverage_list, int[:] start_list,
+                         int[:] end_list):
 
     assert tuple(start_list.shape) == tuple(end_list.shape)
 
-    cdef size_t i, num_tests = start_list.size, start, end, num_counted
-    cdef size_t value_list_size = value_list.size
-    cdef double total
+    cdef size_t i, start, end, bin_end, bin_index
+    cdef size_t num_tests = start_list.size
+    cdef double total, value, coverage
+    cdef unsigned int numb_value, weight, prev_length
 
     result = np.full(num_tests, -1, dtype=np.float64)
     cdef double[:] result_view = result
 
     for i in range(num_tests):
-        total = 0
-        num_counted = 0
         start = start_list[i]
         end = end_list[i]
 
-        for j in range(start, end, 1):
-            if value_list[j] < 0:
+        bin_index = <unsigned int>ceil(start / bin_size)
+        bin_end = <unsigned int>(end / bin_size)
+
+        # special case where interval is within a single bin
+        if bin_index >= bin_end:
+            value = get_bin_mean(value_list, start, end)
+            if value != -1:
+                result_view[i] = value
                 continue
 
-            num_counted += 1
-            total += value_list[j]
+        total = 0
+        numb_value = 0
 
-        if num_counted == 0:
+        # first bin
+        if start % bin_size != 0:
+            prev_length = bin_size - start % bin_size
+            value, weight = get_values(value_list, start, start + prev_length)
+            if value != -1:
+                total += value
+                numb_value += weight
+
+        # middle bins
+        while bin_index < bin_end:
+            value = bin_list[bin_index]
+            if value != -1:
+                coverage = bin_coverage_list[bin_index]
+                weight = <int>(coverage * bin_size)
+                total += weight * value
+                numb_value += weight
+
+            bin_index += 1
+
+        # last bin
+        prev_length = end % bin_size
+        if prev_length != 0:
+            value, weight = get_values(value_list, end - prev_length, end)
+            if value != -1:
+                total += value
+                numb_value += weight
+
+        if numb_value == 0:
             continue
 
-        result_view[i] = total / num_counted
+        result_view[i] = total / numb_value
 
     return result
 
-@cython.cdivision(True)
 def get_approx_means(double[:] bin_list, int max_bin_size,
         int[:] start_list, int[:] end_list):
 
     assert tuple(start_list.shape) == tuple(end_list.shape)
 
-    cdef size_t i, num_tests = start_list.size, start, end
+    cdef size_t i, start, end, bin_end, bin_index
+    cdef size_t num_tests = start_list.size
     cdef double total, value
-    cdef unsigned int numb_value, weight, bin_end, bin_index
+    cdef unsigned int numb_value, weight
 
     result = np.full(num_tests, -1, dtype=np.float64)
     cdef double[:] result_view = result
@@ -203,15 +254,24 @@ def get_mod_approx_means(list bins_list, unsigned int max_bin_size,
 
     cdef double[:] max_size_bin_list = bins_list[bin_list_numb - 1]
     cdef double[:] bin_list = bins_list[0]
+    cdef double* bin_array
 
     cdef size_t i, num_tests = start_list.size, start, end
     cdef size_t max_bin_index
     cdef double total
     cdef unsigned int numb_value, weight, bin_end, bin_index, current_bin_size
-    cdef unsigned int bin_size_index
+    cdef unsigned int bin_size_index, arr_size = bin_list.size
 
     result = np.full(num_tests, -1, dtype=np.float64)
     cdef double[:] result_view = result
+
+    cdef double ** bins_array = <double **>malloc(bin_list_numb * sizeof(double*))
+    for i in range(bin_list_numb):
+        bins_array[i] = <double *>malloc(arr_size * sizeof(double))
+        bin_list = bins_list[i]
+        for j in range(arr_size):
+            bins_array[i][j] = bin_list[j]
+        arr_size /= 2
 
     for i in range(num_tests):
         start = start_list[i]
@@ -242,9 +302,9 @@ def get_mod_approx_means(list bins_list, unsigned int max_bin_size,
                 bin_size_index -= 1
                 bin_index = bin_index * 2 + 1
 
-            #bin_list = bins_list[bin_size_index]
-            if bin_list[bin_index] != -1:
-                total += weight * bin_list[bin_index]
+            bin_array = bins_array[bin_size_index]
+            if bin_array[bin_index] != -1:
+                total += weight * bin_array[bin_index]
                 numb_value += weight
 
         # middle bins
@@ -269,15 +329,19 @@ def get_mod_approx_means(list bins_list, unsigned int max_bin_size,
                 bin_size_index -= 1
                 bin_index = bin_index * 2
 
-            # bin_list = bins_list[bin_size_index]
-            if bin_list[bin_index] != -1:
-                total += weight * bin_list[bin_index]
+            bin_array = bins_array[bin_size_index]
+            if bin_array[bin_index] != -1:
+                total += weight * bin_array[bin_index]
                 numb_value += weight
 
         if numb_value == 0:
             continue
 
         result_view[i] = total / numb_value
+
+    for i in range(bin_list_numb):
+        free(bins_array[i])
+    free(bins_array)
 
     return result
 

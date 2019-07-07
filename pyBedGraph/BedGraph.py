@@ -99,6 +99,9 @@ class BedGraph:
 
         chromosome = self.chromosome_map[chrom_name]
         if stat == "mean":
+            if chromosome.loaded_bins is False:
+                print(f'Bins were not loaded')
+                return None
             return chromosome.get_exact_mean
         elif stat == "approx_mean":
             if chromosome.loaded_bins is False:
@@ -110,11 +113,6 @@ class BedGraph:
                 print(f'Bins were not loaded')
                 return None
             return chromosome.get_mod_approx_mean
-        elif stat == "mod2_approx_mean":
-            if chromosome.loaded_bins is False:
-                print(f'Bins were not loaded')
-                return None
-            return chromosome.get_mod2_approx_mean
         elif stat == "median":
             return chromosome.get_median
         elif stat == "max":

@@ -5,7 +5,7 @@ import numpy as np
 EXACT_MEAN_INDEX = 0
 APPROX_MEAN_INDEX = 1
 MOD_APPROX_MEAN_INDEX = 2
-RANDOM_SEED = 10000
+RANDOM_SEED = 1
 
 mean_names = [
     'pyBigWig_exact',
