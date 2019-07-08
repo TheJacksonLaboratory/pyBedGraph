@@ -18,13 +18,22 @@ from pyBedGraph import BedGraph
 # arg1 - chromosome sizes file
 # arg2 - bedgraph file
 # arg3 - (optional) chromosome_name
-# arg4 - (optional) bin_size (default is 64)
-bedGraph = BedGraph('dm6.chrom.sizes','bedgraph_file.bedgraph', 'chr1')
+# Just load chromosome 'chr1' (uses less memory and takes less time)
+bedGraph = BedGraph('dm6.chrom.sizes', 'bedgraph_file.bedgraph', 'chr1')
 
-bedGraph = bedGraph('bedgraph_file.bedgraph', chromosome_name='chr1', bin_size=128)
+# Load the whole bedGraph file
+bedGraph = BedGraph('dm6.chrom.sizes', 'bedgraph_file.bedgraph')
 ```
+Choose a specific statistic:
+  - `'mean'`
+  - `'approx_mean'` - an approximate mean that is around 5x faster for a 0-1% error
+  - `'median'`
+  - `'max'`
+  - `'min'`
+  - `'coverage'`
+  - `'std'`
 
-Search from a file:
+Search from a file: (TODO)
 ```python
 # arg1 - interval file
 # arg2 - (optional) output_file (default goes to stdout)
@@ -34,6 +43,7 @@ bedGraph.stats_from_file('intervals_to_search_for.txt', output_file='out.txt', s
 
 Search from a list of intervals:
 ```python
+# Option 1
 intervals = [
     ['chr2L', 0, 100],
     ['chr2L', 101, 200],
@@ -41,27 +51,30 @@ intervals = [
     ['chr2L', 100000, 999999]
 ]
 
-# arg1 - interval list
-# arg2 - (optional) stat (default is 'mean')
-print(bedGraph.stats(intervals))
-# output is [value1, value2, value3, value4]
+# Option 2
+start_list = [0, 101, 4, 100000]
+end_list = [100, 200, 100, 999999]
+chrom_name = 'chr2L'
+
+# arg1 - (optional) stat (default is 'mean')
+# arg2 - intervals
+# arg3 - start_list
+# arg4 - end_list
+# arg5 - chrom_name
+# must have either intervals or start_list, end_list, chrom_name
+# returns a list of values
+values = bedGraph.stats(intervals=intervals)
+
+values = bedGraph.stats(start_list=start_list, end_list=end_list, chrom_name=chrom_name)
+
+# Output is [value1, value2, value3, value4]
+print(values)
 ```
 
-Choose a specific statistic:
-  - `'mean'`
-  - `'approx_mean'` - an approximate mean that is around 5x faster
-  - `'mod_approx_mean'` - a slightly slower but almost halves the error in `'approx_mean'`
-  - `'median'`
-  - `'max'`
-  - `'min'`
-  - `'coverage'`
-  - `'std'`
-```python
-bedGraph.stats_from_file('intervals_to_search_for.txt', 'out.txt', 'std')
-```
+
 
 # Benchmark:
-Actual values are found from the `intervals` function in pyBigWig. Times are compared to pyBigWig's `stat` function with the `exact` argument being `True`.
+Actual values are found from the `stats` function in pyBigWig with the `exact` argument being `True`. (TODO)
 ```python
 from pyBedGraph import Benchmark
 
