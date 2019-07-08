@@ -46,11 +46,17 @@ def interval_size_error_benchmark():
             print(f"Total time taken so far (min): {(time.time() - total_start_time) / 60}")
 
     print(interval_error_results)
+    error_types = ['percent_error', 'ms_error', 'abs_error', 'num_actual_0']
     with open(f'graphs/{data_name}/interval_error_results.txt', 'w') as out:
         out.write(" ".join([str(x) for x in interval_test_list]) + '\n')
         for key in interval_error_results:
-            output = key + " " + " ".join([str(x) for x in interval_error_results[key]]) + '\n'
-            out.write(output)
+            out.write(key + '\n')
+            error_list = interval_error_results[key]
+            for error_type in error_types:
+                out.write(error_type + " ")
+                for error_dict in error_list:
+                    out.write(str(error_dict[error_type]) + " ")
+                out.write('\n')
 
     # generate_images.create_error_interval(data_name, interval_test_list, interval_error_results)
 
@@ -182,5 +188,5 @@ interval_test_list = test_numbers[Path(sys.argv[1]).stem + '.sizes']['intervals'
 bin_size_test_list = [2, 10, 20]
 
 runtime_benchmark()
-#interval_size_error_benchmark()
-#interval_size_runtime_benchmark()
+interval_size_error_benchmark()
+interval_size_runtime_benchmark()

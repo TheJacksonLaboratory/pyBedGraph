@@ -130,9 +130,16 @@ class Benchmark:
                 actual_stat_name = stat_name[9:]  # get rid of the pyBigWig tag
                 care_about_high_error = False
 
-            results[stat_name]['error'] = self.get_error(predictions[stat_name],
-                                                         actual[actual_stat_name],
-                                                         care_about_high_error)
+            percent_error, ms_error, abs_error, num_actual_0 =\
+                self.get_error(predictions[stat_name], actual[actual_stat_name],
+                               care_about_high_error)
+
+            results[stat_name]['error'] = {}
+            r = results[stat_name]['error']
+            r['percent_error'] = percent_error
+            r['ms_error'] = ms_error
+            r['abs_error'] = abs_error
+            r['num_actual_0'] = num_actual_0
 
         return results
 
@@ -203,6 +210,9 @@ class Benchmark:
             return
 
         percent_error_values = []
+        mse_error_values = []
+        abs_error_values = []
+        num_actual_0 = 0
         for i in range(len(predicted_values)):
             actual = actual_values[i]
             predicted = predicted_values[i]
@@ -213,7 +223,11 @@ class Benchmark:
             if predicted is None or predicted is -1:
                 predicted = 0
 
+            abs_error_values.append(abs(actual - predicted))
+            mse_error_values.append((actual - predicted) * (actual - predicted))
+
             if actual == 0 and predicted != 0:
+                num_actual_0 += 1
                 continue
             elif predicted == 0:
                 percent_error_values.append(0)
@@ -225,4 +239,5 @@ class Benchmark:
 
                 percent_error_values.append(percent_error)
 
-        return np.mean(percent_error_values)
+        return np.mean(percent_error_values), np.mean(mse_error_values),\
+            np.mean(abs_error_values), num_actual_0

@@ -16,3 +16,4 @@
 !test/*
 !graphs/
 !graphs/*
+graphs/log.txt

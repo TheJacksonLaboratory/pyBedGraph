@@ -1,0 +1,31 @@
+#!/bin/bash 
+# Maximum hours
+#PBS -l walltime=10:00:00
+
+# Max memory
+#PBS -l mem=16G
+#PBS -l vmem=16G
+
+# email for begin, aborts, ends
+#PBS -m bae
+#PBS -M henry.zhang@jax.org henrybzhang@pm.me
+
+# job name
+#PBS -N pyBedGraph_benchmark_intervals
+
+# standard out
+#PBS -o log.txt
+
+# adds stderr to stdout
+#PBS -j oe
+
+# verify options and abort if error
+#PBS -w e
+
+cd ${PBS_O_WORKDIR}
+cd "pyBedGraph/graphs"
+
+# Load modules
+module load python/3.6.6
+
+./generate_graphs.sh

@@ -25,7 +25,8 @@ bin_size = int(math.sqrt(interval_size))
 chrom_name = 'chr1'
 stats = ['mean', 'approx_mean', 'mod_approx_mean']
 
-bedGraph = BedGraph(sys.argv[1], sys.argv[2], chrom_name)
+bedGraph = BedGraph(sys.argv[1], sys.argv[2])
+input("Continue?")
 bench = Benchmark(bedGraph, sys.argv[5])
 result = bench.benchmark(num_tests, interval_size, chrom_name, bin_size, stats,
                          bench_pyBigWig=False)

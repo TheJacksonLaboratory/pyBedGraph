@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import os
 
 colors = [
     'blue',
@@ -31,6 +32,8 @@ INTERVAL_RUNTIME_NAMES = [
     'pyBedGraph_exact',
     'pyBigWig_approx'
 ]
+
+GRAPH_ROOT_LOCATION = 'graphs'
 
 def create_plots():
     with open('graphs/ENCFF487MJL/run_time_data.txt') as input_file:
@@ -92,45 +95,9 @@ def create_error_interval(data_name, interval_test_list, data):
 
 #create_plots()
 
+def main():
+    pass
 
-def sample_method():
-    # runtime
-    rt_x = np.arange(1, 6)
-    rt = [[1, 5, 25, 125, 625], [1, 2, 4, 8, 16], [0.5, 1, 2, 4, 8]]
-    rt_col = ['blue', 'red', 'green']
-    rt_lab = ['pyBW', 'pyBG exact', 'pyBG approx.']
-    # error rate
-    er_x = [64, 128, 256, 512, 1024]
-    er = [[1, 1, 1.2, 1.3, 1.4], [0.1, 0.4, 1.6, 3, 5], [0.1, 0.3, 1.2, 2, 4]]
-    er_col = ['blue', 'red', 'green']
-    er_lab = ['pyBW approx.', 'pyBG approx.', 'pyBG mod approx.']
 
-    fig = plt.figure(figsize=(8, 12))
-    fig.subplots_adjust(hspace=.3)
-    plt.subplot(2, 1, 1)
-
-    # plot runtime
-    for i in range(len(rt_lab)):
-        plt.plot(rt_x, [np.log10(y) for y in rt[i]], color=rt_col[i], marker='o', ms=9, linewidth=2.5, label=rt_lab[i])
-    plt.title("Test runtime", fontsize=16)
-    plt.xlabel("log10(Sample size)", fontsize=16)
-    plt.ylabel("log10(Runtime in seconds)", fontsize=16)
-    plt.xticks(np.arange(1, 6, 1), fontsize=15)
-    plt.yticks(fontsize=15)
-    plt.legend(loc='best', fontsize=16)
-
-    # plot error rate
-    plt.subplot(2, 1, 2)
-    for i in range(len(er_lab)):
-        plt.plot(er_x, er[i], color=er_col[i], marker='o', ms=9, linewidth=2.5, label=er_lab[i])
-    plt.title("Test error rate for binsize = " + str(128), fontsize=16)
-    plt.xlabel("Interval size (bps)", fontsize=16)
-    plt.ylabel("Error rate (%)", fontsize=16)
-    plt.xticks(er_x, fontsize=15)
-    plt.yticks(fontsize=15)
-    plt.legend(loc='best', fontsize=16)
-
-    # plt.show()
-    # plt.savefig('pyBedGraph_example_figures.pdf', dpi=300, bbox_inches="tight")
-    plt.savefig('graphs/pyBedGraph_example_figures_binsize_' + str(128) + '.pdf', dpi=300)
-    plt.close()
+if __name__ == '__main__':
+    main()
