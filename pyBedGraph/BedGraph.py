@@ -148,14 +148,18 @@ class BedGraph:
     def stats(self, stat="mean", intervals=None, start_list=None,
               end_list=None, chrom_name=None):
 
+        # either have intervals be a list of [chrom_name, start, end]
         if intervals is not None:
             method_to_call = self.get_method(intervals[0][0], stat)
             current_chrom = self.chromosome_map[intervals[0][0]]
 
             start_list, end_list = self.change_shape(intervals)
+
         elif start_list is None or end_list is None or chrom_name is None:
             print("Must either have intervals or start_list, end_list, chrom_name")
             return None
+
+        # or start_list, end_list be lists of starts and ends
         else:
             method_to_call = self.get_method(chrom_name, stat)
             current_chrom = self.chromosome_map[chrom_name]

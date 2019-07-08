@@ -8,8 +8,8 @@ from pyBedGraph.BedGraph import BedGraph
 from pyBedGraph.Benchmark import Benchmark
 import generate_images
 
-MIN_NUM_TEST = 100
-MAX_NUM_TEST = 10000000
+MIN_NUM_TEST = 100000
+MAX_NUM_TEST = 1000000
 DEFAULT_INTERVAL_SIZE = 500
 DEFAULT_NUM_TESTS = 10000
 
@@ -46,7 +46,7 @@ def interval_size_error_benchmark():
             print(f"Total time taken so far (min): {(time.time() - total_start_time) / 60}")
 
     print(interval_error_results)
-    with open(f'graphs/{data_name}/interval_error_results.txt', 'w+') as out:
+    with open(f'graphs/{data_name}/interval_error_results.txt', 'w') as out:
         out.write(" ".join([str(x) for x in interval_test_list]) + '\n')
         for key in interval_error_results:
             output = key + " " + " ".join([str(x) for x in interval_error_results[key]]) + '\n'
@@ -87,7 +87,7 @@ def interval_size_runtime_benchmark():
             print(f"Total time taken so far (min): {(time.time() - total_start_time) / 60}")
 
     print(interval_runtime_results)
-    with open(f'graphs/{data_name}/interval_runtime_results.txt', 'w+') as out:
+    with open(f'graphs/{data_name}/interval_runtime_results.txt', 'w') as out:
         out.write(" ".join([str(x) for x in interval_test_list]) + '\n')
         for key in interval_runtime_results:
             output = key + " " + " ".join([str(x) for x in interval_runtime_results[key]]) + '\n'
@@ -96,15 +96,7 @@ def interval_size_runtime_benchmark():
 
 def runtime_benchmark():
     # create list of num_tests
-    num_test_list = []
-    num_test = MIN_NUM_TEST
-    while num_test <= MAX_NUM_TEST:
-        num_test_list.append(num_test)
-        diff = 1000000
-        if num_test >= diff:
-            num_test += diff
-        else:
-            num_test *= 10
+    num_test_list = [x for x in range(MIN_NUM_TEST, MAX_NUM_TEST + 1, MIN_NUM_TEST)]
 
     stats_to_bench = ['mean']
     run_time_results = {}
@@ -114,8 +106,10 @@ def runtime_benchmark():
     bin_size = int(math.sqrt(DEFAULT_INTERVAL_SIZE))
     for num_test in num_test_list:
         result = bench.benchmark(num_test, DEFAULT_INTERVAL_SIZE, chrom_name,
-                                 bin_size, stats_to_bench, True, False, False)
+                                 bin_size, stats_to_bench, True, True)
         run_time_results['pyBedGraph_exact'].append(result['mean']['run_time'])
+        run_time_results['pyBigWig_approx'].append(result['pyBigWig_mean']['approx_run_time'])
+        run_time_results['pyBigWig_exact'].append(result['pyBigWig_mean']['exact_run_time'])
 
         print(f"Total time taken so far (min): {(time.time() - total_start_time) / 60}")
 
@@ -183,10 +177,10 @@ with open('test_numbers.txt') as in_file:
         test_numbers[chrom_size_file]['intervals'] = intervals
         test_numbers[chrom_size_file]['bin_sizes'] = bin_sizes
 
-bin_size_test_list = test_numbers[Path(sys.argv[1]).stem + '.sizes']['bin_sizes']
+# bin_size_test_list = test_numbers[Path(sys.argv[1]).stem + '.sizes']['bin_sizes']
 interval_test_list = test_numbers[Path(sys.argv[1]).stem + '.sizes']['intervals']
 bin_size_test_list = [2, 10, 20]
 
-# interval_size_error_benchmark()
-interval_size_runtime_benchmark()
-# runtime_benchmark()
+runtime_benchmark()
+#interval_size_error_benchmark()
+#interval_size_runtime_benchmark()

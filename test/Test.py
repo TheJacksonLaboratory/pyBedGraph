@@ -21,7 +21,7 @@ test_intervals = []
 num_tests = 50000
 interval_size = 500
 bin_size = interval_size / 20
-# bin_size = int(math.sqrt(interval_size))
+bin_size = int(math.sqrt(interval_size))
 chrom_name = 'chr1'
 stats = ['mean', 'approx_mean', 'mod_approx_mean']
 
