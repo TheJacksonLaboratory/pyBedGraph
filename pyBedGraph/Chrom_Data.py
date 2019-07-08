@@ -7,8 +7,8 @@ START_INDEX = 1
 END_INDEX = 2
 VALUE_INDEX = 3
 
-MAX_NUMB_BIN_LIST = 5
-MIN_BIN_SIZE = 3
+MAX_NUMB_BIN_LIST = 1
+MIN_BIN_SIZE = 2
 
 
 class Chrom_Data:
@@ -289,7 +289,7 @@ class Chrom_Data:
     '''
 
     def get_approx_mean(self, start_list, end_list):
-        return get_approx_means(self.bins_list[0],
+        return get_approx_means(self.bins_list[0], self.bins_list_coverages[0],
                                 self.min_bin_size, start_list, end_list)
 
     def get_mod_approx_mean(self, start_list, end_list):

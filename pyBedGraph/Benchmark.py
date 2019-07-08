@@ -62,8 +62,7 @@ class Benchmark:
 
         self.chromosome = self.bedGraph.chromosome_map[chrom_name]
         self.bedGraph.load_chrom_data(chrom_name)
-        if self.bedGraph.like_pyBigWig:
-            self.bedGraph.load_chrom_bins(chrom_name, bin_size)
+        self.bedGraph.load_chrom_bins(chrom_name, bin_size)
 
         self.create_test_cases(num_tests, interval_size)
 
@@ -81,7 +80,7 @@ class Benchmark:
 
             # get actual value of the stat from pyBedGraph if wanted
             if actual_stat_name not in actual:
-                if not pyBigWig_baseline:
+                if not pyBigWig_baseline and not only_runtime:
                     actual[actual_stat_name] = \
                         self.bedGraph.stats(actual_stat_name,
                                             start_list=self.test_cases[0],
@@ -95,11 +94,14 @@ class Benchmark:
 
                 # get corresponding pyBigWig non-exact stat
                 if pyBigWig_name not in predictions:
-                    results[pyBigWig_name]['approx_run_time'], predictions[pyBigWig_name]\
-                        = self.benchmark_pyBigWig(actual_stat_name, False)
+                    results[pyBigWig_name]['approx_run_time'], predictions[pyBigWig_name] =\
+                        self.benchmark_pyBigWig(actual_stat_name, False)
+
+                results[pyBigWig_name]['exact_run_time'], temp =\
+                    self.benchmark_pyBigWig(actual_stat_name)
 
             # get actual stat from pyBigWig if haven't gotten it yet
-            if actual_stat_name not in actual:
+            if actual_stat_name not in actual and not only_runtime:
                 if pyBigWig_name not in results:
                     results[pyBigWig_name] = {}
 

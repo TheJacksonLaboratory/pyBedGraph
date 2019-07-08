@@ -19,11 +19,17 @@ LEGEND_FONT_SIZE = 8
 RUN_TIME_NAMES = [
     'pyBigWig_exact',
     'pyBedGraph_exact',
-    'pyBigWig_approx',
+    'pyBigWig_approx'
 ]
 
 INTERVAL_ERROR_NAMES = [
-    'pyBigWig_approx',
+    'pyBigWig_approx'
+]
+
+INTERVAL_RUNTIME_NAMES = [
+    'pyBigWig_exact',
+    'pyBedGraph_exact',
+    'pyBigWig_approx'
 ]
 
 def create_plots():

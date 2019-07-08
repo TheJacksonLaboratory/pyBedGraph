@@ -1,5 +1,6 @@
 import time
 import sys
+import math
 sys.path.append("..")
 from pyBedGraph.BedGraph import BedGraph
 from pyBedGraph.Benchmark import ALL_STATS, Benchmark
@@ -16,10 +17,11 @@ if len(sys.argv) != 6:
           "arg 5 - bigWig_file")
     exit(-1)
 
-bin_size = 200
 test_intervals = []
-num_tests = 1000000
+num_tests = 50000
 interval_size = 500
+bin_size = interval_size / 20
+# bin_size = int(math.sqrt(interval_size))
 chrom_name = 'chr1'
 stats = ['mean', 'approx_mean', 'mod_approx_mean']
 

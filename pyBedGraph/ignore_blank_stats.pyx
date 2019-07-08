@@ -11,27 +11,28 @@ def load_smallest_bins(double[:] value_list, unsigned int bin_size):
     cdef unsigned int numb_bins = <int>ceil(value_list_size / bin_size)
 
     bins = np.full(numb_bins, -1, dtype=np.float64)
-    bins_coverage = np.zeros(numb_bins, dtype=np.float64)
+    bins_coverage = np.zeros(numb_bins, dtype=np.uint32)
     cdef double[:] bins_view = bins
-    cdef double[:] bins_coverage_view = bins_coverage
+    cdef unsigned int[:] bins_coverage_view = bins_coverage
 
-    cdef unsigned int start, end
-    cdef double mean, coverage
+    cdef unsigned int start, end, coverage
+    cdef double value
 
     for bin_index in range(numb_bins):
         start = bin_index * bin_size
         end = start + bin_size
 
-        bins_view[bin_index] = get_bin_mean(value_list, start, end)
-        bins_coverage_view[bin_index] = get_coverage(value_list, start, end)
+        if end > value_list_size:
+            end = value_list_size
 
-        '''if mean != -1:
-            bins_view[bin_index] = mean
-            bins_coverage_view[bin_index] = coverage'''
+        value, coverage = get_values(value_list, start, end)
+        if coverage > 0:
+            bins_view[bin_index] = value
+            bins_coverage_view[bin_index] = coverage
 
     return bins, bins_coverage
 
-def load_bins(double[:] prev_bin_level_mean, double[:] prev_bin_level_coverage):
+def load_bins(double[:] prev_bin_level_mean, unsigned int[:] prev_bin_level_coverage):
 
     assert tuple(prev_bin_level_mean.shape) == tuple(prev_bin_level_coverage.shape)
 
@@ -44,43 +45,26 @@ def load_bins(double[:] prev_bin_level_mean, double[:] prev_bin_level_coverage):
     cdef unsigned int numb_bins = <int>ceil(prev_bin_level_size / bin_size)
 
     bins = np.full(numb_bins, -1, dtype=np.float64)
-    bins_coverage = np.zeros(numb_bins, dtype=np.float64)
+    bins_coverage = np.zeros(numb_bins, dtype=np.uint32)
     cdef double[:] bins_view = bins
-    cdef double[:] bins_coverage_view = bins_coverage
+    cdef unsigned int[:] bins_coverage_view = bins_coverage
 
-    cdef unsigned int prev_bin_index
-    cdef double mean1, mean2, cov1, cov2, avg_cov, avg_mean, cov_sum
+    cdef unsigned int prev_bin_index, coverage
+    cdef double value
 
     for bin_index in range(numb_bins):
         prev_bin_index = bin_index * bin_size
 
-        # a slightly more complicated average of the previous bin level
-        mean1 = prev_bin_level_mean[prev_bin_index]
+        # just add them up
+        value = prev_bin_level_mean[prev_bin_index]
+        coverage = prev_bin_level_coverage[prev_bin_index]
         if prev_bin_index + 1 < prev_bin_level_size:
-            mean2 = prev_bin_level_mean[prev_bin_index + 1]
-            cov2 = prev_bin_level_coverage[prev_bin_index + 1]
-        else:
-            mean2 = -1
-            cov2 = 0
+            value += prev_bin_level_mean[prev_bin_index + 1]
+            coverage += prev_bin_level_coverage[prev_bin_index + 1]
 
-        cov1 = prev_bin_level_coverage[prev_bin_index]
-        cov_sum = cov1 + cov2
-        avg_cov = cov_sum / 2
-
-        # both mean1 and mean2 are -1
-        # this bin does not cover anything
-        if avg_cov == 0:
-            continue
-
-        if mean1 != -1 and mean2 != -1:
-            avg_mean = (mean1 * cov1 + mean2 * cov2) / cov_sum
-        elif mean2 == -1:
-            avg_mean = mean1
-        else:
-            avg_mean = mean2
-
-        bins_view[bin_index] = avg_mean
-        bins_coverage_view[bin_index] = avg_cov
+        if coverage > 0:
+            bins_view[bin_index] = value
+            bins_coverage_view[bin_index] = coverage
 
     return bins, bins_coverage
 
@@ -108,7 +92,7 @@ cdef get_bin_mean(double[:] value_list, size_t start, size_t end):
 cdef get_values(double[:] value_list, start, end):
 
     cdef double total = 0, value
-    cdef unsigned int num_counted = 0
+    cdef unsigned int coverage = 0
     cdef size_t i
 
     for i in range(start, end, 1):
@@ -117,20 +101,20 @@ cdef get_values(double[:] value_list, start, end):
             continue
 
         total += value
-        num_counted += 1
+        coverage += 1
 
-    return total, num_counted
+    return total, coverage
 
 def get_exact_means(double[:] value_list, double[:] bin_list, int bin_size,
-                         double[:] bin_coverage_list, int[:] start_list,
+                         unsigned int[:] bin_coverage_list, int[:] start_list,
                          int[:] end_list):
 
     assert tuple(start_list.shape) == tuple(end_list.shape)
 
     cdef size_t i, start, end, bin_end, bin_index
     cdef size_t num_tests = start_list.size
-    cdef double total, value, coverage
-    cdef unsigned int numb_value, weight, prev_length
+    cdef double total, value
+    cdef unsigned int numb_value, weight, prev_length, coverage
 
     result = np.full(num_tests, -1, dtype=np.float64)
     cdef double[:] result_view = result
@@ -162,12 +146,10 @@ def get_exact_means(double[:] value_list, double[:] bin_list, int bin_size,
 
         # middle bins
         while bin_index < bin_end:
-            value = bin_list[bin_index]
-            if value != -1:
-                coverage = bin_coverage_list[bin_index]
-                weight = <int>(coverage * bin_size)
-                total += weight * value
-                numb_value += weight
+            coverage = bin_coverage_list[bin_index]
+            if coverage > 0:
+                total += bin_list[bin_index]
+                numb_value += coverage
 
             bin_index += 1
 
@@ -186,15 +168,15 @@ def get_exact_means(double[:] value_list, double[:] bin_list, int bin_size,
 
     return result
 
-def get_approx_means(double[:] bin_list, int max_bin_size,
-        int[:] start_list, int[:] end_list):
+def get_approx_means(double[:] bin_list, unsigned int[:] bin_coverage_list,
+                     int max_bin_size, int[:] start_list, int[:] end_list):
 
     assert tuple(start_list.shape) == tuple(end_list.shape)
 
     cdef size_t i, start, end, bin_end, bin_index
     cdef size_t num_tests = start_list.size
-    cdef double total, value
-    cdef unsigned int numb_value, weight
+    cdef double total, numb_value, fraction
+    cdef unsigned int weight
 
     result = np.full(num_tests, -1, dtype=np.float64)
     cdef double[:] result_view = result
@@ -208,37 +190,37 @@ def get_approx_means(double[:] bin_list, int max_bin_size,
 
         # special case where interval is within a single bin
         if bin_index == bin_end:
-            if bin_list[bin_index] == -1:
+            if bin_coverage_list[bin_index] == 0:
                 continue
-            result_view[i] = bin_list[bin_index]
+            result_view[i] = bin_list[bin_index] / bin_coverage_list[bin_index]
+            continue
 
         total = 0
         numb_value = 0
 
         # first bin
-        value = bin_list[bin_index]
-        if value != -1:
-            weight = (bin_index + 1) * max_bin_size - start
-            total += weight * value
-            numb_value += weight
+        weight = bin_coverage_list[bin_index]
+        if weight > 0:
+            fraction = (max_bin_size - start % max_bin_size) / max_bin_size
+            total += bin_list[bin_index] * fraction
+            numb_value += weight * fraction
+        bin_index += 1
 
         # middle bins
-        weight = max_bin_size
-        bin_index += 1
         while bin_index < bin_end:
-            value = bin_list[bin_index]
-            if value != -1:
-                total += weight * value
+            weight = bin_coverage_list[bin_index]
+            if weight > 0:
+                total += bin_list[bin_index]
                 numb_value += weight
 
             bin_index += 1
 
         # last bin
-        value = bin_list[bin_index]
-        if value != -1:
-            weight = end - bin_index * max_bin_size
-            total += weight * value
-            numb_value += weight
+        weight = bin_coverage_list[bin_index]
+        if weight > 0:
+            fraction = (end % max_bin_size) / max_bin_size
+            total += bin_list[bin_index] * fraction
+            numb_value += weight * fraction
 
         if numb_value == 0:
             continue
@@ -273,7 +255,7 @@ def get_mod_approx_means(list bins_list, unsigned int max_bin_size,
             bins_array[i][j] = bin_list[j]
         arr_size /= 2
 
-    for i in range(num_tests):
+    '''for i in range(num_tests):
         start = start_list[i]
         end = end_list[i]
 
@@ -337,7 +319,7 @@ def get_mod_approx_means(list bins_list, unsigned int max_bin_size,
         if numb_value == 0:
             continue
 
-        result_view[i] = total / numb_value
+        result_view[i] = total / numb_value'''
 
     for i in range(bin_list_numb):
         free(bins_array[i])
@@ -353,7 +335,7 @@ def get_minimums(double[:] value_list, int[:] start_list, int[:] end_list):
     cdef double minimum
 
     result = np.full(num_tests, -1, dtype=np.float64)
-    cdef double[:] result_view = result
+    cdef double[:] result_view = result, wanted_list, interval
 
     for i in range(num_tests):
         minimum = DBL_MAX
@@ -368,6 +350,11 @@ def get_minimums(double[:] value_list, int[:] start_list, int[:] end_list):
 
         if minimum != DBL_MAX:
             result_view[i] = minimum
+        '''interval = value_list[start:end]
+        wanted_list = interval[interval > -1]
+
+        if wanted_list.size != 0:
+            result_view[i] = np.amin(wanted_list)'''
 
     return result
 
@@ -420,7 +407,7 @@ cpdef get_coverages(double[:] value_list, int[:] start_list, int[:] end_list):
 
     return result
 
-cdef get_coverage(double[:] value_list, size_t start, size_t end):
+'''cdef get_coverage(double[:] value_list, size_t start, size_t end):
     cdef unsigned int num_covered = 0
     cdef size_t i
     cdef double fraction_covered
@@ -437,5 +424,5 @@ cdef get_coverage(double[:] value_list, size_t start, size_t end):
         num_covered += 1
 
     fraction_covered = num_covered / (orig_end - start)
-    return fraction_covered
+    return fraction_covered'''
 
