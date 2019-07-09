@@ -17,19 +17,36 @@ if len(sys.argv) != 6:
           "arg 5 - bigWig_file")
     exit(-1)
 
-test_intervals = []
-num_tests = 50000
+test_intervals = [
+    ['chr1', 0, 1000],
+    ['chr1', 1001, 1500],
+    ['chr1', 2000, 2200],
+    ['chr1', 3000, 5000],
+    ['chr1', 5001, 10000],
+    ['chr1', 100000, 101000]
+]
+num_tests = 2000000
 interval_size = 500
-bin_size = interval_size / 20
 bin_size = int(math.sqrt(interval_size))
+bin_size = 21
 chrom_name = 'chr1'
-stats = ['mean', 'approx_mean', 'mod_approx_mean']
+stats = ['mean']
 
-bedGraph = BedGraph(sys.argv[1], sys.argv[2])
-input("Continue?")
+bedGraph = BedGraph(sys.argv[1], sys.argv[2], chrom_name)
+bedGraph.load_chrom_data(chrom_name)
+bedGraph.load_chrom_bins(chrom_name, 100)
+print(bedGraph.stats(intervals=test_intervals))
+exit(-1)
 bench = Benchmark(bedGraph, sys.argv[5])
-result = bench.benchmark(num_tests, interval_size, chrom_name, bin_size, stats,
-                         bench_pyBigWig=False)
+result = bench.benchmark(num_tests, interval_size, chrom_name, 21, stats,
+                         bench_pyBigWig=False, only_runtime=True)
+
+result = bench.benchmark(num_tests, interval_size, chrom_name, 22, stats,
+                         bench_pyBigWig=False, only_runtime=True)
+
+result = bench.benchmark(num_tests, interval_size, chrom_name, 23, stats,
+                         bench_pyBigWig=False, only_runtime=True)
+exit()
 for key in result:
     print(key, result[key])
 
