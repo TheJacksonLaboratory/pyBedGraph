@@ -1,6 +1,6 @@
 # pyBedGraph
 
-pyBedGraph is an alternative to pyBigWig.
+pyBedGraph is an alternative to pyBigWig. TEST
 
 # Features:
 
