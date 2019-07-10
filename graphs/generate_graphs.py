@@ -17,6 +17,14 @@ colors = {
     'pyBG app. bin=25': 'blue'
 }
 
+TABLE_HEADERS = [
+    'Interval Size (bPS)',
+    'Error Rate (%)',
+    'Mean Squared Error',
+    'Absolute Error',
+    '# Actual is 0'
+]
+
 TITLE_FONT_SIZE = 16
 AXIS_FONT_SIZE = 12
 LEGEND_FONT_SIZE = 10
@@ -76,7 +84,6 @@ def create_interval_error(in_file, data_name):
     intervals = [int(x) for x in line.split()]
 
     errors = {}
-    table_headers = ['Interval Size']
     table_cells = {}
     while True:
         name = in_file.readline().strip()
@@ -93,24 +100,27 @@ def create_interval_error(in_file, data_name):
         errors[name] = {}
         for line in error_list:
             error_name = line[0]
-            table_headers.append(error_name)
             errors[name][error_name] = [float(line[x]) for x in range(1, len(line), 1)]
             for x in range(len(intervals)):
-                error = round(errors[name][error_name][x], 5)
+                error = errors[name][error_name][x]
 
                 if error_name == 'num_actual_0':
                     error = int(error)
+
+                if error_name == 'percent_error':
+                    error *= 100
+                error = round(error, 5)
 
                 table_cells[name][x].append(error)
 
     i = 0
     for name in errors:
-        plt.plot(intervals, errors[name]['percent_error'], color=colors[name], label=name)
+        plt.plot(intervals, [x * 100 for x in errors[name]['percent_error']], color=colors[name], label=name)
         i += 1
 
     plt.title(f"Error vs. Interval Size for {data_name}", fontsize=TITLE_FONT_SIZE)
-    plt.xlabel("Interval Size", fontsize=AXIS_FONT_SIZE)
-    plt.ylabel("Percentage Error Rate", fontsize=AXIS_FONT_SIZE)
+    plt.xlabel("Interval Size (basePairs)", fontsize=AXIS_FONT_SIZE)
+    plt.ylabel("Percentage Error Rate (%)", fontsize=AXIS_FONT_SIZE)
     plt.legend(loc='best', fontsize=LEGEND_FONT_SIZE)
     plt.savefig(f'graphs/{data_name}/interval_error.png')
     plt.close()
@@ -120,8 +130,8 @@ def create_interval_error(in_file, data_name):
         plt.title(f"{data_name} --- {name}", fontsize=AXIS_FONT_SIZE)
         table = plt.table(
             cellText=table_cells[name],
-            colWidths=[0.02] * 5,
-            colLabels=table_headers,
+            colWidths=[0.027, 0.023, 0.03, 0.022, 0.02],
+            colLabels=TABLE_HEADERS,
             loc='center'
         )
         table.auto_set_font_size(False)
