@@ -15,6 +15,9 @@ DEFAULT_NUM_TESTS = 10000
 
 total_start_time = time.time()
 
+interval_test_list = [100, 250, 500, 750, 1000, 2000, 3000, 4000, 5000]
+bin_size_test_list = [5, 10, 20]
+
 
 def interval_size_error_benchmark():
     interval_error_results = {}
@@ -160,25 +163,6 @@ if not os.path.isdir(f'graphs'):
     os.mkdir(f'graphs')
 if not os.path.isdir(f'graphs/{data_name}'):
     os.mkdir(f'graphs/{data_name}')
-
-test_numbers = {}
-with open('test_numbers.txt') as in_file:
-    for i in range(3):
-        line = in_file.readline()
-        chrom_size_file = line.strip()
-        test_numbers[chrom_size_file] = {}
-
-        intervals = in_file.readline()
-        bin_sizes = in_file.readline()
-        intervals = [int(x) for x in intervals.split()]
-        bin_sizes = [int(x) for x in bin_sizes.split()]
-
-        test_numbers[chrom_size_file]['intervals'] = intervals
-        test_numbers[chrom_size_file]['bin_sizes'] = bin_sizes
-
-# bin_size_test_list = test_numbers[Path(sys.argv[1]).stem + '.sizes']['bin_sizes']
-interval_test_list = test_numbers[Path(sys.argv[1]).stem + '.sizes']['intervals']
-bin_size_test_list = [5, 10, 20]
 
 runtime_benchmark()
 interval_size_error_benchmark()

@@ -28,4 +28,4 @@ cd "pyBedGraph/graphs"
 # Load modules
 module load python/3.6.6
 
-./generate_graphs.sh
+./run_benchmark.sh
