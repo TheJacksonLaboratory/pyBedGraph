@@ -56,13 +56,14 @@ class Benchmark:
               f"Stats to bench: {stats}\n"
               f"Only bench run time: {only_runtime}\n"
               f"Bench pyBigWig: {bench_pyBigWig}\n"
-              f"Baseline is pyBigWig: {pyBigWig_baseline}")
+              f"Baseline is pyBigWig: {pyBigWig_baseline}\n")
 
         # self.find_intervals()
 
         self.chromosome = self.bedGraph.chromosome_map[chrom_name]
         self.bedGraph.load_chrom_data(chrom_name)
-        self.bedGraph.load_chrom_bins(chrom_name, bin_size)
+        if bin_size is not None:
+            self.bedGraph.load_chrom_bins(chrom_name, bin_size)
 
         self.create_test_cases(num_tests, interval_size)
 
@@ -176,10 +177,33 @@ class Benchmark:
 
         values = []
         start_time = time.time()
-        for i in range(self.num_tests):
-            value = self.bw.stats(self.chromosome.name, self.test_cases[0][i], self.test_cases[1][i],
-                                   type=stat, exact=want_exact)
-            values.append(value[0])
+        if self.bedGraph.ignore_missing_bp:
+            for i in range(self.num_tests):
+                value = self.bw.stats(self.chromosome.name, self.test_cases[0][i], self.test_cases[1][i],
+                                       type=stat, exact=want_exact)
+                values.append(value[0])
+
+                '''start = self.test_cases[0][i]
+                end = self.test_cases[1][i]
+
+                intervals = self.bw.intervals(self.chromosome.name, start, end)
+                current_interval = intervals[0]
+                interval_index = 0
+                total = 0
+                count = 0
+                for i in range(start, end, 1):
+                    if i == current_interval[1]:
+                        interval_index += 1
+
+                        if interval_index == len(intervals):
+                            break
+
+                        current_interval = intervals[interval_index]
+
+                    if current_interval[0] <= i < current_interval[1]:
+                        total += current_interval[2]
+                        count += 1'''
+
         time_taken = time.time() - start_time
 
         print(f"Time for {stat}: {time_taken} seconds for {self.num_tests} trials\n")

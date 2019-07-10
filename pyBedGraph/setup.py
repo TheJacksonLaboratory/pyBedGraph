@@ -3,10 +3,12 @@ from setuptools.extension import Extension
 from Cython.Build import cythonize
 
 extensions = [
-    Extension(name="complete_stats",
-              sources=["complete_stats.pyx"]),
-    Extension(name="ignore_blank_stats",
-              sources=["ignore_blank_stats.pyx"])
+    Extension(name="include_missing_bp",
+              sources=["include_missing_bp.pyx"]),
+    Extension(name="ignore_missing_bp",
+              sources=["ignore_missing_bp.pyx"]),
+    Extension(name="util",
+              sources=["util.pyx"])
 ]
 
 setup(

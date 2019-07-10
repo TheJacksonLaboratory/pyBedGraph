@@ -25,35 +25,29 @@ test_intervals = [
     ['chr1', 5001, 10000],
     ['chr1', 100000, 101000]
 ]
-num_tests = 2000000
+num_tests = 10
 interval_size = 500
 bin_size = int(math.sqrt(interval_size))
-bin_size = 21
+bin_size = interval_size / 2
 chrom_name = 'chr1'
-stats = ['mean']
+stats = ['mean', 'approx_mean']
 
-bedGraph = BedGraph(sys.argv[1], sys.argv[2], chrom_name)
+#bedGraph = BedGraph(sys.argv[1], sys.argv[2], 'chr1', ignore_missing_bp=False)
+bedGraph = BedGraph(sys.argv[1], sys.argv[2], 'chr1')
 bedGraph.load_chrom_data(chrom_name)
-bedGraph.load_chrom_bins(chrom_name, 100)
-print(bedGraph.stats(intervals=test_intervals))
-exit(-1)
+#bedGraph.load_chrom_bins(chrom_name, 100)
+#print(bedGraph.stats(intervals=test_intervals))
 bench = Benchmark(bedGraph, sys.argv[5])
-result = bench.benchmark(num_tests, interval_size, chrom_name, 21, stats,
-                         bench_pyBigWig=False, only_runtime=True)
 
-result = bench.benchmark(num_tests, interval_size, chrom_name, 22, stats,
-                         bench_pyBigWig=False, only_runtime=True)
-
-result = bench.benchmark(num_tests, interval_size, chrom_name, 23, stats,
-                         bench_pyBigWig=False, only_runtime=True)
-exit()
+result = bench.benchmark(num_tests, interval_size, chrom_name, bin_size, stats,
+                         bench_pyBigWig=False)
 for key in result:
     print(key, result[key])
 
 exit()
 
 complete_bedGraph = BedGraph(sys.argv[1], sys.argv[2], chrom_name,
-                             like_pyBigWig=False)
+                             ignore_missing_bp=False)
 complete_bedGraph.load_chrom_data(chrom_name)
 
 

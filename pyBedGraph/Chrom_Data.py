@@ -1,7 +1,6 @@
-import numpy as np
 import math
-import time
-from .ignore_blank_stats import *
+from .ignore_missing_bp import *
+from .util import *
 
 START_INDEX = 1
 END_INDEX = 2
@@ -38,7 +37,7 @@ class Chrom_Data:
         self.bins_list_coverages = []
         self.bin_list_numb = 0
 
-        print(f"Reading in {name}...")
+        print(f"Reading in {name} ...")
 
     def add_data(self, data):
         start = int(data[START_INDEX])
@@ -58,25 +57,22 @@ class Chrom_Data:
         self.intervals[0] = self.intervals[0][:self.current_index]
         self.intervals[1] = self.intervals[1][:self.current_index]
 
+    def initialize_value_array(self):
+        self.value_list = np.full(self.size, -1, dtype=np.float64)
+
     def load_value_array(self):
 
-        print(f"Loading {self.name}...")
+        print(f"Loading {self.name} ...")
 
         if self.loaded_value_list:
             print(f"{self.name} is already loaded")
             return
 
-        # create and populate the value_list
-        self.value_list = np.full(self.size, -1, dtype=np.float64)
-
-        for i in range(self.intervals[0].size):
-            start = self.intervals[0][i]
-            end = self.intervals[1][i]
-            self.value_list[start:end] = self.value_map[i]
+        self.initialize_value_array()
+        fill_value_array(self.intervals[0], self.intervals[1], self.value_map,
+                         self.value_list)
 
         self.loaded_value_list = True
-
-        print(f"Done with loading {self.name}")
 
     def free_value_array(self):
         self.value_list = None
@@ -108,7 +104,7 @@ class Chrom_Data:
         self.min_bin_size = bin_size
 
         # Loading smallest bins
-        print(f"Loading bins of size: {bin_size} for {self.name}...")
+        print(f"Loading bins of size: {bin_size} for {self.name} ...")
         print(f"Number of bins: {math.ceil(self.value_list.size / bin_size)}")
         prev_bins_list, prev_bins_coverage_list = load_smallest_bins(self.value_list, bin_size)
         self.bins_list.append(prev_bins_list)
@@ -118,7 +114,7 @@ class Chrom_Data:
         # Load larger bins
         while bin_size <= max_bin_size:
 
-            print(f"Loading bins of size: {bin_size} for {self.name}...")
+            print(f"Loading bins of size: {bin_size} for {self.name} ...")
             print(f"Number of bins: {math.ceil(self.value_list.size / bin_size)}")
 
             bins_list, bins_coverage_list = load_bins(prev_bins_list,
@@ -133,13 +129,12 @@ class Chrom_Data:
 
         self.bin_list_numb = len(self.bins_list)
         self.loaded_bins = True
-        print("Done with splitting bins")
 
-        for i in range(self.bin_list_numb):
+        '''for i in range(self.bin_list_numb):
             bin_size /= 2
 
         # test if bins were made correctly
-        '''for bin_list_index in range(self.bin_list_numb):
+        for bin_list_index in range(self.bin_list_numb):
             bin_list = self.bins_list[bin_list_index]
             print(bin_list_index)
             for bin_index in range(len(bin_list)):
@@ -287,6 +282,36 @@ class Chrom_Data:
         return mean_value
 
     '''
+
+    def get_method(self, stat):
+        if stat == "mean":
+            if self.loaded_bins is False:
+                print(f'Bins were not loaded')
+                return None
+            return self.get_exact_mean
+        elif stat == "approx_mean":
+            if self.loaded_bins is False:
+                print(f'Bins were not loaded')
+                return None
+            return self.get_approx_mean
+        elif stat == "mod_approx_mean":
+            if self.loaded_bins is False:
+                print(f'Bins were not loaded')
+                return None
+            return self.get_mod_approx_mean
+        elif stat == "median":
+            return self.get_median
+        elif stat == "max":
+            return self.get_max
+        elif stat == "min":
+            return self.get_min
+        elif stat == "coverage":
+            return self.get_coverage
+        elif stat == "std":
+            return self.get_std
+        else:
+            print(f"{stat} is not a valid statistic to search for")
+            return None
 
     def get_approx_mean(self, start_list, end_list):
         return get_approx_means(self.bins_list[0], self.bins_list_coverages[0],

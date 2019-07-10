@@ -14,13 +14,13 @@ BUFFER_COUNTER = 10000  # 10^4
 class BedGraph:
 
     def __init__(self, chrom_size_file_name, data_file_name, chrom_wanted=None,
-                 like_pyBigWig=True):
+                 ignore_missing_bp=True):
 
         self.chromosome_map = {}
         self.chrom_sizes = {}
-        self.like_pyBigWig = like_pyBigWig
+        self.ignore_missing_bp = ignore_missing_bp
 
-        print(f"Reading in {chrom_size_file_name}...", end=" ")
+        print(f"Reading in {chrom_size_file_name} ...")
         with open(chrom_size_file_name) as chrom_size_file:
             for line in chrom_size_file:
                 data = line.split()
@@ -32,10 +32,9 @@ class BedGraph:
                     break
 
                 self.chrom_sizes[data[0]] = int(data[1])
-        print("Done")
 
         current_chrom = None
-        print(f"Reading in {data_file_name}...")
+        print(f"Reading in {data_file_name} ...")
         with open(data_file_name) as data_file:
             for line in data_file:
                 data = line.split()
@@ -58,9 +57,8 @@ class BedGraph:
                     # clean up the current chromosome before moving on
                     if current_chrom is not None:
                         current_chrom.trim_extra_space()
-                        print("Done")
 
-                    if like_pyBigWig:
+                    if ignore_missing_bp:
                         current_chrom =\
                             Chrom_Data(chrom_name, self.chrom_sizes[chrom_name])
                     else:
@@ -74,13 +72,10 @@ class BedGraph:
 
             # trim for the last chromosome found in the bedGraph file
             current_chrom.trim_extra_space()
-            print("Done")
 
             if current_chrom is None:
                 print(f"{chrom_wanted} was not found in {data_file_name}")
                 exit(-1)
-
-        print(f"Done with reading {data_file_name}")
 
     def load_chrom_data(self, chrom_name):
         self.chromosome_map[chrom_name].load_value_array()
@@ -97,35 +92,13 @@ class BedGraph:
             print(f"{chrom_name} is not a valid chromosome")
             return None
 
-        chromosome = self.chromosome_map[chrom_name]
-        if stat == "mean":
-            if chromosome.loaded_bins is False:
-                print(f'Bins were not loaded')
-                return None
-            return chromosome.get_exact_mean
-        elif stat == "approx_mean":
-            if chromosome.loaded_bins is False:
-                print(f'Bins were not loaded')
-                return None
-            return chromosome.get_approx_mean
-        elif stat == "mod_approx_mean":
-            if chromosome.loaded_bins is False:
-                print(f'Bins were not loaded')
-                return None
-            return chromosome.get_mod_approx_mean
-        elif stat == "median":
-            return chromosome.get_median
-        elif stat == "max":
-            return chromosome.get_max
-        elif stat == "min":
-            return chromosome.get_min
-        elif stat == "coverage":
-            return chromosome.get_coverage
-        elif stat == "std":
-            return chromosome.get_std
-        else:
-            print(f"{stat} is not a valid statistic to search for")
+        chrom = self.chromosome_map[chrom_name]
+
+        if not chrom.loaded_value_list:
+            print(f"{chrom.name} needs to be loaded before it can be searched.")
             return None
+
+        return chrom.get_method(stat)
 
     @staticmethod
     def change_shape(intervals):
@@ -148,27 +121,17 @@ class BedGraph:
     def stats(self, stat="mean", intervals=None, start_list=None,
               end_list=None, chrom_name=None):
 
-        # either have intervals be a list of [chrom_name, start, end]
+        # convert intervals to start_list, end_list
         if intervals is not None:
-            method_to_call = self.get_method(intervals[0][0], stat)
-            current_chrom = self.chromosome_map[intervals[0][0]]
-
+            chrom_name = intervals[0][0]
             start_list, end_list = self.change_shape(intervals)
 
-        elif start_list is None or end_list is None or chrom_name is None:
+        if start_list is None or end_list is None or chrom_name is None:
             print("Must either have intervals or start_list, end_list, chrom_name")
             return None
 
-        # or start_list, end_list be lists of starts and ends
-        else:
-            method_to_call = self.get_method(chrom_name, stat)
-            current_chrom = self.chromosome_map[chrom_name]
-
-            assert end_list.size == start_list.size
-
-        if not current_chrom.loaded_value_list:
-            print(f"{current_chrom.name} needs to be loaded before it can be searched.")
-            return
+        assert end_list.size == start_list.size
+        method_to_call = self.get_method(chrom_name, stat)
 
         if method_to_call is None:
             return
@@ -180,6 +143,7 @@ class BedGraph:
 
     def stats_from_file(self, interval_file, output_file=None, stat="mean"):
         output = ""
+        results = []
 
         out_file = None
         if output_file:
@@ -199,6 +163,7 @@ class BedGraph:
                     print(f"{interval_file} has incorrect formatting. It must be in the format:\n"
                           "chr1\t100\t401\n"
                           "chr1\t600\t1000\n"
+                          "chr2\t0\t1000\n"
                           "...")
                     print(interval)
                     break
@@ -217,7 +182,7 @@ class BedGraph:
                 result = method_to_call(int(interval[1]), int(interval[2]))
 
                 if out_file is None:
-                    print(interval[0], interval[1], interval[2], result)
+                    results.append(result)
                 else:
                     output += f"{result}\n"
                     result_counter += 1
@@ -232,3 +197,5 @@ class BedGraph:
 
         if out_file:
             out_file.close()
+
+        return results
