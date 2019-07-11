@@ -178,7 +178,27 @@ def create_interval_runtime(in_file, data_name):
     plt.close()
 
 
+def create_values_indexed(in_file, data_name):
+
+    bin_sizes = in_file.readline().split()
+    bin_sizes = [int(x) for x in bin_sizes]
+
+    values_indexed = in_file.readline().split()
+    values_indexed = [int(x) for x in values_indexed]
+
+    plt.plot(bin_sizes, values_indexed)
+
+    plt.title(f"Values Indexed vs. Bin Size for Exact Mean Calculation", fontsize=TITLE_FONT_SIZE)
+    plt.xlabel("Bin Size", fontsize=AXIS_FONT_SIZE)
+    plt.ylabel("Values Indexed", fontsize=AXIS_FONT_SIZE)
+    plt.savefig(f'graphs/{data_name}/values_indexed.png')
+    plt.close()
+
+
 def main():
+    create_values_indexed(open('graphs/ENCFF376VCU/values_indexed.txt'), 'ENCFF376VCU')
+    exit()
+
     for subdir, dirs, files in os.walk(GRAPH_ROOT_LOCATION):
         data_name = subdir[7:]
         print(data_name)

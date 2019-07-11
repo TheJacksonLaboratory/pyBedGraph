@@ -4,7 +4,6 @@ import math
 sys.path.append("..")
 from pyBedGraph.BedGraph import BedGraph
 from pyBedGraph.Benchmark import Benchmark
-import pyBigWig
 
 if len(sys.argv) < 5:
     print("Needs 4 arguments:\n"
@@ -16,23 +15,28 @@ if len(sys.argv) < 5:
 
 MAX_NUM_TESTS = 1000000
 test_intervals = []
-average_interval_size = 2500
+average_interval_size = 500
+num_tests = 100000
 chrom_name = 'chr1'
 bin_size = int(math.sqrt(average_interval_size))
-stats = ['approx_mean']
+stats = ['mean']
 
-#bedGraph = BedGraph(sys.argv[1], sys.argv[2], 'chr1', ignore_missing_bp=False)
 bedGraph = BedGraph(sys.argv[1], sys.argv[2], chrom_name)
 bedGraph.load_chrom_data(chrom_name)
-bedGraph.load_chrom_bins(chrom_name, bin_size)
-#print(bedGraph.stats(intervals=test_intervals))
-'''bench = Benchmark(bedGraph, sys.argv[3])
-result = bench.benchmark(num_tests, interval_size, chrom_name, bin_size, stats,
-                         bench_pyBigWig=False, pyBigWig_baseline=False)
-for key in result:
-    print(key, result[key])
+bins = [x for x in range(10, 101, 1)]
+with open('out/values_indexed.txt', 'w') as out_file:
+    out_file.write(' '.join([str(x) for x in bins]) + '\n')
+    for bin_size in bins:
+        bedGraph.load_chrom_bins(chrom_name, bin_size)
+        bench = Benchmark(bedGraph, sys.argv[3])
+        result, bins = bench.benchmark(num_tests, average_interval_size, chrom_name, bin_size, stats,
+                                 bench_pyBigWig=False, pyBigWig_baseline=False, only_runtime=True)
+        out_file.write(str(bins) + " ")
+        for key in result:
+            print(key, result[key])
 
-exit()'''
+exit()
+'''
 
 complete_bedGraph = BedGraph(sys.argv[1], sys.argv[2], chrom_name,
                              ignore_missing_bp=False)
@@ -112,4 +116,4 @@ for stat in stats:
 a = input('end program')
 complete_bedGraph.free_chrom_data(chrom_name)
 bedGraph.free_chrom_data(chrom_name)
-a = input('end program')
+a = input('end program')'''
