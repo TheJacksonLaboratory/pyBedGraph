@@ -1,13 +1,19 @@
 import setuptools
+from distutils.core import setup
+from distutils.extension import Extension
+
+extensions = [
+    Extension('pyBedGraph.ignore_missing_bp', ['pyBedGraph/ignore_missing_bp.c']),
+    Extension('pyBedGraph.include_missing_bp', ['pyBedGraph/include_missing_bp.c']),
+    Extension('pyBedGraph.util', ['pyBedGraph/util.c']),
+]
+
+cmdclass = {}
 
 NAME = 'pyBedGraph'
-VERSION = '0.3.1'
+VERSION = '0.4.1'
 
-with open("README.md", "r") as fh:
-
-    long_description = fh.read()
-
-setuptools.setup(
+setup(
 
     name=NAME,
 
@@ -19,13 +25,17 @@ setuptools.setup(
 
     description="An alternative to pyBigWig for bedgraph files",
 
-    long_description=long_description,
+    long_description=open('README.md').read(),
 
     long_description_content_type="text/markdown",
 
     url="https://github.com/c0ver/pyBedGraph",
 
     packages=setuptools.find_packages(),
+
+    ext_modules=extensions,
+
+    cmdclass=cmdclass,
 
     classifiers=[
 

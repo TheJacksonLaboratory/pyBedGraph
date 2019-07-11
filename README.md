@@ -52,7 +52,7 @@ For approx_mean:
 1. Smaller bin size -> more accurate but slower
 2. Larger bin size -> less accurate but faster
 ```python
-bedGraph.load_chrom_binds('chr1', 100)
+bedGraph.load_chrom_bins('chr1', 100)
 ```
 
 ### Search from a file:
@@ -75,11 +75,11 @@ intervals = [
     ['chr1', 2000, 2200],
     ['chr1', 3000, 5000],
     ['chr1', 5001, 10000],
-    ['chr1', 1000000, 101000]
+    ['chr1', 100000, 101000]
 ]
 
 # Option 2
-start_list = np.array([0, 1001, 2000, 3000, 5001, 1000000], dtype=np.int32)
+start_list = np.array([0, 1001, 2000, 3000, 5001, 100000], dtype=np.int32)
 end_list = np.array([1000, 1500, 2200, 5000, 10000, 101000], dtype=np.int32)
 chrom_name = 'chr1'
 
