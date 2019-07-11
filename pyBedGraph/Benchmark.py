@@ -7,6 +7,8 @@ APPROX_MEAN_INDEX = 1
 MOD_APPROX_MEAN_INDEX = 2
 RANDOM_SEED = 1
 
+ERROR = 0.00000001
+
 mean_names = [
     'pyBigWig_exact',
     'pyBigWig_approx',
@@ -98,9 +100,6 @@ class Benchmark:
                     results[pyBigWig_name]['approx_run_time'], predictions[pyBigWig_name] =\
                         self.benchmark_pyBigWig(actual_stat_name, False)
 
-                results[pyBigWig_name]['exact_run_time'], temp =\
-                    self.benchmark_pyBigWig(actual_stat_name)
-
             # get actual stat from pyBigWig if haven't gotten it yet
             if actual_stat_name not in actual and not only_runtime:
                 if pyBigWig_name not in results:
@@ -177,32 +176,31 @@ class Benchmark:
 
         values = []
         start_time = time.time()
-        if self.bedGraph.ignore_missing_bp:
-            for i in range(self.num_tests):
-                value = self.bw.stats(self.chromosome.name, self.test_cases[0][i], self.test_cases[1][i],
-                                       type=stat, exact=want_exact)
-                values.append(value[0])
+        for i in range(self.num_tests):
+            value = self.bw.stats(self.chromosome.name, self.test_cases[0][i], self.test_cases[1][i],
+                                   type=stat, exact=want_exact)
+            values.append(value[0])
 
-                '''start = self.test_cases[0][i]
-                end = self.test_cases[1][i]
+            '''start = self.test_cases[0][i]
+            end = self.test_cases[1][i]
 
-                intervals = self.bw.intervals(self.chromosome.name, start, end)
-                current_interval = intervals[0]
-                interval_index = 0
-                total = 0
-                count = 0
-                for i in range(start, end, 1):
-                    if i == current_interval[1]:
-                        interval_index += 1
+            intervals = self.bw.intervals(self.chromosome.name, start, end)
+            current_interval = intervals[0]
+            interval_index = 0
+            total = 0
+            count = 0
+            for i in range(start, end, 1):
+                if i == current_interval[1]:
+                    interval_index += 1
 
-                        if interval_index == len(intervals):
-                            break
+                    if interval_index == len(intervals):
+                        break
 
-                        current_interval = intervals[interval_index]
+                    current_interval = intervals[interval_index]
 
-                    if current_interval[0] <= i < current_interval[1]:
-                        total += current_interval[2]
-                        count += 1'''
+                if current_interval[0] <= i < current_interval[1]:
+                    total += current_interval[2]
+                    count += 1'''
 
         time_taken = time.time() - start_time
 
@@ -250,10 +248,10 @@ class Benchmark:
             abs_error_values.append(abs(actual - predicted))
             mse_error_values.append((actual - predicted) * (actual - predicted))
 
-            if actual == 0 and predicted != 0:
+            if actual == 0 and predicted > ERROR:
                 num_actual_0 += 1
                 continue
-            elif predicted == 0:
+            elif predicted <= ERROR:
                 percent_error_values.append(0)
             else:
                 percent_error = abs(actual - predicted) / actual

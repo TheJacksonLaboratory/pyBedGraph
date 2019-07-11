@@ -1,8 +1,6 @@
 import numpy as np
-cimport cython
 from libc.float cimport DBL_MAX, DBL_MIN
-from libc.math cimport ceil
-from libc.stdlib cimport malloc, free
+from libc.math cimport ceil, sqrt
 
 def load_smallest_bins(double[:] value_list, unsigned int bin_size):
     cdef size_t value_list_size = value_list.size
@@ -105,7 +103,7 @@ cdef get_values(double[:] value_list, start, end):
 
     return total, coverage
 
-def get_exact_means(double[:] value_list, double[:] bin_list, int bin_size,
+cpdef get_exact_means(double[:] value_list, double[:] bin_list, int bin_size,
                          unsigned int[:] bin_coverage_list, int[:] start_list,
                          int[:] end_list):
 
@@ -229,103 +227,6 @@ def get_approx_means(double[:] bin_list, unsigned int[:] bin_coverage_list,
 
     return result
 
-def get_mod_approx_means(list bins_list, unsigned int max_bin_size,
-                         unsigned int bin_list_numb, int[:] start_list, int[:] end_list):
-
-    assert tuple(start_list.shape) == tuple(end_list.shape)
-
-    cdef double[:] max_size_bin_list = bins_list[bin_list_numb - 1]
-    cdef double[:] bin_list = bins_list[0]
-    cdef double* bin_array
-
-    cdef size_t i, num_tests = start_list.size, start, end
-    cdef size_t max_bin_index
-    cdef double total
-    cdef unsigned int numb_value, weight, bin_end, bin_index, current_bin_size
-    cdef unsigned int bin_size_index, arr_size = bin_list.size
-
-    result = np.full(num_tests, -1, dtype=np.float64)
-    cdef double[:] result_view = result
-
-    cdef double ** bins_array = <double **>malloc(bin_list_numb * sizeof(double*))
-    for i in range(bin_list_numb):
-        bins_array[i] = <double *>malloc(arr_size * sizeof(double))
-        bin_list = bins_list[i]
-        for j in range(arr_size):
-            bins_array[i][j] = bin_list[j]
-        arr_size /= 2
-
-    '''for i in range(num_tests):
-        start = start_list[i]
-        end = end_list[i]
-
-        max_bin_index = <unsigned int>(start / max_bin_size)
-        bin_end = <unsigned int>(end / max_bin_size)
-
-        # special case where interval is within a single bin
-        # TODO: Look at smaller bins if possible?
-        if max_bin_index == bin_end:
-            if max_size_bin_list[max_bin_index] == -1:
-                continue
-            result_view[i] = max_size_bin_list[max_bin_index]
-
-        total = 0
-        numb_value = 0
-
-        # first bin
-        if max_size_bin_list[max_bin_index] != -1:
-            weight = (max_bin_index + 1) * max_bin_size - start
-
-            current_bin_size = max_bin_size
-            bin_size_index = bin_list_numb - 1
-            bin_index = max_bin_index
-            while weight < current_bin_size / 2 and bin_size_index > 0:
-                current_bin_size /= 2
-                bin_size_index -= 1
-                bin_index = bin_index * 2 + 1
-
-            bin_array = bins_array[bin_size_index]
-            if bin_array[bin_index] != -1:
-                total += weight * bin_array[bin_index]
-                numb_value += weight
-
-        # middle bins
-        weight = max_bin_size
-        max_bin_index += 1
-        while max_bin_index < bin_end:
-            if max_size_bin_list[max_bin_index] != -1:
-                total += weight * max_size_bin_list[max_bin_index]
-                numb_value += weight
-
-            max_bin_index += 1
-
-        # last bin
-        if max_size_bin_list[max_bin_index] != -1:
-            weight = end - max_bin_index * max_bin_size
-
-            current_bin_size = max_bin_size
-            bin_size_index = bin_list_numb - 1
-            bin_index = max_bin_index
-            while weight < current_bin_size / 2 and bin_size_index > 0:
-                current_bin_size /= 2
-                bin_size_index -= 1
-                bin_index = bin_index * 2
-
-            bin_array = bins_array[bin_size_index]
-            if bin_array[bin_index] != -1:
-                total += weight * bin_array[bin_index]
-                numb_value += weight
-
-        if numb_value == 0:
-            continue
-
-        result_view[i] = total / numb_value'''
-
-    for i in range(bin_list_numb):
-        free(bins_array[i])
-    free(bins_array)
-
-    return result
 
 def get_minimums(double[:] value_list, int[:] start_list, int[:] end_list):
 
@@ -350,11 +251,6 @@ def get_minimums(double[:] value_list, int[:] start_list, int[:] end_list):
 
         if minimum != DBL_MAX:
             result_view[i] = minimum
-        '''interval = value_list[start:end]
-        wanted_list = interval[interval > -1]
-
-        if wanted_list.size != 0:
-            result_view[i] = np.amin(wanted_list)'''
 
     return result
 
@@ -407,22 +303,42 @@ cpdef get_coverages(double[:] value_list, int[:] start_list, int[:] end_list):
 
     return result
 
-'''cdef get_coverage(double[:] value_list, size_t start, size_t end):
-    cdef unsigned int num_covered = 0
-    cdef size_t i
-    cdef double fraction_covered
-    cdef size_t value_list_size = value_list.size
-    cdef size_t orig_end = end
+def get_stds(double[:] value_list, double[:] bin_list, unsigned int bin_size,
+            unsigned int[:] bin_coverage_list, int[:] start_list, int[:] end_list):
 
-    if end > value_list_size:
-        end = value_list_size
+    assert tuple(start_list.shape) == tuple(end_list.shape)
 
-    for i in range(start, end, 1):
-        if value_list[i] < 0:
+    cdef size_t i, num_tests = start_list.size, start, end, j
+
+    result = np.zeros(num_tests, dtype=np.float64)
+    cdef double[:] result_view = result
+    cdef double std, difference, value
+    cdef unsigned int total
+
+    cdef double[:] means = get_exact_means(value_list, bin_list, bin_size,
+                            bin_coverage_list, start_list, end_list)
+
+    for i in range(num_tests):
+        mean = means[i]
+        if mean == -1:
             continue
 
-        num_covered += 1
+        start = start_list[i]
+        end = end_list[i]
 
-    fraction_covered = num_covered / (orig_end - start)
-    return fraction_covered'''
+        std = 0
+        total = 0
+        for j in range(start, end, 1):
+            value = value_list[j]
 
+            if value == -1:
+                continue
+
+            difference = value - mean
+            std += difference * difference
+            total += 1
+
+        std /= total
+        result_view[i] = sqrt(std)
+
+    return result

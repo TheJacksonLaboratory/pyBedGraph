@@ -9,6 +9,7 @@ import time
 
 CHROM_NAME_INDEX = 0
 BUFFER_COUNTER = 10000  # 10^4
+BUFFER_COUNTER = 100000  # 10^4
 
 
 class BedGraph:
@@ -70,7 +71,7 @@ class BedGraph:
 
                 current_chrom.add_data(data)
 
-            # trim for the last chromosome found in the bedGraph file
+            # clean up the last chromosome found in the bedGraph file
             current_chrom.trim_extra_space()
 
             if current_chrom is None:
@@ -100,6 +101,7 @@ class BedGraph:
 
         return chrom.get_method(stat)
 
+    # change the shape of intervals to be two lists: start_list, end_list
     @staticmethod
     def change_shape(intervals):
         num_tests = len(intervals)
@@ -117,7 +119,7 @@ class BedGraph:
 
         return start_list, end_list
 
-    # can only deal with one chromosome at a time
+    # can only search one chromosome at a time
     def stats(self, stat="mean", intervals=None, start_list=None,
               end_list=None, chrom_name=None):
 
@@ -141,20 +143,15 @@ class BedGraph:
         print(f"Time for {stat}:", time.time() - start_time)
         return result
 
-    def stats_from_file(self, interval_file, output_file=None, stat="mean"):
-        output = ""
-        results = []
-
-        out_file = None
-        if output_file:
-            out_file = open(output_file, 'w')
-
-        result_counter = 0
+    # output to output_file if given, otherwise return a list of results
+    def stats_from_file(self, interval_file, output_to_file=True, stat="mean"):
+        results = {}
+        test_intervals = {}
 
         with open(interval_file) as in_file:
 
-            current_chrom = None
-            method_to_call = None
+            current_chrom_name = None
+            current_interval = None
 
             for line in in_file:
                 interval = line.split()
@@ -168,34 +165,45 @@ class BedGraph:
                     print(interval)
                     break
 
-                if current_chrom is None or current_chrom.name != interval[0]:
-                    method_to_call = self.get_method(interval[0], stat)
-                    current_chrom = self.chromosome_map[interval[0]]
+                # change current_chrom if interval wants a different chrom
+                if current_chrom_name is None or current_chrom_name != interval[0]:
+                    current_chrom_name = interval[0]
+                    if current_chrom_name not in test_intervals:
+                        test_intervals[current_chrom_name] = {}
+                        current_interval = test_intervals[current_chrom_name]
+                        current_interval['start_list'] = []
+                        current_interval['end_list'] = []
 
-                if not current_chrom.loaded_value_list:
-                    print(f"{current_chrom.name} needs to be loaded before it can be searched.")
-                    return
+                current_interval['start_list'].append(int(interval[1]))
+                current_interval['end_list'].append(int(interval[2]))
 
-                if method_to_call is None:
-                    return
+        for chrom_name in test_intervals:
+            method_to_call = self.get_method(chrom_name, stat)
 
-                result = method_to_call(int(interval[1]), int(interval[2]))
+            if method_to_call is None:
+                return
 
-                if out_file is None:
-                    results.append(result)
-                else:
-                    output += f"{result}\n"
-                    result_counter += 1
+            start_time = time.time()
+            result = method_to_call(np.array(test_intervals[chrom_name]['start_list'], dtype=np.int32),
+                                    np.array(test_intervals[chrom_name]['end_list'], dtype=np.int32))
+            print(f"Time for {stat}:", time.time() - start_time)
 
-                    if result_counter == BUFFER_COUNTER:
-                        result_counter = 0
+            results[chrom_name] = result
+            if output_to_file:
+                with open(chrom_name + '_out.txt', 'w') as out_file:
+                    result_counter = 0
+
+                    output = ''
+                    for value_index in range(result.size):
+                        output += f"{result[value_index]}\n"
+                        result_counter += 1
+
+                        if result_counter == BUFFER_COUNTER:
+                            result_counter = 0
+                            out_file.write(output)
+                            output = ""
+
+                    if result_counter > 0:
                         out_file.write(output)
-                        output = ""
-
-        if out_file and result_counter > 0:
-            out_file.write(output)
-
-        if out_file:
-            out_file.close()
 
         return results

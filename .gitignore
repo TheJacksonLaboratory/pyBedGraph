@@ -13,7 +13,7 @@
 !pyBedGraph/data/chrom_sizes/
 !pyBedGraph/data/chrom_sizes/*.sizes
 !test/
-!test/*
+!test/*.py
 !graphs/
 !graphs/*
 !graphs/graphs/**

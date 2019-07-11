@@ -1,7 +1,7 @@
 import numpy as np
 cimport cython
 from libc.float cimport DBL_MAX, DBL_MIN
-from libc.math cimport ceil
+from libc.math cimport ceil, sqrt
 
 #@cython.boundscheck(False)  # Deactivate bounds checking
 #@cython.wraparound(False)   # Deactivate negative indexing.
@@ -72,7 +72,7 @@ cdef get_total(double[:] value_list, start, end):
 
 # contiguous array
 #def mean(double[::1] values, int[::1] start_list, int[::1] end_list):
-def get_exact_means(double[:] value_list, double[:] bin_list, int bin_size,
+cpdef get_exact_means(double[:] value_list, double[:] bin_list, int bin_size,
                        int[:] start_list, int[:] end_list):
 
     assert tuple(start_list.shape) == tuple(end_list.shape)
@@ -125,6 +125,66 @@ def get_exact_means(double[:] value_list, double[:] bin_list, int bin_size,
                 total += value
 
         if total == 0:
+            continue
+
+        result_view[i] = total / numb_value
+
+    return result
+
+def get_approx_means(double[:] bin_list, int max_bin_size, int[:] start_list,
+                    int[:] end_list):
+
+    assert tuple(start_list.shape) == tuple(end_list.shape)
+
+    cdef size_t i, start, end, bin_end, bin_index
+    cdef size_t num_tests = start_list.size
+    cdef double total, numb_value, fraction, value
+
+    result = np.zeros(num_tests, dtype=np.float64)
+    cdef double[:] result_view = result
+
+    for i in range(num_tests):
+        start = start_list[i]
+        end = end_list[i]
+
+        bin_index = <unsigned int>(start / max_bin_size)
+        bin_end = <unsigned int>(end / max_bin_size)
+
+        # special case where interval is within a single bin
+        if bin_index == bin_end:
+            if bin_list[bin_index] == 0:
+                continue
+            result_view[i] = bin_list[bin_index] / max_bin_size
+            continue
+
+        total = 0
+        numb_value = 0
+
+        # first bin
+        value = bin_list[bin_index]
+        if value > 0:
+            fraction = (max_bin_size - start % max_bin_size) / max_bin_size
+            total += bin_list[bin_index] * fraction
+            numb_value += max_bin_size * fraction
+        bin_index += 1
+
+        # middle bins
+        while bin_index < bin_end:
+            value = bin_list[bin_index]
+            if value > 0:
+                total += bin_list[bin_index]
+                numb_value += max_bin_size
+
+            bin_index += 1
+
+        # last bin
+        value = bin_list[bin_index]
+        if value > 0:
+            fraction = (end % max_bin_size) / max_bin_size
+            total += bin_list[bin_index] * fraction
+            numb_value += max_bin_size * fraction
+
+        if numb_value == 0:
             continue
 
         result_view[i] = total / numb_value
@@ -209,5 +269,57 @@ def get_coverages(double[:] value_list, int[:] start_list, int[:] end_list):
                 numb_covered += 1
 
         result_view[i] = numb_covered / (end - start)
+
+    return result
+
+def get_medians(double[:] value_list, int[:] start_list, int[:] end_list):
+
+    assert tuple(start_list.shape) == tuple(end_list.shape)
+
+    cdef size_t i, num_tests = start_list.size, start, end
+
+    result = np.zeros(num_tests, dtype=np.float64)
+    cdef double[:] result_view = result
+    cdef double median
+
+    for i in range(num_tests):
+        start = start_list[i]
+        end = end_list[i]
+        median = np.median(value_list[start:end])
+
+        if median > 0:
+            result_view[i] = median
+
+    return result
+
+def get_stds(double[:] value_list, double[:] bin_list, int bin_size,
+                int[:] start_list, int[:] end_list):
+
+    assert tuple(start_list.shape) == tuple(end_list.shape)
+
+    cdef size_t i, num_tests = start_list.size, start, end, j
+
+    result = np.zeros(num_tests, dtype=np.float64)
+    cdef double[:] result_view = result
+    cdef double std, difference
+
+    cdef double[:] means = get_exact_means(value_list, bin_list, bin_size,
+                            start_list, end_list)
+
+    for i in range(num_tests):
+        mean = means[i]
+        if mean == 0:
+            continue
+
+        start = start_list[i]
+        end = end_list[i]
+
+        std = 0
+        for j in range(start, end, 1):
+            difference = value_list[j] - mean
+            std += difference * difference
+
+        std /= (end - start)
+        result_view[i] = sqrt(std)
 
     return result
