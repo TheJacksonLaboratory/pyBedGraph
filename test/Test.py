@@ -27,7 +27,7 @@ bedGraph.load_chrom_data(chrom_name)
 bedGraph.load_chrom_bins(chrom_name, bin_size)
 bench = Benchmark(bedGraph, sys.argv[3])
 result = bench.benchmark(num_tests, average_interval_size, chrom_name, bin_size, stats,
-                         bench_pyBigWig=False, only_runtime=True, pyBigWig_baseline=False)
+                         bench_pyBigWig_approx=False, just_runtime=True, make_pyBigWig_baseline=False)
 for key in result:
     print(key, result[key])
 

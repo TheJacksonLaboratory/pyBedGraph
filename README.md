@@ -104,16 +104,16 @@ from pyBedGraph import Benchmark
 
 # arg1 - BedGraph object
 # arg2 - bigwig file
-bedGraph = BedGraph('P2MC7N8HCE3K.bedgraph')
-bench = Benchmark(bedGraph, 'P2MC7N8HCE3K.bw')
+bedGraph = BedGraph('ENCFF321FZQ.bedgraph')
+bench = Benchmark(bedGraph, 'ENCFF321FZQ.bw')
 
 # arg1 - num_tests
 # arg2 - interval_size
 # arg3 - chrom_nam
 # arg4 - bin_size
 # arg5 - stats (optional) (Default is all stats)
-# arg6 - only_runtime (optional) (Default is False)
-# arg6 - bench_pyBigWig (optional) (Default is True)
-# arg6 - pyBigWig_baseline (optional) (Default is True)
+# arg6 - just_runtime (optional) (Default is False)
+# arg6 - bench_pyBigWig_approx (optional) (Default is True)
+# arg6 - make_pyBigWig_baseline (optional) (Default is True)
 result = bench.benchmark(num_test, interval_size, chrom_name, bin_size, stats='mean')
 ```

@@ -41,8 +41,8 @@ class Benchmark:
         self.chromosome = None
 
     def benchmark(self, num_tests, interval_size, chrom_name, bin_size=None,
-                  stats=None, only_runtime=False, bench_pyBigWig=True,
-                  pyBigWig_baseline=True):
+                  stats=None, just_runtime=False, bench_pyBigWig_approx=True,
+                  make_pyBigWig_baseline=True):
 
         # benchmark all stats if none given
         if stats is None:
@@ -54,9 +54,9 @@ class Benchmark:
               f"Chromosome name: {chrom_name}\n"
               f"Bin size: {bin_size}\n"
               f"Stats to bench: {stats}\n"
-              f"Only bench run time: {only_runtime}\n"
-              f"Bench pyBigWig: {bench_pyBigWig}\n"
-              f"Baseline is pyBigWig: {pyBigWig_baseline}\n")
+              f"Just bench run time: {just_runtime}\n"
+              f"Bench pyBigWig approx: {bench_pyBigWig_approx}\n"
+              f"Baseline is pyBigWig exact: {make_pyBigWig_baseline}\n")
 
         # self.find_intervals()
 
@@ -84,7 +84,7 @@ class Benchmark:
 
             # get actual value of the stat from pyBedGraph if wanted
             if actual_stat_name not in actual:
-                if not pyBigWig_baseline and not only_runtime:
+                if not make_pyBigWig_baseline:
                     actual[actual_stat_name] = \
                         self.bedGraph.stats(actual_stat_name,
                                             start_list=self.test_cases[0],
@@ -92,7 +92,7 @@ class Benchmark:
                                             chrom_name=chrom_name)
 
             pyBigWig_name = 'pyBigWig_' + actual_stat_name
-            if bench_pyBigWig:
+            if bench_pyBigWig_approx:
                 if pyBigWig_name not in results:
                     results[pyBigWig_name] = {}
 
@@ -102,7 +102,7 @@ class Benchmark:
                         self.benchmark_pyBigWig(actual_stat_name, False)
 
             # get actual stat from pyBigWig if haven't gotten it yet
-            if actual_stat_name not in actual and not only_runtime:
+            if actual_stat_name not in actual:
                 if pyBigWig_name not in results:
                     results[pyBigWig_name] = {}
 
@@ -117,7 +117,7 @@ class Benchmark:
                                                          chrom_name=chrom_name)
             results[stat_name]['run_time'] = time.time() - start_time
 
-        if only_runtime:
+        if just_runtime:
             return results
 
         # find error

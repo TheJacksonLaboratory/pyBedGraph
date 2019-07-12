@@ -31,8 +31,8 @@ LEGEND_FONT_SIZE = 10
 
 RUN_TIME_NAMES = [
     'pyBW exact',
-    'pyBG exact',
-    'pyBW app.'
+    'pyBW app.',
+    'pyBG exact'
 ]
 
 INTERVAL_ERROR_NAMES = [
@@ -41,8 +41,8 @@ INTERVAL_ERROR_NAMES = [
 
 INTERVAL_RUNTIME_NAMES = [
     'pyBW exact',
-    'pyBG exact',
-    'pyBW app.'
+    'pyBW app.',
+    'pyBG exact'
 ]
 
 GRAPH_ROOT_LOCATION = 'graphs'
@@ -74,7 +74,7 @@ def create_runtime_num_test(infile, data_name):
     plt.xlabel("log10(# of tests)", fontsize=AXIS_FONT_SIZE)
     plt.ylabel("log10(runtime (seconds))", fontsize=AXIS_FONT_SIZE)
     plt.legend(loc='best', fontsize=LEGEND_FONT_SIZE)
-    plt.savefig(f'graphs/{data_name}/run_time.png')
+    plt.savefig(f'graphs/{data_name}/run_time.png', dpi=300)
     plt.close()
 
 
@@ -119,10 +119,10 @@ def create_interval_error(in_file, data_name):
         i += 1
 
     plt.title(f"Error vs. Interval Size for {data_name}", fontsize=TITLE_FONT_SIZE)
-    plt.xlabel("Interval Size (basePairs)", fontsize=AXIS_FONT_SIZE)
+    plt.xlabel("Interval Size (basepairs)", fontsize=AXIS_FONT_SIZE)
     plt.ylabel("Percentage Error Rate (%)", fontsize=AXIS_FONT_SIZE)
     plt.legend(loc='best', fontsize=LEGEND_FONT_SIZE)
-    plt.savefig(f'graphs/{data_name}/interval_error.png')
+    plt.savefig(f'graphs/{data_name}/interval_error.png', dpi=300)
     plt.close()
 
     for name in table_cells:
@@ -174,7 +174,7 @@ def create_interval_runtime(in_file, data_name):
     plt.xlabel("Interval Size", fontsize=AXIS_FONT_SIZE)
     plt.ylabel("log10(runtime (seconds))", fontsize=AXIS_FONT_SIZE)
     plt.legend(loc='best', fontsize=LEGEND_FONT_SIZE)
-    plt.savefig(f'graphs/{data_name}/interval_run_time.png')
+    plt.savefig(f'graphs/{data_name}/interval_run_time.png', dpi=300)
     plt.close()
 
 
@@ -196,8 +196,7 @@ def create_values_indexed(in_file, data_name):
 
 
 def main():
-    create_values_indexed(open('graphs/ENCFF376VCU/values_indexed.txt'), 'ENCFF376VCU')
-    exit()
+    # create_values_indexed(open('graphs/ENCFF376VCU/values_indexed.txt'), 'ENCFF376VCU')
 
     for subdir, dirs, files in os.walk(GRAPH_ROOT_LOCATION):
         data_name = subdir[7:]
