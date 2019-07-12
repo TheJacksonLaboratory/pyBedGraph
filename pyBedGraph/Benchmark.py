@@ -13,14 +13,12 @@ mean_names = [
     'pyBigWig_exact',
     'pyBigWig_approx',
     'pyBedGraph_exact',
-    'pyBedGraph_approx',
-    'pyBedGraph_mod_approx'
+    'pyBedGraph_approx'
 ]
 
 ALL_STATS = [
     "mean",
     "approx_mean",
-    "mod_approx_mean",
     "max",
     "min",
     "coverage",
@@ -223,8 +221,7 @@ class Benchmark:
         print(f"Time for {stat}: {time_taken} seconds for {self.num_tests} trials\n")
         return time_taken, values
 
-    @staticmethod
-    def get_error(predicted_values, actual_values, care_about_high_error):
+    def get_error(self, predicted_values, actual_values, care_about_high_error):
 
         if len(predicted_values) != len(actual_values):
             print(f"Length of predicted values: {len(predicted_values)}, does"
@@ -239,16 +236,14 @@ class Benchmark:
             actual = actual_values[i]
             predicted = predicted_values[i]
 
-            if actual is None:
+            if actual is None and (predicted is None or predicted == -1):
                 actual = 0
-
-            if predicted is None or predicted is -1:
                 predicted = 0
 
             abs_error_values.append(abs(actual - predicted))
             mse_error_values.append((actual - predicted) * (actual - predicted))
 
-            if actual == 0 and predicted > ERROR:
+            if actual == 0 and (predicted > ERROR or predicted is None or predicted == -1):
                 num_actual_0 += 1
                 continue
             elif predicted <= ERROR:

@@ -5,12 +5,12 @@ pyBedGraph is an alternative to pyBigWig for bedGraph files.
 - Finds the mean, approximate mean, median, max, min, coverage, or standard deviation for an interval
 
 # Improvements:
-- Much faster (>100x)
+- Much faster (>200x) for exact statistics
 
 # Downsides:
 - Uses much more memory
     - 16 bytes per line in bedGraph file
-    - 8 bytes per basePair in chromosome loaded
+    - 4 bytes per basePair in chromosome loaded
 - Loading the bedGraph file takes a few minutes if it is large
 
 # Usage:
@@ -45,9 +45,6 @@ bedGraph = BedGraph('hg38.chrom.sizes', 'ENCFF321FZQ.bedGraph', ignore_missing_b
 bedGraph.load_chrom_data('chr1')
 ```
 ### Load bins for finding mean:
-For mean:
-- sqrt(interval size)
-
 For approx_mean:
 1. Smaller bin size -> more accurate but slower
 2. Larger bin size -> less accurate but faster

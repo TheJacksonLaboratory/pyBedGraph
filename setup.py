@@ -13,7 +13,7 @@ cmdclass = {}
 NAME = 'pyBedGraph'
 VERSION = '0.4.1'
 
-setup(
+setuptools.setup(
 
     name=NAME,
 
@@ -32,6 +32,8 @@ setup(
     url="https://github.com/c0ver/pyBedGraph",
 
     packages=setuptools.find_packages(),
+
+    install_requires=['numpy', 'pyBigWig'],
 
     ext_modules=extensions,
 

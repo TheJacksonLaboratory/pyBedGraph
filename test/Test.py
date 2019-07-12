@@ -19,21 +19,17 @@ average_interval_size = 500
 num_tests = 100000
 chrom_name = 'chr1'
 bin_size = int(math.sqrt(average_interval_size))
-stats = ['mean']
+bin_size = average_interval_size / 10
+stats = ['max']
 
 bedGraph = BedGraph(sys.argv[1], sys.argv[2], chrom_name)
 bedGraph.load_chrom_data(chrom_name)
-bins = [x for x in range(10, 101, 1)]
-with open('out/values_indexed.txt', 'w') as out_file:
-    out_file.write(' '.join([str(x) for x in bins]) + '\n')
-    for bin_size in bins:
-        bedGraph.load_chrom_bins(chrom_name, bin_size)
-        bench = Benchmark(bedGraph, sys.argv[3])
-        result, bins = bench.benchmark(num_tests, average_interval_size, chrom_name, bin_size, stats,
-                                 bench_pyBigWig=False, pyBigWig_baseline=False, only_runtime=True)
-        out_file.write(str(bins) + " ")
-        for key in result:
-            print(key, result[key])
+bedGraph.load_chrom_bins(chrom_name, bin_size)
+bench = Benchmark(bedGraph, sys.argv[3])
+result = bench.benchmark(num_tests, average_interval_size, chrom_name, bin_size, stats,
+                         bench_pyBigWig=False)
+for key in result:
+    print(key, result[key])
 
 exit()
 '''
