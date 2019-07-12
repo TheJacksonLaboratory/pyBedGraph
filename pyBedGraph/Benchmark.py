@@ -40,7 +40,7 @@ class Benchmark:
 
         self.chromosome = None
 
-    def benchmark(self, num_tests, interval_size, chrom_name, bin_size,
+    def benchmark(self, num_tests, interval_size, chrom_name, bin_size=None,
                   stats=None, only_runtime=False, bench_pyBigWig=True,
                   pyBigWig_baseline=True):
 
@@ -62,7 +62,10 @@ class Benchmark:
 
         self.chromosome = self.bedGraph.chromosome_map[chrom_name]
         self.bedGraph.load_chrom_data(chrom_name)
-        if bin_size is not None:
+        if 'approx_mean' in stats:
+            if bin_size is None:
+                print("Must give a bin_size if benchmarking approx_mean")
+                return
             self.bedGraph.load_chrom_bins(chrom_name, bin_size)
 
         self.create_test_cases(num_tests, interval_size)

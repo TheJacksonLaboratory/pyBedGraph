@@ -17,9 +17,10 @@ class Chrom_Data:
         self.size = size
 
         # don't use this until user loads this chromosome for searching
-        self.loaded_value_list = False
+        self.loaded_chrom = False
         self.value_list = None
         self.index_list = None
+        self.total_size = 0
 
         # starting length is the size of chromosome
         # later shorten to save memory
@@ -47,6 +48,7 @@ class Chrom_Data:
 
         self.intervals[0][self.current_index] = start
         self.intervals[1][self.current_index] = end
+        self.total_size += (end - start)
 
         self.value_map[self.current_index] = value
         self.current_index += 1
@@ -60,20 +62,20 @@ class Chrom_Data:
         self.intervals[1] = self.intervals[1][:self.current_index]
 
     # assume that missing space in bedGraph file is different from value of 0
-    def initialize_value_array(self):
+    def initialize_index_array(self):
         # self.value_list = np.full(self.size, -1, dtype=np.float64)
         self.index_list = np.full(self.size, -1, dtype=np.int32)
 
     # fill the value array for fast indexing
-    def load_value_array(self):
+    def load_index_array(self):
 
         print(f"Loading {self.name} ...")
 
-        if self.loaded_value_list:
+        if self.loaded_chrom:
             print(f"{self.name} is already loaded")
             return
 
-        self.initialize_value_array()
+        self.initialize_index_array()
         if self.value_list is not None:
             fill_value_array(self.intervals[0], self.intervals[1], self.value_map,
                              self.value_list)
@@ -82,12 +84,12 @@ class Chrom_Data:
             fill_index_array(self.intervals[0], self.intervals[1], self.value_map,
                              self.index_list)
 
-        self.loaded_value_list = True
+        self.loaded_chrom = True
 
     def free_value_array(self):
         self.value_list = None
         self.index_list = None
-        self.loaded_value_list = False
+        self.loaded_chrom = False
         print(f"Freed memory for {self.name}'s value_list and index_list")
 
         self.bins_list.clear()

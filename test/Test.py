@@ -20,14 +20,14 @@ num_tests = 100000
 chrom_name = 'chr1'
 bin_size = int(math.sqrt(average_interval_size))
 bin_size = average_interval_size / 10
-stats = ['max']
+stats = None
 
 bedGraph = BedGraph(sys.argv[1], sys.argv[2], chrom_name)
 bedGraph.load_chrom_data(chrom_name)
 bedGraph.load_chrom_bins(chrom_name, bin_size)
 bench = Benchmark(bedGraph, sys.argv[3])
 result = bench.benchmark(num_tests, average_interval_size, chrom_name, bin_size, stats,
-                         bench_pyBigWig=False)
+                         bench_pyBigWig=False, only_runtime=True, pyBigWig_baseline=False)
 for key in result:
     print(key, result[key])
 

@@ -6,7 +6,7 @@ import math
 sys.path.append("..")
 from pyBedGraph.BedGraph import BedGraph
 from pyBedGraph.Benchmark import Benchmark
-import generate_images
+import generate_graphs
 
 MIN_NUM_TEST = 100000
 MAX_NUM_TEST = 1000000
@@ -21,17 +21,16 @@ bin_size_test_list = [5, 10, 20]
 
 def interval_size_error_benchmark():
     interval_error_results = {}
-    '''for name in generate_images.INTERVAL_ERROR_NAMES:
+    for name in generate_graphs.INTERVAL_ERROR_NAMES:
         interval_error_results[name] = []
 
     stats_to_bench = ['mean']
     for interval_size in interval_test_list:
-        bin_size = int(math.sqrt(interval_size))
         result = bench.benchmark(DEFAULT_NUM_TESTS, interval_size, chrom_name,
-                                 bin_size, stats_to_bench)
-        interval_error_results['pyBigWig_approx'].append(result['pyBigWig_mean']['error'])
+                                 None, stats_to_bench)
+        interval_error_results['pyBW app.'].append(result['pyBigWig_mean']['error'])
 
-        print(f"Total time taken so far (min): {(time.time() - total_start_time) / 60}")'''
+        print(f"Total time taken so far (min): {(time.time() - total_start_time) / 60}")
 
     stats_to_bench = ['approx_mean']
     for bin_size_divide in bin_size_test_list:
@@ -63,19 +62,18 @@ def interval_size_error_benchmark():
 
 def interval_size_runtime_benchmark():
     interval_runtime_results = {}
-    '''for name in generate_images.INTERVAL_RUNTIME_NAMES:
+    for name in generate_graphs.INTERVAL_RUNTIME_NAMES:
         interval_runtime_results[name] = []
 
     stats_to_bench = ['mean']
     for interval_size in interval_test_list:
-        bin_size = int(math.sqrt(interval_size))
         result = bench.benchmark(DEFAULT_NUM_TESTS, interval_size, chrom_name,
-                                 bin_size, stats_to_bench, True, False)
-        interval_runtime_results['pyBigWig_approx'].append(result['pyBigWig_mean']['approx_run_time'])
-        interval_runtime_results['pyBigWig_exact'].append(result['pyBigWig_mean']['exact_run_time'])
-        interval_runtime_results['pyBedGraph_exact'].append(result['mean']['run_time'])
+                                 None, stats_to_bench, True, False)
+        # interval_runtime_results['pyBigWig_approx'].append(result['pyBigWig_mean']['approx_run_time'])
+        # interval_runtime_results['pyBigWig_exact'].append(result['pyBigWig_mean']['exact_run_time'])
+        interval_runtime_results['pyBG exact'].append(result['mean']['run_time'])
 
-        print(f"Total time taken so far (min): {(time.time() - total_start_time) / 60}")'''
+        print(f"Total time taken so far (min): {(time.time() - total_start_time) / 60}")
 
     stats_to_bench = ['approx_mean']
     for bin_size_divide in bin_size_test_list:
@@ -103,29 +101,28 @@ def runtime_benchmark():
 
     run_time_results = {}
 
-    '''stats_to_bench = ['mean']
-    for name in generate_images.RUN_TIME_NAMES:
+    stats_to_bench = ['mean']
+    for name in generate_graphs.RUN_TIME_NAMES:
         run_time_results[name] = []
 
-    bin_size = int(math.sqrt(DEFAULT_INTERVAL_SIZE))
     for num_test in num_test_list:
         result = bench.benchmark(num_test, DEFAULT_INTERVAL_SIZE, chrom_name,
-                                 bin_size, stats_to_bench, True, False, False)
-        run_time_results['pyBedGraph_exact'].append(result['mean']['run_time'])
-        run_time_results['pyBigWig_approx'].append(result['pyBigWig_mean']['approx_run_time'])
-        run_time_results['pyBigWig_exact'].append(result['pyBigWig_mean']['exact_run_time'])
+                                 None, stats_to_bench, True, False, False)
+        run_time_results['pyBG exact'].append(result['mean']['run_time'])
+        # run_time_results['pyBigWig_approx'].append(result['pyBigWig_mean']['approx_run_time'])
+        # run_time_results['pyBigWig_exact'].append(result['pyBigWig_mean']['exact_run_time'])
 
-        print(f"Total time taken so far (min): {(time.time() - total_start_time) / 60}")'''
+        print(f"Total time taken so far (min): {(time.time() - total_start_time) / 60}")
 
     stats_to_bench = ['approx_mean']
     for bin_size_divide in bin_size_test_list:
         bin_size = int(DEFAULT_INTERVAL_SIZE / bin_size_divide)
-        run_time_results['pBG approx. bin=' + str(bin_size)] = []
+        run_time_results['pyBG app. bin=' + str(bin_size)] = []
         for num_test in num_test_list:
             result = bench.benchmark(num_test, DEFAULT_INTERVAL_SIZE,
                                      chrom_name, bin_size, stats_to_bench, True,
                                      False, False)
-            run_time_results['pBG approx. bin=' + str(bin_size)].append(result['approx_mean']['run_time'])
+            run_time_results['pyBG app. bin=' + str(bin_size)].append(result['approx_mean']['run_time'])
 
             print(f"Total time taken so far (min): {(time.time() - total_start_time) / 60}")
 

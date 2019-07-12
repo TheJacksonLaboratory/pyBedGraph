@@ -1,4 +1,5 @@
 import numpy as np
+import cython
 from libc.float cimport DBL_MAX
 from libc.math cimport ceil, sqrt
 
@@ -100,6 +101,8 @@ cdef get_values(double[:] value_map, int[:] index_list,
 
     return total, coverage
 
+@cython.cdivision(True)
+@cython.boundscheck(False)
 cpdef get_exact_means(double[:] value_map, int[:] index_list,
                  unsigned int[:] interval_start, unsigned int[:] interval_end,
                  int[:] start_list, int[:] end_list):
@@ -143,6 +146,8 @@ cpdef get_exact_means(double[:] value_map, int[:] index_list,
 
     return result
 
+@cython.cdivision(True)
+@cython.boundscheck(False)
 def get_approx_means(double[:] bin_list, unsigned int[:] bin_coverage_list,
                      int max_bin_size, int[:] start_list, int[:] end_list):
 
