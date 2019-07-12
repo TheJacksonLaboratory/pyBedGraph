@@ -8,10 +8,10 @@
 
 # email for begin, aborts, ends
 #PBS -m bae
-#PBS -M henry.zhang@jax.org henrybzhang@pm.me
+#PBS -M henry.zhang@jax.org
 
 # job name
-#PBS -N pyBedGraph_benchmark_intervals
+#PBS -N pyBedGraph_benchmark
 
 # standard out
 #PBS -o log.txt

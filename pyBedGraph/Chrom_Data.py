@@ -177,9 +177,6 @@ class Chrom_Data:
     # get the specific stat to search for
     def get_method(self, stat):
         if stat == "mean":
-            if self.loaded_bins is False:
-                print(f'Bins were not loaded')
-                return None
             return self.get_exact_mean
         elif stat == "approx_mean":
             if self.loaded_bins is False:
