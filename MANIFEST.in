@@ -1,0 +1,2 @@
+recursive-include pyBedGraph *.pyx
+recursive-include pyBedGraph *.c

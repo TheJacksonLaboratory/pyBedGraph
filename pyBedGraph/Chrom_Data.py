@@ -17,8 +17,10 @@ class Chrom_Data:
         self.size = size
 
         # don't use this until user loads this chromosome for searching
-        self.loaded_value_list = False
+        self.loaded_chrom = False
         self.value_list = None
+        self.index_list = None
+        self.total_size = 0
 
         # starting length is the size of chromosome
         # later shorten to save memory
@@ -46,6 +48,7 @@ class Chrom_Data:
 
         self.intervals[0][self.current_index] = start
         self.intervals[1][self.current_index] = end
+        self.total_size += (end - start)
 
         self.value_map[self.current_index] = value
         self.current_index += 1
@@ -59,28 +62,35 @@ class Chrom_Data:
         self.intervals[1] = self.intervals[1][:self.current_index]
 
     # assume that missing space in bedGraph file is different from value of 0
-    def initialize_value_array(self):
-        self.value_list = np.full(self.size, -1, dtype=np.float64)
+    def initialize_index_array(self):
+        # self.value_list = np.full(self.size, -1, dtype=np.float64)
+        self.index_list = np.full(self.size, -1, dtype=np.int32)
 
     # fill the value array for fast indexing
-    def load_value_array(self):
+    def load_index_array(self):
 
         print(f"Loading {self.name} ...")
 
-        if self.loaded_value_list:
+        if self.loaded_chrom:
             print(f"{self.name} is already loaded")
             return
 
-        self.initialize_value_array()
-        fill_value_array(self.intervals[0], self.intervals[1], self.value_map,
-                         self.value_list)
+        self.initialize_index_array()
+        if self.value_list is not None:
+            fill_value_array(self.intervals[0], self.intervals[1], self.value_map,
+                             self.value_list)
 
-        self.loaded_value_list = True
+        if self.index_list is not None:
+            fill_index_array(self.intervals[0], self.intervals[1], self.value_map,
+                             self.index_list)
+
+        self.loaded_chrom = True
 
     def free_value_array(self):
         self.value_list = None
-        self.loaded_value_list = False
-        print(f"Freed memory for {self.name}'s value_list")
+        self.index_list = None
+        self.loaded_chrom = False
+        print(f"Freed memory for {self.name}'s value_list and index_list")
 
         self.bins_list.clear()
         if self.bins_list_coverages is not None:
@@ -119,8 +129,11 @@ class Chrom_Data:
 
         # Loading smallest bins
         print(f"Loading bins of size: {bin_size} for {self.name} ...")
-        print(f"Number of bins: {math.ceil(self.value_list.size / bin_size)}")
-        prev_bins_list, prev_bins_coverage_list = load_smallest_bins(self.value_list, bin_size)
+        print(f"Number of bins: {math.ceil(self.size / bin_size)}")
+        prev_bins_list, prev_bins_coverage_list = \
+            load_smallest_bins(self.value_map, self.index_list, self.size,
+                               self.intervals[0], self.intervals[1], bin_size)
+
         self.bins_list.append(prev_bins_list)
         self.bins_list_coverages.append(prev_bins_coverage_list)
         bin_size *= 2
@@ -129,7 +142,7 @@ class Chrom_Data:
         while bin_size <= max_bin_size:
 
             print(f"Loading bins of size: {bin_size} for {self.name} ...")
-            print(f"Number of bins: {math.ceil(self.value_list.size / bin_size)}")
+            print(f"Number of bins: {math.ceil(self.size / bin_size)}")
 
             # use the previous bin list to speed up the process
             bins_list, bins_coverage_list = load_bins(prev_bins_list,
@@ -174,7 +187,9 @@ class Chrom_Data:
                 return None
             return self.get_approx_mean
         elif stat == "median":
-            return self.get_median
+            print("Median has not been implemented yet")
+            return None
+            # return self.get_median
         elif stat == "max":
             return self.get_max
         elif stat == "min":
@@ -192,11 +207,8 @@ class Chrom_Data:
                                 self.min_bin_size, start_list, end_list)
 
     def get_exact_mean(self, start_list, end_list):
-        return get_exact_means(self.value_list,
-                               self.bins_list[self.bin_list_numb - 1],
-                               self.max_bin_size,
-                               self.bins_list_coverages[self.bin_list_numb - 1],
-                               start_list, end_list)
+        return get_exact_means(self.value_map, self.index_list, self.intervals[0],
+                               self.intervals[1], start_list, end_list)
 
     # slower for now because of usage of numpy instead of implementing O(n)
     # algorithm in Cython
@@ -213,16 +225,17 @@ class Chrom_Data:
         return results
 
     def get_coverage(self, start_list, end_list):
-        return get_coverages(self.value_list, start_list, end_list)
+        return get_coverages(self.index_list, self.intervals[0],
+                             self.intervals[1], start_list, end_list)
 
     def get_max(self, start_list, end_list):
-        return get_maximums(self.value_list, start_list, end_list)
+        return get_maximums(self.value_map, self.index_list, self.intervals[0],
+                            self.intervals[1], start_list, end_list)
 
     def get_min(self, start_list, end_list):
-        return get_minimums(self.value_list, start_list, end_list)
+        return get_minimums(self.value_map, self.index_list, self.intervals[0],
+                            self.intervals[1], start_list, end_list)
 
     def get_std(self, start_list, end_list):
-        return get_stds(self.value_list, self.bins_list[self.bin_list_numb - 1],
-                        self.max_bin_size,
-                        self.bins_list_coverages[self.bin_list_numb - 1],
-                        start_list, end_list)
+        return get_stds(self.value_map, self.index_list, self.intervals[0],
+                        self.intervals[1], start_list, end_list)

@@ -74,12 +74,15 @@ class BedGraph:
             # clean up the last chromosome found in the bedGraph file
             current_chrom.trim_extra_space()
 
+            print("Average interval size: ",
+                  current_chrom.total_size / current_chrom.value_map.size)
+
             if current_chrom is None:
                 print(f"{chrom_wanted} was not found in {data_file_name}")
                 exit(-1)
 
     def load_chrom_data(self, chrom_name):
-        self.chromosome_map[chrom_name].load_value_array()
+        self.chromosome_map[chrom_name].load_index_array()
 
     def load_chrom_bins(self, chrom_name, max_bins_size):
         self.chromosome_map[chrom_name].load_bins(max_bins_size)
@@ -95,7 +98,7 @@ class BedGraph:
 
         chrom = self.chromosome_map[chrom_name]
 
-        if not chrom.loaded_value_list:
+        if not chrom.loaded_chrom:
             print(f"{chrom.name} needs to be loaded before it can be searched.")
             return None
 
