@@ -248,7 +248,7 @@ class Benchmark:
             abs_error_values.append(abs(actual - predicted))
             mse_error_values.append((actual - predicted) * (actual - predicted))
 
-            if actual == 0 and predicted > ERROR:
+            if actual == 0 and abs(predicted) > ERROR:
                 num_actual_0 += 1
                 continue
             elif predicted <= ERROR:

@@ -1,5 +1,5 @@
 import numpy as np
-from libc.float cimport DBL_MAX, DBL_MIN
+from libc.float cimport DBL_MAX
 from libc.math cimport ceil, sqrt
 
 def load_smallest_bins(double[:] value_list, unsigned int bin_size):
@@ -265,7 +265,7 @@ def get_maximums(double[:] value_list, int[:] start_list, int[:] end_list):
     cdef double[:] result_view = result
 
     for i in range(num_tests):
-        maximum = DBL_MIN
+        maximum = -1
         start = start_list[i]
         end = end_list[i]
         for j in range(start, end, 1):
@@ -275,7 +275,7 @@ def get_maximums(double[:] value_list, int[:] start_list, int[:] end_list):
             if value_list[j] > maximum:
                 maximum = value_list[j]
 
-        if maximum != DBL_MIN:
+        if maximum != -1:
             result_view[i] = maximum
 
     return result
