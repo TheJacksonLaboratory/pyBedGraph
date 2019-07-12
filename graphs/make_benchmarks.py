@@ -75,7 +75,7 @@ def interval_size_runtime_benchmark():
 
         print(f"Total time taken so far (min): {(time.time() - total_start_time) / 60}")
 
-    stats_to_bench = ['approx_mean']
+    '''stats_to_bench = ['approx_mean']
     for bin_size_divide in bin_size_test_list:
         interval_runtime_results['pyBG app. bin=int_size/' + str(bin_size_divide)] = []
         for interval_size in interval_test_list:
@@ -85,7 +85,7 @@ def interval_size_runtime_benchmark():
                                      True, False)
             interval_runtime_results['pyBG app. bin=int_size/' + str(bin_size_divide)].append(result['approx_mean']['run_time'])
 
-            print(f"Total time taken so far (min): {(time.time() - total_start_time) / 60}")
+            print(f"Total time taken so far (min): {(time.time() - total_start_time) / 60}")'''
 
     print(interval_runtime_results)
     with open(f'graphs/{data_name}/interval_runtime_results.txt', 'a') as out:
@@ -114,7 +114,7 @@ def runtime_benchmark():
 
         print(f"Total time taken so far (min): {(time.time() - total_start_time) / 60}")
 
-    stats_to_bench = ['approx_mean']
+    '''stats_to_bench = ['approx_mean']
     for bin_size_divide in bin_size_test_list:
         bin_size = int(DEFAULT_INTERVAL_SIZE / bin_size_divide)
         run_time_results['pyBG app. bin=' + str(bin_size)] = []
@@ -124,7 +124,7 @@ def runtime_benchmark():
                                      False, False)
             run_time_results['pyBG app. bin=' + str(bin_size)].append(result['approx_mean']['run_time'])
 
-            print(f"Total time taken so far (min): {(time.time() - total_start_time) / 60}")
+            print(f"Total time taken so far (min): {(time.time() - total_start_time) / 60}")'''
 
     print(run_time_results)
     with open(f'graphs/{data_name}/run_time_results.txt', 'a') as out:
@@ -162,5 +162,5 @@ if not os.path.isdir(f'graphs/{data_name}'):
     os.mkdir(f'graphs/{data_name}')
 
 runtime_benchmark()
-interval_size_error_benchmark()
+# interval_size_error_benchmark()
 interval_size_runtime_benchmark()
