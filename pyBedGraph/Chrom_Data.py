@@ -18,8 +18,8 @@ class Chrom_Data:
 
         # don't use this until user loads this chromosome for searching
         self.loaded_chrom = False
-        self.value_list = None
         self.index_list = None
+        self.value_list = None
         self.total_size = 0
 
         # starting length is the size of chromosome

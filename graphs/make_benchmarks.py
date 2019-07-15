@@ -19,10 +19,10 @@ interval_test_list = [100, 250, 500, 750, 1000, 2000, 3000, 4000, 5000]
 bin_size_test_list = [5, 10, 20]
 
 # Tests to make sure it works
-#interval_test_list = [100]
-#bin_size_test_list = [5]
-#MIN_NUM_TEST = 10000
-#MAX_NUM_TEST = 10000
+interval_test_list = [100]
+bin_size_test_list = [5]
+MIN_NUM_TEST = 10000
+MAX_NUM_TEST = 10000
 
 
 def interval_size_error_benchmark():

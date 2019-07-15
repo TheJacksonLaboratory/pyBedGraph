@@ -16,28 +16,28 @@ if len(sys.argv) < 5:
 MAX_NUM_TESTS = 1000000
 test_intervals = []
 average_interval_size = 500
-num_tests = 100000
+num_tests = 10000
 chrom_name = 'chr1'
 bin_size = int(math.sqrt(average_interval_size))
-bin_size = average_interval_size / 10
+bin_size = 100
+stats = ['mean', 'approx_mean', 'min', 'max', 'std', 'coverage']
 stats = None
 
 bedGraph = BedGraph(sys.argv[1], sys.argv[2], chrom_name)
 bedGraph.load_chrom_data(chrom_name)
 bedGraph.load_chrom_bins(chrom_name, bin_size)
+#complete_bedGraph = BedGraph(sys.argv[1], sys.argv[2], chrom_name,
+#                             ignore_missing_bp=False)
+#complete_bedGraph.load_chrom_data(chrom_name)
+#complete_bedGraph.load_chrom_bins(chrom_name, bin_size)
 bench = Benchmark(bedGraph, sys.argv[3])
-result = bench.benchmark(num_tests, average_interval_size, chrom_name, bin_size, stats,
-                         bench_pyBigWig_approx=False, just_runtime=True, make_pyBigWig_baseline=False)
+result = bench.benchmark(num_tests, average_interval_size, chrom_name, bin_size, stats)
+print(result)
 for key in result:
     print(key, result[key])
 
 exit()
-'''
 
-complete_bedGraph = BedGraph(sys.argv[1], sys.argv[2], chrom_name,
-                             ignore_missing_bp=False)
-complete_bedGraph.load_chrom_data(chrom_name)
-complete_bedGraph.load_chrom_bins(chrom_name, bin_size)
 
 
 with open(sys.argv[4]) as interval_file:
@@ -51,6 +51,7 @@ with open(sys.argv[4]) as interval_file:
 for stat in stats:
     start_time = time.time()
     stat_values = bedGraph.stats(stat, test_intervals)
+    print(stat_values)
     print("Time for bedGraph stats:", time.time() - start_time)
 
     start_time = time.time()
@@ -59,6 +60,7 @@ for stat in stats:
 
     start_time = time.time()
     file_values = bedGraph.stats_from_file(sys.argv[4], output_to_file=False, stat=stat)
+    print(file_values)
     print("Time for bedGraph stats_from_file to return:", time.time() - start_time)
 
     file_values = file_values[chrom_name]
@@ -81,6 +83,7 @@ for stat in stats:
 
     start_time = time.time()
     stat_values = complete_bedGraph.stats(stat, test_intervals)
+    print(stat_values)
     print("Time for complete_bedGraph stats:", time.time() - start_time)
 
     start_time = time.time()
@@ -108,8 +111,9 @@ for stat in stats:
                 print(stat_values[i], file_values[i])
                 print(file_value, file_values[i])
                 exit(-1)
+    print()
 
 a = input('end program')
 complete_bedGraph.free_chrom_data(chrom_name)
 bedGraph.free_chrom_data(chrom_name)
-a = input('end program')'''
+a = input('end program')

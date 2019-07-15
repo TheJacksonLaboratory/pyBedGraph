@@ -6,11 +6,12 @@ from libc.math cimport ceil, sqrt
 #@cython.boundscheck(False)  # Deactivate bounds checking
 #@cython.wraparound(False)   # Deactivate negative indexing.
 
-def load_smallest_bins(double[:] value_list, unsigned int bin_size):
-    cdef size_t value_list_size = value_list.size
+def load_smallest_bins(double[:] value_map, int[:] index_list, unsigned int size,
+                       unsigned int[:] interval_start, unsigned int[:] interval_end,
+                       unsigned int bin_size):
     cdef size_t bin_index
 
-    cdef unsigned int numb_bins = <int>ceil(value_list_size / bin_size)
+    cdef unsigned int numb_bins = <int>ceil(size / bin_size)
 
     bins = np.zeros(numb_bins, dtype=np.float64)
     cdef double[:] bins_view = bins
@@ -22,10 +23,11 @@ def load_smallest_bins(double[:] value_list, unsigned int bin_size):
         start = bin_index * bin_size
         end = start + bin_size
 
-        if end > value_list_size:
-            end = value_list_size
+        if end > size:
+            end = size
 
-        value = get_total(value_list, start, end)
+        value = get_total(value_map, index_list, interval_start,
+                                     interval_end, start, end)
         if value > 0:
             bins_view[bin_index] = value
 
@@ -60,74 +62,82 @@ def load_bins(double[:] prev_bin_level_mean):
 
     return bins
 
-cdef get_total(double[:] value_list, start, end):
+cdef get_total(double[:] value_map, int[:] index_list,
+                unsigned int[:] interval_start, unsigned int[:] interval_end,
+                unsigned int start, unsigned int end):
 
-    cdef double total = 0
-    cdef size_t i
+    cdef double total = 0, value
+    cdef unsigned int value_index, temp_end, interval_size
+    cdef size_t i, numb_intervals = interval_start.size
 
-    for i in range(start, end, 1):
-        total += value_list[i]
+    # get to an interval
+    while start < end and index_list[start] == -1:
+        start += 1
+
+    if start == end:
+        return total
+
+    value_index = index_list[start]
+    while start < end and start < interval_end[value_index]:
+        temp_end = interval_end[value_index]
+        if temp_end > end:
+            temp_end = end
+        interval_size = temp_end - start
+
+        total += value_map[value_index] * interval_size
+
+        value_index += 1
+        if value_index == numb_intervals:
+            break
+        start = interval_start[value_index]
 
     return total
 
 # contiguous array
 #def mean(double[::1] values, int[::1] start_list, int[::1] end_list):
-cpdef get_exact_means(double[:] value_list, double[:] bin_list, int bin_size,
-                       int[:] start_list, int[:] end_list):
+cpdef get_exact_means(double[:] value_map, int[:] index_list,
+                 unsigned int[:] interval_start, unsigned int[:] interval_end,
+                 int[:] start_list, int[:] end_list):
 
     assert tuple(start_list.shape) == tuple(end_list.shape)
 
     cdef size_t i, start, end, bin_end, bin_index
-    cdef size_t num_tests = start_list.size
+    cdef size_t num_tests = start_list.size, numb_intervals = interval_start.size
     cdef double total, value
-    cdef unsigned int numb_value, weight, prev_length
+    cdef unsigned int numb_value, interval_size, temp_end, value_index, curr_start
 
     result = np.zeros(num_tests, dtype=np.float64)
     cdef double[:] result_view = result
 
     for i in range(num_tests):
+        total = 0
         start = start_list[i]
         end = end_list[i]
-        numb_value = end - start
+        curr_start = start
 
-        bin_index = <unsigned int>ceil(start / bin_size)
-        bin_end = <unsigned int>(end / bin_size)
+        # get to an interval
+        while index_list[curr_start] == -1 and curr_start < end:
+            curr_start += 1
 
-        # special case where interval is within a single bin
-        if bin_index >= bin_end:
-            value = get_total(value_list, start, end)
-            if value > 0:
-                result_view[i] = value / (end - start)
-                continue
-
-        total = 0
-
-        # first bin
-        if start % bin_size != 0:
-            prev_length = bin_size - start % bin_size
-            value = get_total(value_list, start, start + prev_length)
-            if value > 0:
-                total += value
-
-        # middle bins
-        while bin_index < bin_end:
-            value = bin_list[bin_index]
-            if value > 0:
-                total += value
-
-            bin_index += 1
-
-        # last bin
-        prev_length = end % bin_size
-        if prev_length != 0:
-            value = get_total(value_list, end - prev_length, end)
-            if value > 0:
-                total += value
-
-        if total == 0:
+        if curr_start == end:
             continue
 
-        result_view[i] = total / numb_value
+        value_index = index_list[curr_start]
+        while curr_start < end:
+            temp_end = interval_end[value_index]
+            if temp_end > end:
+                temp_end = end
+            interval_size = temp_end - curr_start
+
+            total += value_map[value_index] * interval_size
+
+            value_index += 1
+            if value_index == numb_intervals:
+                break
+            curr_start = interval_start[value_index]
+
+        if total != 0:
+            result_view[i] = total / (end - start)
 
     return result
 
@@ -154,7 +164,7 @@ def get_approx_means(double[:] bin_list, int max_bin_size, int[:] start_list,
         if bin_index == bin_end:
             if bin_list[bin_index] == 0:
                 continue
-            result_view[i] = bin_list[bin_index] / max_bin_size
+            result_view[i] = bin_list[bin_index] / (end - start)
             continue
 
         total = 0
@@ -187,30 +197,18 @@ def get_approx_means(double[:] bin_list, int max_bin_size, int[:] start_list,
         if numb_value == 0:
             continue
 
-        result_view[i] = total / numb_value
+        result_view[i] = total / (end - start)
 
     return result
 
-def get_medians(double[:] value_list, int[:] start_list, int[:] end_list):
+def get_minimums(double[:] value_map, int[:] index_list,
+                 unsigned int[:] interval_start, unsigned int[:] interval_end,
+                 int[:] start_list, int[:] end_list):
 
     assert tuple(start_list.shape) == tuple(end_list.shape)
 
-    cdef size_t num_tests = start_list.size, i, start, end
-    result = np.zeros(num_tests, dtype=np.float64)
-
-    for i in range(num_tests):
-        start = start_list[i]
-        end = end_list[i]
-
-        result[i] = np.median(value_list[start:end])
-
-    return result
-
-def get_minimums(double[:] value_list, int[:] start_list, int[:] end_list):
-
-    assert tuple(start_list.shape) == tuple(end_list.shape)
-
-    cdef size_t i, num_tests = start_list.size, start, end
+    cdef size_t i, num_tests = start_list.size, start, end, value_index
+    cdef size_t numb_intervals = interval_start.size
     cdef double minimum
 
     result = np.zeros(num_tests, dtype=np.float64)
@@ -220,42 +218,77 @@ def get_minimums(double[:] value_list, int[:] start_list, int[:] end_list):
         minimum = DBL_MAX
         start = start_list[i]
         end = end_list[i]
-        for j in range(start, end, 1):
-            if value_list[j] < minimum:
-                minimum = value_list[j]
 
-        result_view[i] = minimum
+        # get to an interval
+        while index_list[start] == -1 and start < end:
+            minimum = 0
+            start += 1
+
+        if start == end:
+            continue
+
+        value_index = index_list[start]
+        while interval_start[value_index] < end:
+            if value_map[value_index] < minimum:
+                minimum = value_map[value_index]
+
+            value_index += 1
+            if value_index == numb_intervals:
+                break
+
+        if minimum != DBL_MAX:
+            result_view[i] = minimum
 
     return result
 
-def get_maximums(double[:] value_list, int[:] start_list, int[:] end_list):
+def get_maximums(double[:] value_map, int[:] index_list,
+                 unsigned int[:] interval_start, unsigned int[:] interval_end,
+                 int[:] start_list, int[:] end_list):
 
     assert tuple(start_list.shape) == tuple(end_list.shape)
 
-    cdef size_t i, num_tests = start_list.size, start, end
-    cdef double maximum
+    cdef size_t i, num_tests = start_list.size, start, end, value_index
+    cdef size_t numb_intervals = interval_start.size
+    cdef double maximum, value
 
     result = np.zeros(num_tests, dtype=np.float64)
     cdef double[:] result_view = result
 
     for i in range(num_tests):
-        maximum = -1
+        maximum = 0
         start = start_list[i]
         end = end_list[i]
-        for j in range(start, end, 1):
-            if value_list[j] > maximum:
-                maximum = value_list[j]
 
-        result_view[i] = maximum
+        # get to an interval
+        while index_list[start] == -1 and start < end:
+            start += 1
+
+        if start == end:
+            continue
+
+        value_index = index_list[start]
+        while interval_start[value_index] < end:
+            value = value_map[value_index]
+            if value > maximum:
+                maximum = value
+
+            value_index += 1
+            if value_index == numb_intervals:
+                break
+
+        if maximum != 0:
+            result_view[i] = maximum
 
     return result
 
-def get_coverages(double[:] value_list, int[:] start_list, int[:] end_list):
+def get_coverages(double[:] value_map, int[:] index_list, unsigned int[:] interval_start,
+                  unsigned int[:] interval_end, int[:] start_list, int[:] end_list):
 
     assert tuple(start_list.shape) == tuple(end_list.shape)
 
-    cdef size_t i, num_tests = start_list.size, start, end
-    cdef unsigned int numb_covered
+    cdef size_t i, num_tests = start_list.size, start, end, current_start
+    cdef unsigned int numb_covered, temp_end, value_index
+    cdef size_t numb_intervals = interval_start.size
 
     result = np.zeros(num_tests, dtype=np.float64)
     cdef double[:] result_view = result
@@ -264,36 +297,37 @@ def get_coverages(double[:] value_list, int[:] start_list, int[:] end_list):
         numb_covered = 0
         start = start_list[i]
         end = end_list[i]
-        for j in range(start, end, 1):
-            if value_list[j] > 0:
-                numb_covered += 1
+        current_start = start
 
-        result_view[i] = numb_covered / (end - start)
+        # get to an interval
+        while index_list[current_start] == -1 and current_start < end:
+            current_start += 1
+
+        if current_start == end:
+            continue
+
+        value_index = index_list[current_start]
+        while current_start < end:
+            temp_end = interval_end[value_index]
+            if temp_end > end:
+                temp_end = end
+
+            if value_map[value_index] > 0:
+                numb_covered += (temp_end - current_start)
+
+            value_index += 1
+            if value_index == numb_intervals:
+                break
+            current_start = interval_start[value_index]
+
+        if numb_covered > 0:
+            result_view[i] = numb_covered / (end - start)
 
     return result
 
-def get_medians(double[:] value_list, int[:] start_list, int[:] end_list):
-
-    assert tuple(start_list.shape) == tuple(end_list.shape)
-
-    cdef size_t i, num_tests = start_list.size, start, end
-
-    result = np.zeros(num_tests, dtype=np.float64)
-    cdef double[:] result_view = result
-    cdef double median
-
-    for i in range(num_tests):
-        start = start_list[i]
-        end = end_list[i]
-        median = np.median(value_list[start:end])
-
-        if median > 0:
-            result_view[i] = median
-
-    return result
-
-def get_stds(double[:] value_list, double[:] bin_list, int bin_size,
-                int[:] start_list, int[:] end_list):
+def get_stds(double[:] value_map, int[:] index_list,
+                 unsigned int[:] interval_start, unsigned int[:] interval_end,
+                 int[:] start_list, int[:] end_list):
 
     assert tuple(start_list.shape) == tuple(end_list.shape)
 
@@ -301,10 +335,12 @@ def get_stds(double[:] value_list, double[:] bin_list, int bin_size,
 
     result = np.zeros(num_tests, dtype=np.float64)
     cdef double[:] result_view = result
-    cdef double std, difference
+    cdef double std, difference, value
+    cdef unsigned int numb_value, interval_size, value_index, temp_end, curr_start
+    cdef size_t numb_intervals = interval_start.size
 
-    cdef double[:] means = get_exact_means(value_list, bin_list, bin_size,
-                            start_list, end_list)
+    cdef double[:] means = get_exact_means(value_map, index_list, interval_start,
+                            interval_end, start_list, end_list)
 
     for i in range(num_tests):
         mean = means[i]
@@ -313,13 +349,43 @@ def get_stds(double[:] value_list, double[:] bin_list, int bin_size,
 
         start = start_list[i]
         end = end_list[i]
+        curr_start = start
+
+        # get to an interval
+        while index_list[curr_start] == -1 and curr_start < end:
+            curr_start += 1
+
+        if curr_start == end:
+            continue
 
         std = 0
-        for j in range(start, end, 1):
-            difference = value_list[j] - mean
-            std += difference * difference
+        numb_value = 0
 
-        std /= (end - start - 1)
+        value_index = index_list[curr_start]
+        while curr_start < end:
+            temp_end = interval_end[value_index]
+            if temp_end > end:
+                temp_end = end
+
+            interval_size = temp_end - curr_start
+            difference = value_map[value_index] - mean
+            std += difference * difference * interval_size
+            numb_value += interval_size
+
+            value_index += 1
+            if value_index == numb_intervals:
+                break
+            curr_start = interval_start[value_index]
+
+        if numb_value == 0:
+            print("why?")
+            continue
+
+        # get base pairs that are not in bedGraph intervals
+        difference = mean
+        std += difference * difference * (end - start - numb_value)
+
+        std /= (end - start)
         result_view[i] = sqrt(std)
 
     return result
