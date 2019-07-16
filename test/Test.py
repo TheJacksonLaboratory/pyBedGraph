@@ -20,8 +20,7 @@ num_tests = 10000
 chrom_name = 'chr1'
 bin_size = int(math.sqrt(average_interval_size))
 bin_size = 1000
-stats = ['mean', 'approx_mean']
-stats = None
+stats = ['mean', 'approx_mean', 'coverage']
 
 bedGraph = BedGraph(sys.argv[1], sys.argv[2], chrom_name)
 bedGraph.load_chrom_data(chrom_name)

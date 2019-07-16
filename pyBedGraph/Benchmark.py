@@ -250,6 +250,14 @@ class Benchmark:
 
             if actual == 0 and predicted > ERROR:
                 not_included += 1
+                #start = self.test_cases[0][i]
+                #end = self.test_cases[1][i]
+                #bin_start = int(start / 1000)
+                #bin_end = int(end / 1000)
+                #bin_list = self.bedGraph.chromosome_map['chr1'].bins_list[0]
+                #bin_coverage_list = self.bedGraph.chromosome_map['chr1'].bins_list_coverages[0]
+                #print(i, bin_list[bin_start:bin_end], bin_coverage_list[bin_start:bin_end], predicted,
+                #      self.bedGraph.stats('approx_mean', intervals=[['chr1', start, end]]))
                 continue
             elif actual == 0 and predicted <= ERROR:
                 percent_error_values.append(0)

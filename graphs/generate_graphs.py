@@ -190,11 +190,13 @@ def main():
 
             with open(file_path) as in_file:
                 if file_name == 'run_time_results.txt':
-                    create_runtime_num_test(in_file, data_name)
+                    pass
+                    #create_runtime_num_test(in_file, data_name)
                 elif file_name == 'interval_error_results.txt':
                     create_interval_error(in_file, data_name)
                 elif file_name == 'interval_runtime_results.txt':
-                    create_interval_runtime(in_file, data_name)
+                    pass
+                    #create_interval_runtime(in_file, data_name)
                 elif file_name[-4:] == '.png':
                     continue
                 else:

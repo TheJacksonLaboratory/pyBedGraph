@@ -136,7 +136,7 @@ def get_approx_means(double[:] bin_list, unsigned int[:] bin_coverage_list,
         # first bin
         weight = bin_coverage_list[bin_index]
         if weight > 0:
-            fraction = (max_bin_size - start % max_bin_size) / max_bin_size
+            fraction = <double>(max_bin_size - start % max_bin_size) / max_bin_size
             total += bin_list[bin_index] * fraction
             numb_value += weight * fraction
         bin_index += 1
@@ -153,7 +153,7 @@ def get_approx_means(double[:] bin_list, unsigned int[:] bin_coverage_list,
         # last bin
         weight = bin_coverage_list[bin_index]
         if weight > 0:
-            fraction = (end % max_bin_size) / max_bin_size
+            fraction = <double>(end % max_bin_size) / max_bin_size
             total += bin_list[bin_index] * fraction
             numb_value += weight * fraction
 
@@ -328,7 +328,7 @@ def get_coverages(int[:] index_list, unsigned int[:] interval_start,
             current_start = interval_start[value_index]
 
         if numb_covered > 0:
-            result_view[i] = numb_covered / (end - start)
+            result_view[i] = <double>numb_covered / (end - start)
 
     return result
 

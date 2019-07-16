@@ -143,7 +143,7 @@ class BedGraph:
 
         start_time = time.time()
         result = method_to_call(start_list, end_list)
-        print(f"Time for {stat}:", time.time() - start_time)
+        #print(f"Time for {stat}:", time.time() - start_time)
         return result
 
     # output to output_file if given, otherwise return a list of results
