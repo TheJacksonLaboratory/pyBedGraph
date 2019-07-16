@@ -6,12 +6,27 @@ import math
 sys.path.append("..")
 from pyBedGraph.BedGraph import BedGraph
 from pyBedGraph.Benchmark import Benchmark
-import generate_graphs
 
 MIN_NUM_TEST = 100000
 MAX_NUM_TEST = 1000000
 DEFAULT_INTERVAL_SIZE = 500
 DEFAULT_NUM_TESTS = 10000
+
+RUN_TIME_NAMES = [
+    'pyBW exact',
+    'pyBW app.',
+    'pyBG exact'
+]
+
+INTERVAL_ERROR_NAMES = [
+    'pyBW app.'
+]
+
+INTERVAL_RUNTIME_NAMES = [
+    'pyBW exact',
+    'pyBW app.',
+    'pyBG exact'
+]
 
 total_start_time = time.time()
 
@@ -19,15 +34,15 @@ interval_test_list = [100, 250, 500, 750, 1000, 2000, 3000, 4000, 5000]
 bin_size_test_list = [5, 10, 20]
 
 # Tests to make sure it works
-interval_test_list = [100]
-bin_size_test_list = [5]
-MIN_NUM_TEST = 10000
-MAX_NUM_TEST = 10000
+#interval_test_list = [100]
+#bin_size_test_list = [5]
+#MIN_NUM_TEST = 10000
+#MAX_NUM_TEST = 10000
 
 
 def interval_size_error_benchmark():
     interval_error_results = {}
-    for name in generate_graphs.INTERVAL_ERROR_NAMES:
+    for name in INTERVAL_ERROR_NAMES:
         interval_error_results[name] = []
 
     stats_to_bench = ['mean']
@@ -51,7 +66,7 @@ def interval_size_error_benchmark():
             print(f"Total time taken so far (min): {(time.time() - total_start_time) / 60}")
 
     print(interval_error_results)
-    error_types = ['percent_error', 'ms_error', 'abs_error', 'num_actual_0']
+    error_types = ['percent_error', 'ms_error', 'abs_error', 'not_included']
     with open(f'graphs/{data_name}/interval_error_results.txt', 'a+') as out:
         out.write(" ".join([str(x) for x in interval_test_list]) + '\n')
         for key in interval_error_results:
@@ -68,7 +83,7 @@ def interval_size_error_benchmark():
 
 def interval_size_runtime_benchmark():
     interval_runtime_results = {}
-    for name in generate_graphs.INTERVAL_RUNTIME_NAMES:
+    for name in INTERVAL_RUNTIME_NAMES:
         interval_runtime_results[name] = []
 
     stats_to_bench = ['mean']
@@ -108,7 +123,7 @@ def runtime_benchmark():
     run_time_results = {}
 
     stats_to_bench = ['mean']
-    for name in generate_graphs.RUN_TIME_NAMES:
+    for name in RUN_TIME_NAMES:
         run_time_results[name] = []
 
     for num_test in num_test_list:
@@ -145,7 +160,7 @@ def runtime_benchmark():
 if len(sys.argv) != 4:
     print("Needs 3 arguments:\n"
           "arg 1 - chrom_sizes_file\n"
-          "arg 2 - bedgraph_file\n"
+          "arg 2 - bedGraph_file\n"
           "arg 3 - bigWig file")
     exit(-1)
 
@@ -166,6 +181,6 @@ if not os.path.isdir(f'graphs'):
 if not os.path.isdir(f'graphs/{data_name}'):
     os.mkdir(f'graphs/{data_name}')
 
-runtime_benchmark()
+#runtime_benchmark()
 interval_size_error_benchmark()
-interval_size_runtime_benchmark()
+#interval_size_runtime_benchmark()

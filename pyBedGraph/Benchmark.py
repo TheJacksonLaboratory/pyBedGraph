@@ -131,7 +131,7 @@ class Benchmark:
                 actual_stat_name = stat_name[9:]  # get rid of the pyBigWig tag
                 care_about_high_error = False
 
-            percent_error, ms_error, abs_error, num_actual_0 =\
+            percent_error, ms_error, abs_error, not_included =\
                 self.get_error(predictions[stat_name], actual[actual_stat_name],
                                care_about_high_error)
 
@@ -140,7 +140,7 @@ class Benchmark:
             r['percent_error'] = percent_error
             r['ms_error'] = ms_error
             r['abs_error'] = abs_error
-            r['num_actual_0'] = num_actual_0
+            r['not_included'] = not_included
 
         return results
 
@@ -234,22 +234,24 @@ class Benchmark:
         percent_error_values = []
         mse_error_values = []
         abs_error_values = []
-        num_actual_0 = 0
+        not_included = 0
         for i in range(len(predicted_values)):
             actual = actual_values[i]
             predicted = predicted_values[i]
 
-            if actual is None and (predicted is None or predicted == -1):
+            if actual is None or actual == -1:
                 actual = 0
+
+            if predicted is None or predicted == -1 or predicted <= ERROR:
                 predicted = 0
 
             abs_error_values.append(abs(actual - predicted))
             mse_error_values.append((actual - predicted) * (actual - predicted))
 
-            if actual == 0 and (predicted > ERROR or predicted is None or predicted == -1):
-                num_actual_0 += 1
+            if actual == 0 and predicted > ERROR:
+                not_included += 1
                 continue
-            elif predicted <= ERROR:
+            elif actual == 0 and predicted <= ERROR:
                 percent_error_values.append(0)
             else:
                 percent_error = abs(actual - predicted) / actual
@@ -260,4 +262,4 @@ class Benchmark:
                 percent_error_values.append(percent_error)
 
         return np.mean(percent_error_values), np.mean(mse_error_values),\
-            np.mean(abs_error_values), num_actual_0
+            np.mean(abs_error_values), not_included

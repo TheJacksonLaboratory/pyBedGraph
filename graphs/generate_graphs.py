@@ -29,22 +29,6 @@ TITLE_FONT_SIZE = 16
 AXIS_FONT_SIZE = 12
 LEGEND_FONT_SIZE = 10
 
-RUN_TIME_NAMES = [
-    'pyBW exact',
-    'pyBW app.',
-    'pyBG exact'
-]
-
-INTERVAL_ERROR_NAMES = [
-    'pyBW app.'
-]
-
-INTERVAL_RUNTIME_NAMES = [
-    'pyBW exact',
-    'pyBW app.',
-    'pyBG exact'
-]
-
 GRAPH_ROOT_LOCATION = 'graphs'
 NUM_ERROR_TYPES = 4
 
@@ -104,7 +88,7 @@ def create_interval_error(in_file, data_name):
             for x in range(len(intervals)):
                 error = errors[name][error_name][x]
 
-                if error_name == 'num_actual_0':
+                if error_name == 'not_included':
                     error = int(error)
 
                 if error_name == 'percent_error':

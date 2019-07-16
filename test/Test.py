@@ -15,12 +15,12 @@ if len(sys.argv) < 5:
 
 MAX_NUM_TESTS = 1000000
 test_intervals = []
-average_interval_size = 500
+average_interval_size = 5000
 num_tests = 10000
 chrom_name = 'chr1'
 bin_size = int(math.sqrt(average_interval_size))
-bin_size = 100
-stats = ['mean', 'approx_mean', 'min', 'max', 'std', 'coverage']
+bin_size = 1000
+stats = ['mean', 'approx_mean']
 stats = None
 
 bedGraph = BedGraph(sys.argv[1], sys.argv[2], chrom_name)

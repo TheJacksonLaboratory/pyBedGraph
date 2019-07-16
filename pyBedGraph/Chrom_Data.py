@@ -159,8 +159,7 @@ class Chrom_Data:
         self.loaded_bins = True
 
         # test if bins were made correctly
-        '''for i in range(self.bin_list_numb):
-            bin_size /= 2
+        '''bin_size = self.min_bin_size
 
         for bin_list_index in range(self.bin_list_numb):
             bin_list = self.bins_list[bin_list_index]
@@ -168,8 +167,10 @@ class Chrom_Data:
             for bin_index in range(len(bin_list)):
                 start = bin_index * bin_size
                 end = start + bin_size
-                test_avg = get_bin_mean(self.value_list, start, end)
-                if abs(bin_list[bin_index] - test_avg) > 0.000001:
+                test_avg = get_bin_value(self.value_map, self.index_list,
+                                          self.intervals[0], self.intervals[1],
+                                          start, end)
+                if (bin_list[bin_index] == -1 and test_avg != -1) or abs(bin_list[bin_index] - test_avg) > 0.0000001:
                     print(bin_index, bin_list[bin_index], test_avg)
                     exit(-1)
             bin_size *= 2'''
