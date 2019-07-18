@@ -66,7 +66,7 @@ test_intervals = [
     ['chr1', 9, 10],
     ['chr1', 0, 5]
 ]
-values = bedGraph.stats(intervals=intervals)
+values = bedGraph.stats(intervals=test_intervals)
 
 # Option 2
 start_list = np.array([24, 12, 8, 9, 0], dtype=np.int32)
@@ -80,7 +80,10 @@ chrom_name = 'chr1'
 # arg5 - chrom_name
 # must have either intervals or start_list, end_list, chrom_name
 # returns a numpy array of values
-bedGraph.stats(start_list=start_list, end_list=end_list, chrom_name=chrom_name)
+result = bedGraph.stats(start_list=start_list, end_list=end_list, chrom_name=chrom_name)
+
+# [-1.    0.9   0.1  -1.    0.82]
+print(result)
 ```
 
 ### Search from a file:
@@ -90,7 +93,9 @@ bedGraph.stats(start_list=start_list, end_list=end_list, chrom_name=chrom_name)
 # arg3 - (optional) stat (default is 'mean')
 # returns a dictionary; keys are chromosome names, values are numpy arrays
 result = bedGraph.stats_from_file('test_intervals.txt', output_to_file=False, stat='mean')
+
 # {'chr1': array([-1.  ,  0.9 ,  0.1 , -1.  ,  0.82])}
+print(result)
 ```
 
 ### Sample Tests (from included test files):
