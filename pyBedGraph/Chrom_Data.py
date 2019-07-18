@@ -25,6 +25,9 @@ class Chrom_Data:
         # starting length is the size of chromosome
         # later shorten to save memory
         self.value_map = np.zeros(size, dtype=np.float64)
+
+        # TODO:
+        # make intervals unsigned shorts to use 75% memory when loading file
         self.intervals = [
             np.zeros(size, dtype=np.uint32),
             np.zeros(size, dtype=np.uint32)

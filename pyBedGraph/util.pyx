@@ -9,6 +9,9 @@ def fill_value_array(unsigned int[:] start_list, unsigned int[:] end_list,
         end = end_list[i]
         value_list[start:end] = value_map[i]
 
+# TODO
+# fill missing values with the -1 * index to the next interval
+# will speed up more based on how sparse the bedGraph file is
 def fill_index_array(unsigned int[:] start_list, unsigned int[:] end_list,
                     double[:] value_map, int[:] index_list):
     assert tuple(start_list.shape) == tuple(end_list.shape)

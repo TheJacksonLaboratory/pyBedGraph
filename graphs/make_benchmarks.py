@@ -42,7 +42,7 @@ bin_size_test_list = [5, 10, 20]
 
 def interval_size_error_benchmark():
     interval_error_results = {}
-    for name in INTERVAL_ERROR_NAMES:
+    '''for name in INTERVAL_ERROR_NAMES:
         interval_error_results[name] = []
 
     stats_to_bench = ['mean']
@@ -51,7 +51,7 @@ def interval_size_error_benchmark():
                                  None, stats_to_bench)
         interval_error_results['pyBW app.'].append(result['pyBigWig_mean']['error'])
 
-        print(f"Total time taken so far (min): {(time.time() - total_start_time) / 60}")
+        print(f"Total time taken so far (min): {(time.time() - total_start_time) / 60}")'''
 
     stats_to_bench = ['approx_mean']
     for bin_size_divide in bin_size_test_list:
@@ -182,5 +182,5 @@ if not os.path.isdir(f'graphs/{data_name}'):
     os.mkdir(f'graphs/{data_name}')
 
 runtime_benchmark()
-interval_size_error_benchmark()
-#interval_size_runtime_benchmark()
+#interval_size_error_benchmark()
+interval_size_runtime_benchmark()

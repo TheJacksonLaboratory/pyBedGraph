@@ -1,7 +1,7 @@
 import numpy as np
-cimport cython
 from libc.float cimport DBL_MAX
 from libc.math cimport ceil, sqrt
+from cython.parallel import prange
 
 #@cython.boundscheck(False)  # Deactivate bounds checking
 #@cython.wraparound(False)   # Deactivate negative indexing.
@@ -9,7 +9,7 @@ from libc.math cimport ceil, sqrt
 def load_smallest_bins(double[:] value_map, int[:] index_list, unsigned int size,
                        unsigned int[:] interval_start, unsigned int[:] interval_end,
                        unsigned int bin_size):
-    cdef size_t bin_index
+    cdef Py_ssize_t bin_index
 
     cdef unsigned int numb_bins = <int>ceil(size / bin_size)
 
@@ -35,8 +35,8 @@ def load_smallest_bins(double[:] value_map, int[:] index_list, unsigned int size
 
 def load_bins(double[:] prev_bin_level_mean):
 
-    cdef size_t prev_bin_level_size = prev_bin_level_mean.size
-    cdef size_t bin_index
+    cdef Py_ssize_t prev_bin_level_size = prev_bin_level_mean.size
+    cdef Py_ssize_t bin_index
 
     # just take the average of two bins from prev level
     cdef char bin_size = 2
@@ -55,7 +55,7 @@ def load_bins(double[:] prev_bin_level_mean):
         # just add them up
         value = prev_bin_level_mean[prev_bin_index]
         if prev_bin_index + 1 < prev_bin_level_size:
-            value += prev_bin_level_mean[prev_bin_index + 1]
+            value = value + prev_bin_level_mean[prev_bin_index + 1]
 
         if value > 0:
             bins_view[bin_index] = value
@@ -68,11 +68,11 @@ cdef get_total(double[:] value_map, int[:] index_list,
 
     cdef double total = 0, value
     cdef unsigned int value_index, temp_end, interval_size
-    cdef size_t i, numb_intervals = interval_start.size
+    cdef Py_ssize_t i, numb_intervals = interval_start.size
 
     # get to an interval
     while start < end and index_list[start] == -1:
-        start += 1
+        start = start + 1
 
     if start == end:
         return total
@@ -84,9 +84,9 @@ cdef get_total(double[:] value_map, int[:] index_list,
             temp_end = end
         interval_size = temp_end - start
 
-        total += value_map[value_index] * interval_size
+        total = total + value_map[value_index] * interval_size
 
-        value_index += 1
+        value_index = value_index + 1
         if value_index == numb_intervals:
             break
         start = interval_start[value_index]
@@ -101,15 +101,15 @@ cpdef get_exact_means(double[:] value_map, int[:] index_list,
 
     assert tuple(start_list.shape) == tuple(end_list.shape)
 
-    cdef size_t i, start, end, bin_end, bin_index
-    cdef size_t num_tests = start_list.size, numb_intervals = interval_start.size
+    cdef Py_ssize_t i, start, end, bin_end, bin_index
+    cdef Py_ssize_t num_tests = start_list.size, numb_intervals = interval_start.size
     cdef double total, value
     cdef unsigned int numb_value, interval_size, temp_end, value_index, curr_start
 
     result = np.zeros(num_tests, dtype=np.float64)
     cdef double[:] result_view = result
 
-    for i in range(num_tests):
+    for i in prange(num_tests, nogil=True):
         total = 0
         start = start_list[i]
         end = end_list[i]
@@ -117,7 +117,7 @@ cpdef get_exact_means(double[:] value_map, int[:] index_list,
 
         # get to an interval
         while index_list[curr_start] == -1 and curr_start < end:
-            curr_start += 1
+            curr_start = curr_start + 1
 
         if curr_start == end:
             continue
@@ -129,9 +129,9 @@ cpdef get_exact_means(double[:] value_map, int[:] index_list,
                 temp_end = end
             interval_size = temp_end - curr_start
 
-            total += value_map[value_index] * interval_size
+            total = total + value_map[value_index] * interval_size
 
-            value_index += 1
+            value_index = value_index + 1
             if value_index == numb_intervals:
                 break
             curr_start = interval_start[value_index]
@@ -146,14 +146,14 @@ def get_approx_means(double[:] bin_list, int max_bin_size, int[:] start_list,
 
     assert tuple(start_list.shape) == tuple(end_list.shape)
 
-    cdef size_t i, start, end, bin_end, bin_index
-    cdef size_t num_tests = start_list.size
+    cdef Py_ssize_t i, start, end, bin_end, bin_index
+    cdef Py_ssize_t num_tests = start_list.size
     cdef double total, numb_value, fraction, value
 
     result = np.zeros(num_tests, dtype=np.float64)
     cdef double[:] result_view = result
 
-    for i in range(num_tests):
+    for i in prange(num_tests, nogil=True):
         start = start_list[i]
         end = end_list[i]
 
@@ -164,7 +164,7 @@ def get_approx_means(double[:] bin_list, int max_bin_size, int[:] start_list,
         if bin_index == bin_end:
             if bin_list[bin_index] == 0:
                 continue
-            result_view[i] = bin_list[bin_index] / (end - start)
+            result_view[i] = <double>bin_list[bin_index] / (end - start)
             continue
 
         total = 0
@@ -173,26 +173,26 @@ def get_approx_means(double[:] bin_list, int max_bin_size, int[:] start_list,
         # first bin
         value = bin_list[bin_index]
         if value > 0:
-            fraction = (max_bin_size - start % max_bin_size) / max_bin_size
-            total += bin_list[bin_index] * fraction
-            numb_value += max_bin_size * fraction
-        bin_index += 1
+            fraction = <double>(max_bin_size - start % max_bin_size) / max_bin_size
+            total = total + bin_list[bin_index] * fraction
+            numb_value = numb_value + max_bin_size * fraction
+        bin_index = bin_index + 1
 
         # middle bins
         while bin_index < bin_end:
             value = bin_list[bin_index]
             if value > 0:
-                total += bin_list[bin_index]
-                numb_value += max_bin_size
+                total = total + bin_list[bin_index]
+                numb_value = numb_value + max_bin_size
 
-            bin_index += 1
+            bin_index = bin_index + 1
 
         # last bin
         value = bin_list[bin_index]
         if value > 0:
-            fraction = (end % max_bin_size) / max_bin_size
-            total += bin_list[bin_index] * fraction
-            numb_value += max_bin_size * fraction
+            fraction = <double>(end % max_bin_size) / max_bin_size
+            total = total + bin_list[bin_index] * fraction
+            numb_value = numb_value + max_bin_size * fraction
 
         if numb_value == 0:
             continue
@@ -207,14 +207,14 @@ def get_minimums(double[:] value_map, int[:] index_list,
 
     assert tuple(start_list.shape) == tuple(end_list.shape)
 
-    cdef size_t i, num_tests = start_list.size, start, end, value_index
-    cdef size_t numb_intervals = interval_start.size
+    cdef Py_ssize_t i, num_tests = start_list.size, start, end, value_index
+    cdef Py_ssize_t numb_intervals = interval_start.size
     cdef double minimum
 
     result = np.zeros(num_tests, dtype=np.float64)
     cdef double[:] result_view = result
 
-    for i in range(num_tests):
+    for i in prange(num_tests, nogil=True):
         minimum = DBL_MAX
         start = start_list[i]
         end = end_list[i]
@@ -222,7 +222,7 @@ def get_minimums(double[:] value_map, int[:] index_list,
         # get to an interval
         while index_list[start] == -1 and start < end:
             minimum = 0
-            start += 1
+            start = start + 1
 
         if start == end:
             continue
@@ -232,7 +232,7 @@ def get_minimums(double[:] value_map, int[:] index_list,
             if value_map[value_index] < minimum:
                 minimum = value_map[value_index]
 
-            value_index += 1
+            value_index = value_index + 1
             if value_index == numb_intervals:
                 break
 
@@ -247,21 +247,21 @@ def get_maximums(double[:] value_map, int[:] index_list,
 
     assert tuple(start_list.shape) == tuple(end_list.shape)
 
-    cdef size_t i, num_tests = start_list.size, start, end, value_index
-    cdef size_t numb_intervals = interval_start.size
+    cdef Py_ssize_t i, num_tests = start_list.size, start, end, value_index
+    cdef Py_ssize_t numb_intervals = interval_start.size
     cdef double maximum, value
 
     result = np.zeros(num_tests, dtype=np.float64)
     cdef double[:] result_view = result
 
-    for i in range(num_tests):
+    for i in prange(num_tests, nogil=True):
         maximum = 0
         start = start_list[i]
         end = end_list[i]
 
         # get to an interval
         while index_list[start] == -1 and start < end:
-            start += 1
+            start = start + 1
 
         if start == end:
             continue
@@ -272,7 +272,7 @@ def get_maximums(double[:] value_map, int[:] index_list,
             if value > maximum:
                 maximum = value
 
-            value_index += 1
+            value_index = value_index + 1
             if value_index == numb_intervals:
                 break
 
@@ -286,14 +286,14 @@ def get_coverages(double[:] value_map, int[:] index_list, unsigned int[:] interv
 
     assert tuple(start_list.shape) == tuple(end_list.shape)
 
-    cdef size_t i, num_tests = start_list.size, start, end, current_start
+    cdef Py_ssize_t i, num_tests = start_list.size, start, end, current_start
     cdef unsigned int numb_covered, temp_end, value_index
-    cdef size_t numb_intervals = interval_start.size
+    cdef Py_ssize_t numb_intervals = interval_start.size
 
     result = np.zeros(num_tests, dtype=np.float64)
     cdef double[:] result_view = result
 
-    for i in range(num_tests):
+    for i in prange(num_tests, nogil=True):
         numb_covered = 0
         start = start_list[i]
         end = end_list[i]
@@ -301,7 +301,7 @@ def get_coverages(double[:] value_map, int[:] index_list, unsigned int[:] interv
 
         # get to an interval
         while index_list[current_start] == -1 and current_start < end:
-            current_start += 1
+            current_start = current_start + 1
 
         if current_start == end:
             continue
@@ -313,15 +313,15 @@ def get_coverages(double[:] value_map, int[:] index_list, unsigned int[:] interv
                 temp_end = end
 
             if value_map[value_index] > 0:
-                numb_covered += (temp_end - current_start)
+                numb_covered = numb_covered + (temp_end - current_start)
 
-            value_index += 1
+            value_index = value_index + 1
             if value_index == numb_intervals:
                 break
             current_start = interval_start[value_index]
 
         if numb_covered > 0:
-            result_view[i] = numb_covered / (end - start)
+            result_view[i] = <double>numb_covered / (end - start)
 
     return result
 
@@ -331,18 +331,18 @@ def get_stds(double[:] value_map, int[:] index_list,
 
     assert tuple(start_list.shape) == tuple(end_list.shape)
 
-    cdef size_t i, num_tests = start_list.size, start, end, j
+    cdef Py_ssize_t i, num_tests = start_list.size, start, end, j
 
     result = np.zeros(num_tests, dtype=np.float64)
     cdef double[:] result_view = result
-    cdef double std, difference, value
+    cdef double std, difference, value, mean
     cdef unsigned int numb_value, interval_size, value_index, temp_end, curr_start
-    cdef size_t numb_intervals = interval_start.size
+    cdef Py_ssize_t numb_intervals = interval_start.size
 
     cdef double[:] means = get_exact_means(value_map, index_list, interval_start,
                             interval_end, start_list, end_list)
 
-    for i in range(num_tests):
+    for i in prange(num_tests, nogil=True):
         mean = means[i]
         if mean == 0:
             continue
@@ -353,7 +353,7 @@ def get_stds(double[:] value_map, int[:] index_list,
 
         # get to an interval
         while index_list[curr_start] == -1 and curr_start < end:
-            curr_start += 1
+            curr_start = curr_start + 1
 
         if curr_start == end:
             continue
@@ -369,23 +369,23 @@ def get_stds(double[:] value_map, int[:] index_list,
 
             interval_size = temp_end - curr_start
             difference = value_map[value_index] - mean
-            std += difference * difference * interval_size
-            numb_value += interval_size
+            std = std + difference * difference * interval_size
+            numb_value = numb_value + interval_size
 
-            value_index += 1
+            value_index = value_index + 1
             if value_index == numb_intervals:
                 break
             curr_start = interval_start[value_index]
 
         if numb_value == 0:
-            print("why?")
             continue
 
         # get base pairs that are not in bedGraph intervals
         difference = mean
-        std += difference * difference * (end - start - numb_value)
+        std = std + difference * difference * (end - start - numb_value)
 
-        std /= (end - start)
+        std = std / (end - start)
+        # std = std / (end - start - 1)
         result_view[i] = sqrt(std)
 
     return result

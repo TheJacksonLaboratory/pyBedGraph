@@ -15,12 +15,13 @@ if len(sys.argv) < 5:
 
 MAX_NUM_TESTS = 1000000
 test_intervals = []
-average_interval_size = 5000
+average_interval_size = 500
 num_tests = 10000
 chrom_name = 'chr1'
 bin_size = int(math.sqrt(average_interval_size))
-bin_size = 1000
-stats = ['mean', 'approx_mean', 'coverage']
+bin_size = 100
+stats = ['min', 'max', 'mean', 'approx_mean', 'std']
+stats = None
 
 bedGraph = BedGraph(sys.argv[1], sys.argv[2], chrom_name)
 bedGraph.load_chrom_data(chrom_name)
@@ -29,15 +30,14 @@ bedGraph.load_chrom_bins(chrom_name, bin_size)
 #                             ignore_missing_bp=False)
 #complete_bedGraph.load_chrom_data(chrom_name)
 #complete_bedGraph.load_chrom_bins(chrom_name, bin_size)
+#bench = Benchmark(complete_bedGraph, sys.argv[3])
 bench = Benchmark(bedGraph, sys.argv[3])
 result = bench.benchmark(num_tests, average_interval_size, chrom_name, bin_size, stats)
-print(result)
+#print(result)
 for key in result:
     print(key, result[key])
 
 exit()
-
-
 
 with open(sys.argv[4]) as interval_file:
     count = 0

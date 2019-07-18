@@ -208,22 +208,6 @@ class Benchmark:
         print(f"Time for {stat}: {time_taken} seconds for {self.num_tests} trials\n")
         return time_taken, values
 
-    def benchmark_self(self, stat):
-
-        print(f"Finding pyBedGraph benchmark for {stat}...")
-
-        method = self.bedGraph.get_method(self.chromosome.name, stat)
-        values = []
-
-        start_time = time.time()
-        for i in range(self.num_tests):
-            value = method(self.test_cases[0][i], self.test_cases[1][i])
-            values.append(value)
-        time_taken = time.time() - start_time
-
-        print(f"Time for {stat}: {time_taken} seconds for {self.num_tests} trials\n")
-        return time_taken, values
-
     def get_error(self, predicted_values, actual_values, care_about_high_error):
 
         if len(predicted_values) != len(actual_values):
