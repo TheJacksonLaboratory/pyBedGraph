@@ -26,7 +26,7 @@ from pyBedGraph import BedGraph
 bedGraph = BedGraph('myChrom.sizes', 'random_test.bedGraph', 'chr1')
 
 # Load the whole bedGraph file
-bedGraph = BedGraph('myChrom.sizes', 'random_test.bedGraph', 'chr1')
+bedGraph = BedGraph('myChrom.sizes', 'random_test.bedGraph')
 
 # Option to not ignore missing basePairs when calculating statistics
 # Used the exact same way but produces slightly different results
@@ -159,7 +159,7 @@ bench = Benchmark(bedGraph, 'ENCFF376VCU.bigWig')
 # arg6 - just_runtime (optional) (Default is False)
 # arg6 - bench_pyBigWig_approx (optional) (Default is True)
 # arg6 - make_pyBigWig_baseline (optional) (Default is True)
-result = bench.benchmark(10000, 500, 'chr1', 100, stats='mean')
+result = bench.benchmark(10000, 500, 'chr1', 100, stats=['mean'])
 
 # formatted
 # mean {'run_time': 0.003580808639526367, 'error': {'percent_error': 1.1133849453411403e-08, 'ms_error': 1.1558877957200436e-15, 'abs_error': 5.565259658128112e-09, 'num_actual_0': 0}}
