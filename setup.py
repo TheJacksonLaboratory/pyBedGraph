@@ -11,7 +11,7 @@ extensions = [
 cmdclass = {}
 
 NAME = 'pyBedGraph'
-VERSION = '0.4.1'
+VERSION = '0.5.1'
 
 setuptools.setup(
 
@@ -23,13 +23,13 @@ setuptools.setup(
 
     author_email="henrybzhang.99@gmail.com",
 
-    description="An alternative to pyBigWig for bedgraph files",
+    description="A package for fast operations on 1-dimensional genomic signal tracks",
 
     long_description=open('README.md').read(),
 
     long_description_content_type="text/markdown",
 
-    url="https://github.com/c0ver/pyBedGraph",
+    url="https://github.com/TheJacksonLaboratory/pyBedGraph",
 
     packages=setuptools.find_packages(),
 

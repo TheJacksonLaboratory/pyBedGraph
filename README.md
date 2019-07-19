@@ -1,8 +1,9 @@
 # pyBedGraph
-pyBedGraph is an alternative to pyBigWig for bedGraph files.
+A Python package for fast operations on 1-dimensional genomic signal tracks.
 
 # Features:
 - Finds the mean, approx. mean, max, min, coverage, or standard deviation for a given interval in a bedGraph file
+- Uses OpenMP for multithreading for around 2.3x speedup for 4 threads
 
 # Improvements over pyBigWig:
 - Much faster (>200x) for most exact statistics
@@ -14,7 +15,21 @@ pyBedGraph is an alternative to pyBigWig for bedGraph files.
     - 4 bytes per basePair in every chromosome loaded
 - Loading the bedGraph file takes a few minutes if it is large
 
+# Installation:
+
+Requirements:
+- Numpy 1.16.4
+- pyBigWig 0.3.16
+- Cython 0.29.12
+
+
+With pip:
+```bash
+pip3 install pyBedGraph
+```
+
 # Usage:
+
 ### Create the object:
 ```python
 from pyBedGraph import BedGraph
@@ -147,6 +162,9 @@ Alternatively, one can make actual values be from pyBedGraph.
 from pyBedGraph import Benchmark
 
 bedGraph = BedGraph('mm10.chrom.sizes', ENCFF376VCU.bedgraph', 'chr1')
+bedGraph.load_chrom_data('chr1')
+bedGraph.load_chrom_bins('chr1', 100)
+
 # arg1 - BedGraph object
 # arg2 - bigwig file
 bench = Benchmark(bedGraph, 'ENCFF376VCU.bigWig')
@@ -161,23 +179,22 @@ bench = Benchmark(bedGraph, 'ENCFF376VCU.bigWig')
 # arg6 - make_pyBigWig_baseline (optional) (Default is True)
 result = bench.benchmark(10000, 500, 'chr1', 100, stats='mean')
 
+for key in result:
+    print(key, result[key])
 # formatted
-# mean {'run_time': 0.003580808639526367, 'error': {'percent_error': 1.1133849453411403e-08, 'ms_error': 1.1558877957200436e-15, 'abs_error': 5.565259658128112e-09, 'num_actual_0': 0}}
-# pyBigWig_mean {'approx_run_time': 0.6421082019805908, 'exact_run_time': 0.6379795074462891, 'error': {'percent_error': 0.0, 'ms_error': 0.0, 'abs_error': 0.0, 'num_actual_0': 0}}
-# approx_mean {'run_time': 0.0011749267578125, 'error': {'percent_error': 0.13400600725529524, 'ms_error': 0.00964614706312478, 'abs_error': 0.068980199063462, 'num_actual_0': 0}}
+# mean {'run_time': 0.0030603408813476562, 'error': {'percent_error': 1.1133849453411403e-08, 'ms_error': 1.1558877957200436e-15, 'abs_error': 5.565259658128112e-09, 'not_included': 0}}
+# pyBigWig_mean {'approx_run_time': 1.2074346542358398, 'exact_run_time': 0.6487197875976562, 'error': {'percent_error': 0.0, 'ms_error': 0.0, 'abs_error': 0.0, 'not_included': 0}}
+# approx_mean {'run_time': 0.0009570121765136719, 'error': {'percent_error': 0.05871362950772767, 'ms_error': 0.0007750126193535608, 'abs_error': 0.017845196959357015, 'not_included': 107}}
 
-# max {'run_time': 0.0027365684509277344, 'error': {'percent_error': 2.1245231544977356e-08, 'ms_error': 9.128975974031677e-13, 'abs_error': 6.218157096711807e-08, 'num_actual_0': 0}}
-# pyBigWig_max {'approx_run_time': 0.6533908843994141, 'exact_run_time': 0.6436026096343994, 'error': {'percent_error': 0.0, 'ms_error': 0.0, 'abs_error': 0.0, 'num_actual_0': 0}}
+# max {'run_time': 0.002663135528564453, 'error': {'percent_error': 2.1245231544977356e-08, 'ms_error': 9.128975974031677e-13, 'abs_error': 6.218157096711807e-08, 'not_included': 0}}
+# pyBigWig_max {'approx_run_time': 0.6745939254760742, 'exact_run_time': 0.6476855278015137, 'error': {'percent_error': 0.0, 'ms_error': 0.0, 'abs_error': 0.0, 'not_included': 0}}
 
-# min {'run_time': 0.002889871597290039, 'error': {'percent_error': 2.3296755440892273e-10, 'ms_error': 9.931400247350677e-19, 'abs_error': 7.883071898306948e-11, 'num_actual_0': 0}}
-# pyBigWig_min {'approx_run_time': 0.6556143760681152, 'exact_run_time': 0.6390907764434814, 'error': {'percent_error': 0.0, 'ms_error': 0.0, 'abs_error': 0.0, 'num_actual_0': 0}}
+# min {'run_time': 0.002806425094604492, 'error': {'percent_error': 2.3296755440892273e-10, 'ms_error': 9.931400247350677e-19, 'abs_error': 7.883071898306948e-11, 'not_included': 0}}
+# pyBigWig_min {'approx_run_time': 0.6016414165496826, 'exact_run_time': 0.5900013446807861, 'error': {'percent_error': 0.0, 'ms_error': 0.0, 'abs_error': 0.0, 'not_included': 0}}
 
-# coverage {'run_time': 0.002706289291381836, 'error': {'percent_error': 0.0, 'ms_error': 0.0, 'abs_error': 0.0, 'num_actual_0': 0}}
-# pyBigWig_coverage {'approx_run_time': 0.6487991809844971, 'exact_run_time': 0.6407179832458496, 'error': {'percent_error': 0.0, 'ms_error': 0.0, 'abs_error': 0.0, 'num_actual_0': 0}}
+# coverage {'run_time': 0.0025963783264160156, 'error': {'percent_error': 0.0, 'ms_error': 0.0, 'abs_error': 0.0, 'not_included': 0}}
+# pyBigWig_coverage {'approx_run_time': 0.5905411243438721, 'exact_run_time': 0.6004214286804199, 'error': {'percent_error': 0.0, 'ms_error': 0.0, 'abs_error': 0.0, 'not_included': 0}}
 
-# std {'run_time': 0.008781194686889648, 'error': {'percent_error': 0.0008802452423860437, 'ms_error': 3.5123006260771487e-07, 'abs_error': 0.0004987475752671237, 'num_actual_0': 0}}
-# pyBigWig_std {'approx_run_time': 0.6418542861938477, 'exact_run_time': 0.6490097045898438, 'error': {'percent_error': 0.0, 'ms_error': 0.0, 'abs_error': 0.0, 'num_actual_0': 0}}
-
-# Unformatted
-# {'mean': {'run_time': 0.003580808639526367, 'error': {'percent_error': 1.1133849453411403e-08, 'ms_error': 1.1558877957200436e-15, 'abs_error': 5.565259658128112e-09, 'num_actual_0': 0}}, 'pyBigWig_mean': {'approx_run_time': 0.6421082019805908, 'exact_run_time': 0.6379795074462891, 'error': {'percent_error': 0.0, 'ms_error': 0.0, 'abs_error': 0.0, 'num_actual_0': 0}}, 'approx_mean': {'run_time': 0.0011749267578125, 'error': {'percent_error': 0.13400600725529524, 'ms_error': 0.00964614706312478, 'abs_error': 0.068980199063462, 'num_actual_0': 0}}, 'max': {'run_time': 0.0027365684509277344, 'error': {'percent_error': 2.1245231544977356e-08, 'ms_error': 9.128975974031677e-13, 'abs_error': 6.218157096711807e-08, 'num_actual_0': 0}}, 'pyBigWig_max': {'approx_run_time': 0.6533908843994141, 'exact_run_time': 0.6436026096343994, 'error': {'percent_error': 0.0, 'ms_error': 0.0, 'abs_error': 0.0, 'num_actual_0': 0}}, 'min': {'run_time': 0.002889871597290039, 'error': {'percent_error': 2.3296755440892273e-10, 'ms_error': 9.931400247350677e-19, 'abs_error': 7.883071898306948e-11, 'num_actual_0': 0}}, 'pyBigWig_min': {'approx_run_time': 0.6556143760681152, 'exact_run_time': 0.6390907764434814, 'error': {'percent_error': 0.0, 'ms_error': 0.0, 'abs_error': 0.0, 'num_actual_0': 0}}, 'coverage': {'run_time': 0.002706289291381836, 'error': {'percent_error': 0.0, 'ms_error': 0.0, 'abs_error': 0.0, 'num_actual_0': 0}}, 'pyBigWig_coverage': {'approx_run_time': 0.6487991809844971, 'exact_run_time': 0.6407179832458496, 'error': {'percent_error': 0.0, 'ms_error': 0.0, 'abs_error': 0.0, 'num_actual_0': 0}}, 'std': {'run_time': 0.008781194686889648, 'error': {'percent_error': 0.0008802452423860437, 'ms_error': 3.5123006260771487e-07, 'abs_error': 0.0004987475752671237, 'num_actual_0': 0}}, 'pyBigWig_std': {'approx_run_time': 0.6418542861938477, 'exact_run_time': 0.6490097045898438, 'error': {'percent_error': 0.0, 'ms_error': 0.0, 'abs_error': 0.0, 'num_actual_0': 0}}}
+# std {'run_time': 0.006185770034790039, 'error': {'percent_error': 0.0008802452423860437, 'ms_error': 3.5123006260771487e-07, 'abs_error': 0.0004987475752671237, 'not_included': 0}}
+# pyBigWig_std {'approx_run_time': 0.6033289432525635, 'exact_run_time': 0.587740421295166, 'error': {'percent_error': 0.0, 'ms_error': 0.0, 'abs_error': 0.0, 'not_included': 0}}
 ```
