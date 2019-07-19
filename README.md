@@ -30,8 +30,6 @@ pip3 install pyBedGraph
 ### Download the test files:
 https://thejacksonlaboratory.ent.box.com/s/3jglutwf3d54pnomnp33ivo7a9546vhe
 
-Test files in examples given below will be in `test/test_files`.
-
 ### Create the object:
 ```python
 from pyBedGraph import BedGraph
@@ -186,17 +184,20 @@ for key in result:
 # formatted
 # mean {'run_time': 0.002971172332763672, 'error': {'percent_error': 1.1133849453411403e-08, 'ms_error': 1.1558877957200436e-15, 'abs_error': 5.565259658128112e-09, 'not_included': 0}}
 # pyBigWig_mean {'approx_run_time': 0.570319652557373, 'exact_run_time': 0.5670754909515381, 'error': {'percent_error': 0.0, 'ms_error': 0.0, 'abs_error': 0.0, 'not_included': 0}}
-# approx_mean {'run_time': 0.0007066726684570312, 'error': {'percent_error': 0.05871362950772767, 'ms_error': 0.0007750126193535608, 'abs_error': 0.017845196959357015, 'not_included': 107}}
 
-# max {'run_time': 0.0025815963745117188, 'error': {'percent_error': 2.1245231544977356e-08, 'ms_error': 9.128975974031677e-13, 'abs_error': 6.218157096711807e-08, 'not_included': 0}}
-# pyBigWig_max {'approx_run_time': 0.5677430629730225, 'exact_run_time': 0.567854642868042, 'error': {'percent_error': 0.0, 'ms_error': 0.0, 'abs_error': 0.0, 'not_included': 0}}
 
-# min {'run_time': 0.0025594234466552734, 'error': {'percent_error': 2.3296755440892273e-10, 'ms_error': 9.931400247350677e-19, 'abs_error': 7.883071898306948e-11, 'not_included': 0}}
-# pyBigWig_min {'approx_run_time': 0.5688655376434326, 'exact_run_time': 0.567101001739502, 'error': {'percent_error': 0.0, 'ms_error': 0.0, 'abs_error': 0.0, 'not_included': 0}}
+# Test all statistics
+result = bench.benchmark(10000, 500, 'chr1', 100)
 
-# coverage {'run_time': 0.0025963783264160156, 'error': {'percent_error': 0.0, 'ms_error': 0.0, 'abs_error': 0.0, 'not_included': 0}}
-# pyBigWig_coverage {'approx_run_time': 0.5685813426971436, 'exact_run_time': 0.5664701461791992, 'error': {'percent_error': 0.0, 'ms_error': 0.0, 'abs_error': 0.0, 'not_included': 0}}
-
-# std {'run_time': 0.008012056350708008, 'error': {'percent_error': 0.0008802452423860437, 'ms_error': 3.5123006260771487e-07, 'abs_error': 0.0004987475752671237, 'not_included': 0}}
-# pyBigWig_std {'approx_run_time': 0.5693457126617432, 'exact_run_time': 0.5679435729980469, 'error': {'percent_error': 0.0, 'ms_error': 0.0, 'abs_error': 0.0, 'not_included': 0}}
+# mean {'run_time': 0.0033969879150390625, 'error': {'percent_error': 1.1133849453411403e-08, 'ms_error': 1.1558877957200436e-15, 'abs_error': 5.565259658128112e-09, 'not_included': 0}}
+# pyBigWig_mean {'approx_run_time': 1.4938299655914307, 'exact_run_time': 1.4855470657348633, 'error': {'percent_error': 0.0, 'ms_error': 0.0, 'abs_error': 0.0, 'not_included': 0}}
+# approx_mean {'run_time': 0.0029401779174804688, 'error': {'percent_error': 0.05871362950772767, 'ms_error': 0.0007750126193535608, 'abs_error': 0.017845196959357015, 'not_included': 107}}
+# max {'run_time': 0.003038167953491211, 'error': {'percent_error': 2.1245231544977356e-08, 'ms_error': 9.128975974031677e-13, 'abs_error': 6.218157096711807e-08, 'not_included': 0}}
+# pyBigWig_max {'approx_run_time': 1.4961540699005127, 'exact_run_time': 1.5022919178009033, 'error': {'percent_error': 0.0, 'ms_error': 0.0, 'abs_error': 0.0, 'not_included': 0}}
+# min {'run_time': 0.002947092056274414, 'error': {'percent_error': 2.3296755440892273e-10, 'ms_error': 9.931400247350677e-19, 'abs_error': 7.883071898306948e-11, 'not_included': 0}}
+# pyBigWig_min {'approx_run_time': 1.4919359683990479, 'exact_run_time': 1.4932668209075928, 'error': {'percent_error': 0.0, 'ms_error': 0.0, 'abs_error': 0.0, 'not_included': 0}}
+# coverage {'run_time': 0.002975940704345703, 'error': {'percent_error': 0.0, 'ms_error': 0.0, 'abs_error': 0.0, 'not_included': 0}}
+# pyBigWig_coverage {'approx_run_time': 1.4844129085540771, 'exact_run_time': 1.5427591800689697, 'error': {'percent_error': 0.0, 'ms_error': 0.0, 'abs_error': 0.0, 'not_included': 0}}
+# std {'run_time': 0.010123968124389648, 'error': {'percent_error': 0.0008802452423860437, 'ms_error': 3.5123006260771487e-07, 'abs_error': 0.0004987475752671237, 'not_included': 0}}
+# pyBigWig_std {'approx_run_time': 1.5250320434570312, 'exact_run_time': 1.4730277061462402, 'error': {'percent_error': 0.0, 'ms_error': 0.0, 'abs_error': 0.0, 'not_included': 0}}
 ```
