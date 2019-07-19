@@ -160,7 +160,7 @@ Alternatively, one can make actual values be from pyBedGraph.
 ```python
 from pyBedGraph import Benchmark
 
-bedGraph = BedGraph('mm10.chrom.sizes', ENCFF376VCU.bedgraph', 'chr1')
+bedGraph = BedGraph('mm10.chrom.sizes', 'ENCFF376VCU.bedGraph', 'chr1')
 bedGraph.load_chrom_data('chr1')
 bedGraph.load_chrom_bins('chr1', 100)
 
