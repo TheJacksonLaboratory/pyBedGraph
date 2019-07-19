@@ -3,6 +3,7 @@ A Python package for fast operations on 1-dimensional genomic signal tracks.
 
 # Features:
 - Finds the mean, approx. mean, max, min, coverage, or standard deviation for a given interval in a bedGraph file
+- Partly written in Cython for speed improvements
 
 # Improvements over pyBigWig:
 - Much faster (>200x) for most exact statistics
