@@ -19,8 +19,6 @@ A Python package for fast operations on 1-dimensional genomic signal tracks.
 Requirements:
 - Numpy 1.16.4
 - pyBigWig 0.3.16
-- Cython 0.29.12
-
 
 With pip:
 ```bash
@@ -28,6 +26,11 @@ pip3 install pyBedGraph
 ```
 
 # Usage:
+
+### Download the test files:
+https://thejacksonlaboratory.ent.box.com/s/3jglutwf3d54pnomnp33ivo7a9546vhe
+
+Test files in examples given below will be in `test/test_files`.
 
 ### Create the object:
 ```python
@@ -158,7 +161,7 @@ Actual values are found from the `stats` function in pyBigWig with the `exact` a
 
 Alternatively, one can make actual values be from pyBedGraph. 
 ```python
-from pyBedGraph import Benchmark
+from pyBedGraph import Benchmark, BedGraph
 
 bedGraph = BedGraph('mm10.chrom.sizes', ENCFF376VCU.bedgraph', 'chr1')
 bedGraph.load_chrom_data('chr1')
