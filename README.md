@@ -182,19 +182,19 @@ result = bench.benchmark(10000, 500, 'chr1', 100, stats=['mean'])
 for key in result:
     print(key, result[key])
 # formatted
-# mean {'run_time': 0.0030603408813476562, 'error': {'percent_error': 1.1133849453411403e-08, 'ms_error': 1.1558877957200436e-15, 'abs_error': 5.565259658128112e-09, 'not_included': 0}}
-# pyBigWig_mean {'approx_run_time': 1.2074346542358398, 'exact_run_time': 0.6487197875976562, 'error': {'percent_error': 0.0, 'ms_error': 0.0, 'abs_error': 0.0, 'not_included': 0}}
-# approx_mean {'run_time': 0.0009570121765136719, 'error': {'percent_error': 0.05871362950772767, 'ms_error': 0.0007750126193535608, 'abs_error': 0.017845196959357015, 'not_included': 107}}
+# mean {'run_time': 0.0011222362518310547, 'error': {'percent_error': 1.1133849453411403e-08, 'ms_error': 1.1558877957200436e-15, 'abs_error': 5.565259658128112e-09, 'not_included': 0}}
+# pyBigWig_mean {'approx_run_time': 0.5717868804931641, 'exact_run_time': 0.5684747695922852, 'error': {'percent_error': 0.0, 'ms_error': 0.0, 'abs_error': 0.0, 'not_included': 0}}
+# approx_mean {'run_time': 0.00036835670471191406, 'error': {'percent_error': 0.05871362950772767, 'ms_error': 0.0007750126193535608, 'abs_error': 0.017845196959357015, 'not_included': 107}}
 
-# max {'run_time': 0.002663135528564453, 'error': {'percent_error': 2.1245231544977356e-08, 'ms_error': 9.128975974031677e-13, 'abs_error': 6.218157096711807e-08, 'not_included': 0}}
-# pyBigWig_max {'approx_run_time': 0.6745939254760742, 'exact_run_time': 0.6476855278015137, 'error': {'percent_error': 0.0, 'ms_error': 0.0, 'abs_error': 0.0, 'not_included': 0}}
+# max {'run_time': 0.0009229183197021484, 'error': {'percent_error': 2.1245231544977356e-08, 'ms_error': 9.128975974031677e-13, 'abs_error': 6.218157096711807e-08, 'not_included': 0}}
+# pyBigWig_max {'approx_run_time': 0.572739839553833, 'exact_run_time': 0.5694329738616943, 'error': {'percent_error': 0.0, 'ms_error': 0.0, 'abs_error': 0.0, 'not_included': 0}}
 
-# min {'run_time': 0.002806425094604492, 'error': {'percent_error': 2.3296755440892273e-10, 'ms_error': 9.931400247350677e-19, 'abs_error': 7.883071898306948e-11, 'not_included': 0}}
-# pyBigWig_min {'approx_run_time': 0.6016414165496826, 'exact_run_time': 0.5900013446807861, 'error': {'percent_error': 0.0, 'ms_error': 0.0, 'abs_error': 0.0, 'not_included': 0}}
+# min {'run_time': 0.0009326934814453125, 'error': {'percent_error': 2.3296755440892273e-10, 'ms_error': 9.931400247350677e-19, 'abs_error': 7.883071898306948e-11, 'not_included': 0}}
+# pyBigWig_min {'approx_run_time': 0.5719847679138184, 'exact_run_time': 0.5693511962890625, 'error': {'percent_error': 0.0, 'ms_error': 0.0, 'abs_error': 0.0, 'not_included': 0}}
 
-# coverage {'run_time': 0.0025963783264160156, 'error': {'percent_error': 0.0, 'ms_error': 0.0, 'abs_error': 0.0, 'not_included': 0}}
-# pyBigWig_coverage {'approx_run_time': 0.5905411243438721, 'exact_run_time': 0.6004214286804199, 'error': {'percent_error': 0.0, 'ms_error': 0.0, 'abs_error': 0.0, 'not_included': 0}}
+# coverage {'run_time': 0.0008909702301025391, 'error': {'percent_error': 0.0, 'ms_error': 0.0, 'abs_error': 0.0, 'not_included': 0}}
+# pyBigWig_coverage {'approx_run_time': 0.5727438926696777, 'exact_run_time': 0.5708115100860596, 'error': {'percent_error': 0.0, 'ms_error': 0.0, 'abs_error': 0.0, 'not_included': 0}}
 
-# std {'run_time': 0.006185770034790039, 'error': {'percent_error': 0.0008802452423860437, 'ms_error': 3.5123006260771487e-07, 'abs_error': 0.0004987475752671237, 'not_included': 0}}
-# pyBigWig_std {'approx_run_time': 0.6033289432525635, 'exact_run_time': 0.587740421295166, 'error': {'percent_error': 0.0, 'ms_error': 0.0, 'abs_error': 0.0, 'not_included': 0}}
+# std {'run_time': 0.003862619400024414, 'error': {'percent_error': 0.0008802452423860437, 'ms_error': 3.5123006260771487e-07, 'abs_error': 0.0004987475752671237, 'not_included': 0}}
+# pyBigWig_std {'approx_run_time': 0.5720584392547607, 'exact_run_time': 0.5698130130767822, 'error': {'percent_error': 0.0, 'ms_error': 0.0, 'abs_error': 0.0, 'not_included': 0}}
 ```
