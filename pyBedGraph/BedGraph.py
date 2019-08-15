@@ -6,6 +6,7 @@ from .Chrom_Data import Chrom_Data
 from .Chrom_Data_Complete import Chrom_Data_Complete
 import numpy as np
 import time
+import os
 
 CHROM_NAME_INDEX = 0
 BUFFER_COUNTER = 10000  # 10^4
@@ -15,8 +16,9 @@ BUFFER_COUNTER = 100000  # 10^4
 class BedGraph:
 
     def __init__(self, chrom_size_file_name, data_file_name, chrom_wanted=None,
-                 ignore_missing_bp=True):
+                 ignore_missing_bp=True, min_value=-1):
 
+        self.name = os.path.basename(data_file_name).split('.')[0]
         self.chromosome_map = {}
         self.chrom_sizes = {}
         self.ignore_missing_bp = ignore_missing_bp
@@ -61,11 +63,13 @@ class BedGraph:
 
                     if ignore_missing_bp:
                         current_chrom =\
-                            Chrom_Data(chrom_name, self.chrom_sizes[chrom_name])
+                            Chrom_Data(chrom_name, self.chrom_sizes[chrom_name],
+                                       min_value)
                     else:
                         current_chrom =\
                             Chrom_Data_Complete(chrom_name,
-                                                self.chrom_sizes[chrom_name])
+                                                self.chrom_sizes[chrom_name],
+                                                min_value)
 
                     self.chromosome_map[chrom_name] = current_chrom
 
@@ -74,12 +78,15 @@ class BedGraph:
             # clean up the last chromosome found in the bedGraph file
             current_chrom.trim_extra_space()
 
-            print("Average interval size: ",
-                  current_chrom.total_size / current_chrom.value_map.size)
-
             if current_chrom is None:
                 print(f"{chrom_wanted} was not found in {data_file_name}")
                 exit(-1)
+
+    def get_chrom(self, chrom_name):
+        return self.chromosome_map[chrom_name]
+
+    def has_chrom(self, chrom_name):
+        return chrom_name in self.chromosome_map
 
     def load_chrom_data(self, chrom_name):
         self.chromosome_map[chrom_name].load_index_array()
@@ -88,7 +95,7 @@ class BedGraph:
         self.chromosome_map[chrom_name].load_bins(max_bins_size)
 
     def free_chrom_data(self, chrom_name):
-        self.chromosome_map[chrom_name].free_value_array()
+        self.chromosome_map[chrom_name].free_index_list()
 
     def get_method(self, chrom_name, stat):
 
@@ -134,6 +141,13 @@ class BedGraph:
         if start_list is None or end_list is None or chrom_name is None:
             print("Must either have intervals or start_list, end_list, chrom_name")
             return None
+
+        if not type(start_list) is np.ndarray:
+            assert type(start_list) is list
+            start_list = np.asarray(start_list, dtype=np.int32)
+        if not type(end_list) is np.ndarray:
+            assert type(end_list) is list
+            end_list = np.asarray(end_list, dtype=np.int32)
 
         assert end_list.size == start_list.size
         method_to_call = self.get_method(chrom_name, stat)

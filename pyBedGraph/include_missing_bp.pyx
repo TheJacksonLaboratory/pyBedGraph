@@ -281,6 +281,61 @@ def get_maximums(double[:] value_map, int[:] index_list,
 
     return result
 
+def get_max_indexes(double[:] value_map, int[:] index_list,
+                    unsigned int[:] interval_start, unsigned int[:] interval_end,
+                    int[:] start_list, int[:] end_list):
+
+    assert tuple(start_list.shape) == tuple(end_list.shape)
+
+    cdef size_t i, num_tests = start_list.size, start, end, value_index
+    cdef size_t numb_intervals = interval_start.size, orig_start, orig_end
+    cdef double maximum, value
+    cdef unsigned int max_index
+
+    result = np.full(num_tests, -1, dtype=np.int32)
+    cdef int[:] result_view = result
+
+    for i in range(num_tests):
+        maximum = 0
+        max_index = -1
+        orig_start = start_list[i]
+        orig_end = end_list[i]
+
+        start = orig_start
+        end = orig_end
+
+        # get to an interval
+        while index_list[start] == -1 and start < end:
+            start += 1
+
+        if start == end:
+            result_view[i] = <int>((orig_start + orig_start) / 2)
+            continue
+
+        value_index = index_list[start]
+        while interval_start[value_index] < end:
+            value = value_map[value_index]
+            if value > maximum:
+                maximum = value
+                max_index = value_index
+
+            value_index += 1
+            if value_index == numb_intervals:
+                break
+
+        start = orig_start
+        end = orig_end
+        if max_index != -1:
+            # make sure returned index is not outside search interval
+            if end > interval_end[max_index]:
+                end = interval_end[max_index]
+            if start < interval_start[max_index]:
+                start = interval_start[max_index]
+
+        result_view[i] = <int>((start + end) / 2)
+
+    return result
+
 def get_coverages(double[:] value_map, int[:] index_list, unsigned int[:] interval_start,
                   unsigned int[:] interval_end, int[:] start_list, int[:] end_list):
 

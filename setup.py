@@ -11,7 +11,7 @@ extensions = [
 cmdclass = {}
 
 NAME = 'pyBedGraph'
-VERSION = '0.5.21'
+VERSION = '0.5.22'
 
 setuptools.setup(
 

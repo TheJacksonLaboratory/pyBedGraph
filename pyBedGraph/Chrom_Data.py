@@ -1,5 +1,6 @@
 import math
 from .ignore_missing_bp import *
+from .include_missing_bp import get_max_indexes
 from .util import *
 
 START_INDEX = 1
@@ -12,15 +13,20 @@ MIN_BIN_SIZE = 2
 
 class Chrom_Data:
 
-    def __init__(self, name, size):
+    def __init__(self, name, size, min_value):
         self.name = name
         self.size = size
+        self.min_value = min_value
 
         # don't use this until user loads this chromosome for searching
         self.loaded_chrom = False
         self.index_list = None
-        self.value_list = None
-        self.total_size = 0
+        self.total_coverage = 0
+        self.num_samples = 0
+
+        self.avg_chrom_value = -1
+        self.avg_interval_value = -1
+        self.avg_interval_size = -1
 
         # starting length is the size of chromosome
         # later shorten to save memory
@@ -29,7 +35,7 @@ class Chrom_Data:
             np.zeros(size, dtype=np.uint32),
             np.zeros(size, dtype=np.uint32)
         ]
-        self.current_index = 0  # number of intervals in bedGraph file
+        self.num_intervals = 0  # number of intervals in bedGraph file
         self.max_index = 0  # end of last interval in bedGraph file
 
         self.loaded_bins = False
@@ -42,24 +48,48 @@ class Chrom_Data:
         print(f"Reading in {name} ...")
 
     def add_data(self, data):
-        start = int(data[START_INDEX])
-        end = int(data[END_INDEX])
         value = float(data[VALUE_INDEX])
 
-        self.intervals[0][self.current_index] = start
-        self.intervals[1][self.current_index] = end
-        self.total_size += (end - start)
+        if value < self.min_value:
+            return
 
-        self.value_map[self.current_index] = value
-        self.current_index += 1
+        start = int(data[START_INDEX])
+        end = int(data[END_INDEX])
 
-        self.max_index = end
+        self.intervals[0][self.num_intervals] = start
+        self.intervals[1][self.num_intervals] = end
+        self.value_map[self.num_intervals] = value
+
+        self.num_intervals += 1
+        self.num_samples += value * (end - start)
+        self.total_coverage += (end - start)
 
     # shorten length to # of intervals in bedGraph file for the chromosome
     def trim_extra_space(self):
-        self.value_map = self.value_map[:self.current_index]
-        self.intervals[0] = self.intervals[0][:self.current_index]
-        self.intervals[1] = self.intervals[1][:self.current_index]
+        self.value_map = self.value_map[:self.num_intervals]
+        self.intervals[0] = self.intervals[0][:self.num_intervals]
+        self.intervals[1] = self.intervals[1][:self.num_intervals]
+
+        self.max_index = self.intervals[1][-1]
+        self.avg_chrom_value = self.num_samples / self.total_coverage
+        self.avg_interval_value = np.sum(self.value_map) / self.num_intervals
+        self.avg_interval_size = self.total_coverage / self.num_intervals
+
+        print(f"Average interval size: {self.avg_interval_size}")
+        print(f"Average chromosome value: {self.avg_chrom_value}")
+        print(f'Average interval value: {self.avg_interval_value}')
+
+    def remove_intervals(self, interval_index_list):
+        for interval_index in interval_index_list:
+            start = self.intervals[0][interval_index]
+            end = self.intervals[1][interval_index]
+
+            self.num_samples -= (end - start) * self.value_map[interval_index]
+
+            self.value_map[interval_index] = 0
+
+            if self.index_list is not None:
+                self.index_list[start:end] = -1
 
     # assume that missing space in bedGraph file is different from value of 0
     def initialize_index_array(self):
@@ -76,22 +106,20 @@ class Chrom_Data:
             return
 
         self.initialize_index_array()
-        if self.value_list is not None:
-            fill_value_array(self.intervals[0], self.intervals[1], self.value_map,
-                             self.value_list)
 
         if self.index_list is not None:
-            fill_index_array(self.intervals[0], self.intervals[1], self.value_map,
+            fill_index_array(self.intervals[0], self.intervals[1],
+                             self.value_map,
                              self.index_list)
 
         self.loaded_chrom = True
 
-    def free_value_array(self):
-        self.value_list = None
+    def free_index_list(self):
         self.index_list = None
         self.loaded_chrom = False
-        print(f"Freed memory for {self.name}'s value_list and index_list")
+        print(f"Freed memory for {self.name}'s index_list")
 
+    def free_bin_list(self):
         self.bins_list.clear()
         if self.bins_list_coverages is not None:
             self.bins_list_coverages.clear()
@@ -140,7 +168,6 @@ class Chrom_Data:
 
         # Load larger bins
         while bin_size <= max_bin_size:
-
             print(f"Loading bins of size: {bin_size} for {self.name} ...")
             print(f"Number of bins: {math.ceil(self.size / bin_size)}")
 
@@ -190,6 +217,8 @@ class Chrom_Data:
             # return self.get_median
         elif stat == "max":
             return self.get_max
+        elif stat == "max_index":
+            return self.get_max_indexes
         elif stat == "min":
             return self.get_min
         elif stat == "coverage":
@@ -205,13 +234,14 @@ class Chrom_Data:
                                 self.min_bin_size, start_list, end_list)
 
     def get_exact_mean(self, start_list, end_list):
-        return get_exact_means(self.value_map, self.index_list, self.intervals[0],
+        return get_exact_means(self.value_map, self.index_list,
+                               self.intervals[0],
                                self.intervals[1], start_list, end_list)
 
     # slower for now because of usage of numpy instead of implementing O(n)
     # algorithm in Cython
     def get_median(self, start_list, end_list):
-        assert len(start_list) == len(end_list)
+        """assert len(start_list) == len(end_list)
         num_tests = len(start_list)
         results = np.full(num_tests, -1, dtype=np.float64)
         for i in range(num_tests):
@@ -220,7 +250,8 @@ class Chrom_Data:
             wanted_range = self.value_list[start:end]
             cleaned_range = wanted_range[wanted_range > -1]
             results[i] = np.median(cleaned_range)
-        return results
+        return results"""
+        return None
 
     def get_coverage(self, start_list, end_list):
         return get_coverages(self.index_list, self.intervals[0],
@@ -229,6 +260,11 @@ class Chrom_Data:
     def get_max(self, start_list, end_list):
         return get_maximums(self.value_map, self.index_list, self.intervals[0],
                             self.intervals[1], start_list, end_list)
+
+    def get_max_indexes(self, start_list, end_list):
+        return get_max_indexes(self.value_map, self.index_list,
+                               self.intervals[0], self.intervals[1],
+                               start_list, end_list)
 
     def get_min(self, start_list, end_list):
         return get_minimums(self.value_map, self.index_list, self.intervals[0],
