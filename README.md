@@ -1,34 +1,32 @@
 # pyBedGraph
 A Python package for fast operations on 1-dimensional genomic signal tracks.
 
-# Features:
+## Features
 - Finds the mean, approx. mean, max, min, coverage, or standard deviation for a given interval in a bedGraph file
 - Partly written in Cython for speed improvements
+- Can look up exact statistics of 1 million regions in ~0.26 second on a conventional laptop
+- An approximate mean for 10,000 regions can be computed in ~0.0012 second w/ error rate of less than 5 percent
 
-# Improvements over pyBigWig:
-- Much faster (>200x) for most exact statistics
-- Even faster for approximate statistics
-
-# Downsides:
-- Uses much more memory
+## Drawbacks
+- Uses memory to load files
     - 16 bytes per line in bedGraph file
     - 4 bytes per basePair in every chromosome loaded
-- Loading the bedGraph file takes a few minutes if it is large
+- Loading the bedGraph file can take up to a minute or two
 
-# Installation:
+## Installation
 
-Requirements:
-- Numpy 1.16.4
-- pyBigWig 0.3.16
+Dependency requirements:
+- Numpy v1.16.4
+- pyBigWig v0.3.16 (for benchmark)
 
 With pip:
 ```bash
 pip3 install pyBedGraph
 ```
 
-# Usage:
+## Usage
 
-### Download the test files:
+### Download the test files here:
 https://thejacksonlaboratory.ent.box.com/s/3jglutwf3d54pnomnp33ivo7a9546vhe
 
 ### Create the object:
@@ -64,7 +62,7 @@ inclusive_bedGraph.load_chrom_bins('chr1', 3)
 ```
 ### Choose a specific statistic to search for:
   - `'mean'`
-  - `'approx_mean'` - an approximate mean that is slightly faster for a 0-1% error
+  - `'approx_mean'` - an approximate mean is faster than exact mean, with < 5% error rate
   - `'max'`
   - `'min'`
   - `'coverage'`
@@ -155,10 +153,10 @@ inclusive_bedGraph.stats('max', test_intervals)
 inclusive_bedGraph.stats('std', test_intervals)
 ```
 
-# Benchmark:
+## Benchmark:
 Actual values are found from the `stats` function in pyBigWig with the `exact` argument being `True`. The error for exact stats will be ~1e-8 due to rounding error of conversion of bigWig and bedGraph files.
 
-Alternatively, one can make actual values be from pyBedGraph. 
+Alternatively, one can make actual values be pyBedGraph's exact statistics. 
 ```python
 from pyBedGraph import Benchmark, BedGraph
 
@@ -202,3 +200,9 @@ result = bench.benchmark(10000, 500, 'chr1', 100)
 # std {'run_time': 0.010123968124389648, 'error': {'percent_error': 0.0008802452423860437, 'ms_error': 3.5123006260771487e-07, 'abs_error': 0.0004987475752671237, 'not_included': 0}}
 # pyBigWig_std {'approx_run_time': 1.5250320434570312, 'exact_run_time': 1.4730277061462402, 'error': {'percent_error': 0.0, 'ms_error': 0.0, 'abs_error': 0.0, 'not_included': 0}}
 ```
+
+## Reference 
+[pyBedGraph: a Python package for fast operations on 1-dimensional genomic signal tracks](https://www.biorxiv.org/content/10.1101/709683v1), Zhang et al., bioRxiv, 2019
+
+## Bug reports
+To report bugs, contact Henry (henry.zhang@jax.org) and Minji (minji.kim@jax.org) or visit the [Issues](https://github.com/TheJacksonLaboratory/pyBedGraph/issues) page. 
