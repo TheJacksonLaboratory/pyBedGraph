@@ -1,6 +1,9 @@
 from .Chrom_Data import Chrom_Data
 from .include_missing_bp import *
+import logging
 import math
+
+log = logging.getLogger()
 
 START_INDEX = 1
 END_INDEX = 2
@@ -22,11 +25,11 @@ class Chrom_Data_Complete(Chrom_Data):
     def load_bins(self, max_bin_size):
 
         if max_bin_size is None:
-            print("Did not specify max_bin_size")
+            log.error("Did not specify max_bin_size")
             return
 
         if max_bin_size == self.max_bin_size and self.loaded_bins is True:
-            print(f"Already loaded bins for: {max_bin_size}")
+            log.warning(f"Already loaded bins for: {max_bin_size}")
             return
 
         self.max_bin_size = max_bin_size
@@ -44,8 +47,8 @@ class Chrom_Data_Complete(Chrom_Data):
         self.min_bin_size = bin_size
 
         # Loading smallest bins
-        print(f"Loading bins of size: {bin_size} for {self.name} ...")
-        print(f"Number of bins: {math.ceil(self.size / bin_size)}")
+        log.info(f"Loading bins of size: {bin_size} for {self.name} ...")
+        log.info(f"Number of bins: {math.ceil(self.size / bin_size)}")
         prev_bins_list = load_smallest_bins(self.value_map, self.index_list, self.size,
                            self.intervals[0], self.intervals[1], bin_size)
         self.bins_list.append(prev_bins_list)
@@ -54,8 +57,8 @@ class Chrom_Data_Complete(Chrom_Data):
         # Load larger bins
         while bin_size <= max_bin_size:
 
-            print(f"Loading bins of size: {bin_size} for {self.name} ...")
-            print(f"Number of bins: {math.ceil(self.size / bin_size)}")
+            log.info(f"Loading bins of size: {bin_size} for {self.name} ...")
+            log.info(f"Number of bins: {math.ceil(self.size / bin_size)}")
 
             # use the previous bin list to speed up the process
             bins_list = load_bins(prev_bins_list)
@@ -74,13 +77,13 @@ class Chrom_Data_Complete(Chrom_Data):
 
         for bin_list_index in range(self.bin_list_numb):
             bin_list = self.bins_list[bin_list_index]
-            print(bin_list_index)
+            log.info(bin_list_index)
             for bin_index in range(len(bin_list)):
                 start = bin_index * bin_size
                 end = start + bin_size
                 test_avg = get_bin_mean(self.value_list, start, end)
                 if abs(bin_list[bin_index] - test_avg) > 0.000001:
-                    print(bin_index, bin_list[bin_index], test_avg)
+                    log.info(bin_index, bin_list[bin_index], test_avg)
                     exit(-1)
             bin_size *= 2'''
 
@@ -97,7 +100,7 @@ class Chrom_Data_Complete(Chrom_Data):
     def get_median(self, start_list, end_list):
         """my_results = get_medians(self.value_list, start_list, end_list)
         return my_results"""
-        print('Not implemented')
+        log.warning('Not implemented')
         return None
 
     def get_coverage(self, start_list, end_list):

@@ -3,12 +3,12 @@
 /* BEGIN: Cython Metadata
 {
     "distutils": {
-        "name": "util",
+        "name": "pyBedGraph.util",
         "sources": [
-            "util.pyx"
+            "pyBedGraph/util.pyx"
         ]
     },
-    "module_name": "util"
+    "module_name": "pyBedGraph.util"
 }
 END: Cython Metadata */
 
@@ -602,8 +602,8 @@ static CYTHON_INLINE float __PYX_NAN() {
   #endif
 #endif
 
-#define __PYX_HAVE__util
-#define __PYX_HAVE_API__util
+#define __PYX_HAVE__pyBedGraph__util
+#define __PYX_HAVE_API__pyBedGraph__util
 /* Early includes */
 #include "pythread.h"
 #include <string.h>
@@ -818,7 +818,7 @@ static const char *__pyx_filename;
 
 
 static const char *__pyx_f[] = {
-  "util.pyx",
+  "pyBedGraph/util.pyx",
   "stringsource",
 };
 /* MemviewSliceStruct.proto */
@@ -1705,7 +1705,7 @@ static PyObject *__pyx_memoryview_assign_item_from_object(struct __pyx_memoryvie
 static PyObject *__pyx_memoryviewslice_convert_item_to_object(struct __pyx_memoryviewslice_obj *__pyx_v_self, char *__pyx_v_itemp); /* proto*/
 static PyObject *__pyx_memoryviewslice_assign_item_from_object(struct __pyx_memoryviewslice_obj *__pyx_v_self, char *__pyx_v_itemp, PyObject *__pyx_v_value); /* proto*/
 
-/* Module declarations from 'util' */
+/* Module declarations from 'pyBedGraph.util' */
 static PyTypeObject *__pyx_array_type = 0;
 static PyTypeObject *__pyx_MemviewEnum_type = 0;
 static PyTypeObject *__pyx_memoryview_type = 0;
@@ -1717,7 +1717,7 @@ static PyObject *contiguous = 0;
 static PyObject *indirect_contiguous = 0;
 static int __pyx_memoryview_thread_locks_used;
 static PyThread_type_lock __pyx_memoryview_thread_locks[8];
-static PyObject *__pyx_f_4util_get_bin_value(__Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, int, int, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_10pyBedGraph_4util_get_bin_value(__Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, int, int, int __pyx_skip_dispatch); /*proto*/
 static CYTHON_INLINE PyObject *__Pyx_carray_to_py_Py_ssize_t(Py_ssize_t *, Py_ssize_t); /*proto*/
 static CYTHON_INLINE PyObject *__Pyx_carray_to_tuple_Py_ssize_t(Py_ssize_t *, Py_ssize_t); /*proto*/
 static struct __pyx_array_obj *__pyx_array_new(PyObject *, Py_ssize_t, char *, char *, char *); /*proto*/
@@ -1756,11 +1756,11 @@ static PyObject *__pyx_unpickle_Enum__set_state(struct __pyx_MemviewEnum_obj *, 
 static __Pyx_TypeInfo __Pyx_TypeInfo_unsigned_int = { "unsigned int", NULL, sizeof(unsigned int), { 0 }, 0, IS_UNSIGNED(unsigned int) ? 'U' : 'I', IS_UNSIGNED(unsigned int), 0 };
 static __Pyx_TypeInfo __Pyx_TypeInfo_double = { "double", NULL, sizeof(double), { 0 }, 0, 'R', 0, 0 };
 static __Pyx_TypeInfo __Pyx_TypeInfo_int = { "int", NULL, sizeof(int), { 0 }, 0, IS_UNSIGNED(int) ? 'U' : 'I', IS_UNSIGNED(int), 0 };
-#define __Pyx_MODULE_NAME "util"
-extern int __pyx_module_is_main_util;
-int __pyx_module_is_main_util = 0;
+#define __Pyx_MODULE_NAME "pyBedGraph.util"
+extern int __pyx_module_is_main_pyBedGraph__util;
+int __pyx_module_is_main_pyBedGraph__util = 0;
 
-/* Implementation of 'util' */
+/* Implementation of 'pyBedGraph.util' */
 static PyObject *__pyx_builtin_range;
 static PyObject *__pyx_builtin_ValueError;
 static PyObject *__pyx_builtin_MemoryError;
@@ -1787,7 +1787,6 @@ static const char __pyx_k_size[] = "size";
 static const char __pyx_k_step[] = "step";
 static const char __pyx_k_stop[] = "stop";
 static const char __pyx_k_test[] = "__test__";
-static const char __pyx_k_util[] = "util";
 static const char __pyx_k_ASCII[] = "ASCII";
 static const char __pyx_k_class[] = "__class__";
 static const char __pyx_k_error[] = "error";
@@ -1812,7 +1811,6 @@ static const char __pyx_k_getstate[] = "__getstate__";
 static const char __pyx_k_itemsize[] = "itemsize";
 static const char __pyx_k_pyx_type[] = "__pyx_type";
 static const char __pyx_k_setstate[] = "__setstate__";
-static const char __pyx_k_util_pyx[] = "util.pyx";
 static const char __pyx_k_TypeError[] = "TypeError";
 static const char __pyx_k_enumerate[] = "enumerate";
 static const char __pyx_k_pyx_state[] = "__pyx_state";
@@ -1836,6 +1834,7 @@ static const char __pyx_k_interval_start[] = "interval_start";
 static const char __pyx_k_View_MemoryView[] = "View.MemoryView";
 static const char __pyx_k_allocate_buffer[] = "allocate_buffer";
 static const char __pyx_k_dtype_is_object[] = "dtype_is_object";
+static const char __pyx_k_pyBedGraph_util[] = "pyBedGraph.util";
 static const char __pyx_k_pyx_PickleError[] = "__pyx_PickleError";
 static const char __pyx_k_setstate_cython[] = "__setstate_cython__";
 static const char __pyx_k_fill_index_array[] = "fill_index_array";
@@ -1843,6 +1842,7 @@ static const char __pyx_k_fill_value_array[] = "fill_value_array";
 static const char __pyx_k_pyx_unpickle_Enum[] = "__pyx_unpickle_Enum";
 static const char __pyx_k_cline_in_traceback[] = "cline_in_traceback";
 static const char __pyx_k_strided_and_direct[] = "<strided and direct>";
+static const char __pyx_k_pyBedGraph_util_pyx[] = "pyBedGraph/util.pyx";
 static const char __pyx_k_strided_and_indirect[] = "<strided and indirect>";
 static const char __pyx_k_contiguous_and_direct[] = "<contiguous and direct>";
 static const char __pyx_k_MemoryView_of_r_object[] = "<MemoryView of %r object>";
@@ -1931,6 +1931,8 @@ static PyObject *__pyx_kp_s_no_default___reduce___due_to_non;
 static PyObject *__pyx_n_s_obj;
 static PyObject *__pyx_n_s_pack;
 static PyObject *__pyx_n_s_pickle;
+static PyObject *__pyx_n_s_pyBedGraph_util;
+static PyObject *__pyx_kp_s_pyBedGraph_util_pyx;
 static PyObject *__pyx_n_s_pyx_PickleError;
 static PyObject *__pyx_n_s_pyx_checksum;
 static PyObject *__pyx_n_s_pyx_getbuffer;
@@ -1961,13 +1963,11 @@ static PyObject *__pyx_kp_s_unable_to_allocate_array_data;
 static PyObject *__pyx_kp_s_unable_to_allocate_shape_and_str;
 static PyObject *__pyx_n_s_unpack;
 static PyObject *__pyx_n_s_update;
-static PyObject *__pyx_n_s_util;
-static PyObject *__pyx_kp_s_util_pyx;
 static PyObject *__pyx_n_s_value_list;
 static PyObject *__pyx_n_s_value_map;
-static PyObject *__pyx_pf_4util_fill_value_array(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_start_list, __Pyx_memviewslice __pyx_v_end_list, __Pyx_memviewslice __pyx_v_value_map, __Pyx_memviewslice __pyx_v_value_list); /* proto */
-static PyObject *__pyx_pf_4util_2fill_index_array(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_start_list, __Pyx_memviewslice __pyx_v_end_list, CYTHON_UNUSED __Pyx_memviewslice __pyx_v_value_map, __Pyx_memviewslice __pyx_v_index_list); /* proto */
-static PyObject *__pyx_pf_4util_4get_bin_value(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_value_map, __Pyx_memviewslice __pyx_v_index_list, __Pyx_memviewslice __pyx_v_interval_start, __Pyx_memviewslice __pyx_v_interval_end, int __pyx_v_start, int __pyx_v_end); /* proto */
+static PyObject *__pyx_pf_10pyBedGraph_4util_fill_value_array(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_start_list, __Pyx_memviewslice __pyx_v_end_list, __Pyx_memviewslice __pyx_v_value_map, __Pyx_memviewslice __pyx_v_value_list); /* proto */
+static PyObject *__pyx_pf_10pyBedGraph_4util_2fill_index_array(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_start_list, __Pyx_memviewslice __pyx_v_end_list, CYTHON_UNUSED __Pyx_memviewslice __pyx_v_value_map, __Pyx_memviewslice __pyx_v_index_list); /* proto */
+static PyObject *__pyx_pf_10pyBedGraph_4util_4get_bin_value(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_value_map, __Pyx_memviewslice __pyx_v_index_list, __Pyx_memviewslice __pyx_v_interval_start, __Pyx_memviewslice __pyx_v_interval_end, int __pyx_v_start, int __pyx_v_end); /* proto */
 static int __pyx_array___pyx_pf_15View_dot_MemoryView_5array___cinit__(struct __pyx_array_obj *__pyx_v_self, PyObject *__pyx_v_shape, Py_ssize_t __pyx_v_itemsize, PyObject *__pyx_v_format, PyObject *__pyx_v_mode, int __pyx_v_allocate_buffer); /* proto */
 static int __pyx_array___pyx_pf_15View_dot_MemoryView_5array_2__getbuffer__(struct __pyx_array_obj *__pyx_v_self, Py_buffer *__pyx_v_info, int __pyx_v_flags); /* proto */
 static void __pyx_array___pyx_pf_15View_dot_MemoryView_5array_4__dealloc__(struct __pyx_array_obj *__pyx_v_self); /* proto */
@@ -2049,16 +2049,16 @@ static PyObject *__pyx_codeobj__22;
 static PyObject *__pyx_codeobj__29;
 /* Late includes */
 
-/* "util.pyx":1
+/* "pyBedGraph/util.pyx":1
  * def fill_value_array(unsigned int[:] start_list, unsigned int[:] end_list,             # <<<<<<<<<<<<<<
  *                     double[:] value_map, double[:] value_list):
  *     assert tuple(start_list.shape) == tuple(end_list.shape)
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_4util_1fill_value_array(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static PyMethodDef __pyx_mdef_4util_1fill_value_array = {"fill_value_array", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_4util_1fill_value_array, METH_VARARGS|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_4util_1fill_value_array(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+static PyObject *__pyx_pw_10pyBedGraph_4util_1fill_value_array(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static PyMethodDef __pyx_mdef_10pyBedGraph_4util_1fill_value_array = {"fill_value_array", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_10pyBedGraph_4util_1fill_value_array, METH_VARARGS|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_10pyBedGraph_4util_1fill_value_array(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   __Pyx_memviewslice __pyx_v_start_list = { 0, 0, { 0 }, { 0 }, { 0 } };
   __Pyx_memviewslice __pyx_v_end_list = { 0, 0, { 0 }, { 0 }, { 0 } };
   __Pyx_memviewslice __pyx_v_value_map = { 0, 0, { 0 }, { 0 }, { 0 } };
@@ -2128,18 +2128,18 @@ static PyObject *__pyx_pw_4util_1fill_value_array(PyObject *__pyx_self, PyObject
   __pyx_L5_argtuple_error:;
   __Pyx_RaiseArgtupleInvalid("fill_value_array", 1, 4, 4, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 1, __pyx_L3_error)
   __pyx_L3_error:;
-  __Pyx_AddTraceback("util.fill_value_array", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("pyBedGraph.util.fill_value_array", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_4util_fill_value_array(__pyx_self, __pyx_v_start_list, __pyx_v_end_list, __pyx_v_value_map, __pyx_v_value_list);
+  __pyx_r = __pyx_pf_10pyBedGraph_4util_fill_value_array(__pyx_self, __pyx_v_start_list, __pyx_v_end_list, __pyx_v_value_map, __pyx_v_value_list);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_4util_fill_value_array(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_start_list, __Pyx_memviewslice __pyx_v_end_list, __Pyx_memviewslice __pyx_v_value_map, __Pyx_memviewslice __pyx_v_value_list) {
+static PyObject *__pyx_pf_10pyBedGraph_4util_fill_value_array(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_start_list, __Pyx_memviewslice __pyx_v_end_list, __Pyx_memviewslice __pyx_v_value_map, __Pyx_memviewslice __pyx_v_value_list) {
   size_t __pyx_v_size;
   size_t __pyx_v_i;
   size_t __pyx_v_start;
@@ -2160,7 +2160,7 @@ static PyObject *__pyx_pf_4util_fill_value_array(CYTHON_UNUSED PyObject *__pyx_s
   __Pyx_memviewslice __pyx_t_12 = { 0, 0, { 0 }, { 0 }, { 0 } };
   __Pyx_RefNannySetupContext("fill_value_array", 0);
 
-  /* "util.pyx":3
+  /* "pyBedGraph/util.pyx":3
  * def fill_value_array(unsigned int[:] start_list, unsigned int[:] end_list,
  *                     double[:] value_map, double[:] value_list):
  *     assert tuple(start_list.shape) == tuple(end_list.shape)             # <<<<<<<<<<<<<<
@@ -2191,7 +2191,7 @@ static PyObject *__pyx_pf_4util_fill_value_array(CYTHON_UNUSED PyObject *__pyx_s
   }
   #endif
 
-  /* "util.pyx":5
+  /* "pyBedGraph/util.pyx":5
  *     assert tuple(start_list.shape) == tuple(end_list.shape)
  * 
  *     cdef size_t size = start_list.size, i, start, end             # <<<<<<<<<<<<<<
@@ -2207,7 +2207,7 @@ static PyObject *__pyx_pf_4util_fill_value_array(CYTHON_UNUSED PyObject *__pyx_s
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __pyx_v_size = __pyx_t_5;
 
-  /* "util.pyx":7
+  /* "pyBedGraph/util.pyx":7
  *     cdef size_t size = start_list.size, i, start, end
  * 
  *     for i in range(size):             # <<<<<<<<<<<<<<
@@ -2219,7 +2219,7 @@ static PyObject *__pyx_pf_4util_fill_value_array(CYTHON_UNUSED PyObject *__pyx_s
   for (__pyx_t_7 = 0; __pyx_t_7 < __pyx_t_6; __pyx_t_7+=1) {
     __pyx_v_i = __pyx_t_7;
 
-    /* "util.pyx":8
+    /* "pyBedGraph/util.pyx":8
  * 
  *     for i in range(size):
  *         start = start_list[i]             # <<<<<<<<<<<<<<
@@ -2235,7 +2235,7 @@ static PyObject *__pyx_pf_4util_fill_value_array(CYTHON_UNUSED PyObject *__pyx_s
     }
     __pyx_v_start = (*((unsigned int *) ( /* dim=0 */ (__pyx_v_start_list.data + __pyx_t_8 * __pyx_v_start_list.strides[0]) )));
 
-    /* "util.pyx":9
+    /* "pyBedGraph/util.pyx":9
  *     for i in range(size):
  *         start = start_list[i]
  *         end = end_list[i]             # <<<<<<<<<<<<<<
@@ -2251,7 +2251,7 @@ static PyObject *__pyx_pf_4util_fill_value_array(CYTHON_UNUSED PyObject *__pyx_s
     }
     __pyx_v_end = (*((unsigned int *) ( /* dim=0 */ (__pyx_v_end_list.data + __pyx_t_10 * __pyx_v_end_list.strides[0]) )));
 
-    /* "util.pyx":10
+    /* "pyBedGraph/util.pyx":10
  *         start = start_list[i]
  *         end = end_list[i]
  *         value_list[start:end] = value_map[i]             # <<<<<<<<<<<<<<
@@ -2305,7 +2305,7 @@ static PyObject *__pyx_pf_4util_fill_value_array(CYTHON_UNUSED PyObject *__pyx_s
     __pyx_t_12.data = NULL;
   }
 
-  /* "util.pyx":1
+  /* "pyBedGraph/util.pyx":1
  * def fill_value_array(unsigned int[:] start_list, unsigned int[:] end_list,             # <<<<<<<<<<<<<<
  *                     double[:] value_map, double[:] value_list):
  *     assert tuple(start_list.shape) == tuple(end_list.shape)
@@ -2319,7 +2319,7 @@ static PyObject *__pyx_pf_4util_fill_value_array(CYTHON_UNUSED PyObject *__pyx_s
   __Pyx_XDECREF(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_3);
   __PYX_XDEC_MEMVIEW(&__pyx_t_12, 1);
-  __Pyx_AddTraceback("util.fill_value_array", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("pyBedGraph.util.fill_value_array", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __PYX_XDEC_MEMVIEW(&__pyx_v_start_list, 1);
@@ -2331,7 +2331,7 @@ static PyObject *__pyx_pf_4util_fill_value_array(CYTHON_UNUSED PyObject *__pyx_s
   return __pyx_r;
 }
 
-/* "util.pyx":12
+/* "pyBedGraph/util.pyx":12
  *         value_list[start:end] = value_map[i]
  * 
  * def fill_index_array(unsigned int[:] start_list, unsigned int[:] end_list,             # <<<<<<<<<<<<<<
@@ -2340,9 +2340,9 @@ static PyObject *__pyx_pf_4util_fill_value_array(CYTHON_UNUSED PyObject *__pyx_s
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_4util_3fill_index_array(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static PyMethodDef __pyx_mdef_4util_3fill_index_array = {"fill_index_array", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_4util_3fill_index_array, METH_VARARGS|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_4util_3fill_index_array(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+static PyObject *__pyx_pw_10pyBedGraph_4util_3fill_index_array(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static PyMethodDef __pyx_mdef_10pyBedGraph_4util_3fill_index_array = {"fill_index_array", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_10pyBedGraph_4util_3fill_index_array, METH_VARARGS|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_10pyBedGraph_4util_3fill_index_array(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   __Pyx_memviewslice __pyx_v_start_list = { 0, 0, { 0 }, { 0 }, { 0 } };
   __Pyx_memviewslice __pyx_v_end_list = { 0, 0, { 0 }, { 0 }, { 0 } };
   CYTHON_UNUSED __Pyx_memviewslice __pyx_v_value_map = { 0, 0, { 0 }, { 0 }, { 0 } };
@@ -2412,18 +2412,18 @@ static PyObject *__pyx_pw_4util_3fill_index_array(PyObject *__pyx_self, PyObject
   __pyx_L5_argtuple_error:;
   __Pyx_RaiseArgtupleInvalid("fill_index_array", 1, 4, 4, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 12, __pyx_L3_error)
   __pyx_L3_error:;
-  __Pyx_AddTraceback("util.fill_index_array", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("pyBedGraph.util.fill_index_array", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_4util_2fill_index_array(__pyx_self, __pyx_v_start_list, __pyx_v_end_list, __pyx_v_value_map, __pyx_v_index_list);
+  __pyx_r = __pyx_pf_10pyBedGraph_4util_2fill_index_array(__pyx_self, __pyx_v_start_list, __pyx_v_end_list, __pyx_v_value_map, __pyx_v_index_list);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_4util_2fill_index_array(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_start_list, __Pyx_memviewslice __pyx_v_end_list, CYTHON_UNUSED __Pyx_memviewslice __pyx_v_value_map, __Pyx_memviewslice __pyx_v_index_list) {
+static PyObject *__pyx_pf_10pyBedGraph_4util_2fill_index_array(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_start_list, __Pyx_memviewslice __pyx_v_end_list, CYTHON_UNUSED __Pyx_memviewslice __pyx_v_value_map, __Pyx_memviewslice __pyx_v_index_list) {
   size_t __pyx_v_size;
   size_t __pyx_v_i;
   size_t __pyx_v_start;
@@ -2443,7 +2443,7 @@ static PyObject *__pyx_pf_4util_2fill_index_array(CYTHON_UNUSED PyObject *__pyx_
   __Pyx_memviewslice __pyx_t_11 = { 0, 0, { 0 }, { 0 }, { 0 } };
   __Pyx_RefNannySetupContext("fill_index_array", 0);
 
-  /* "util.pyx":14
+  /* "pyBedGraph/util.pyx":14
  * def fill_index_array(unsigned int[:] start_list, unsigned int[:] end_list,
  *                     double[:] value_map, int[:] index_list):
  *     assert tuple(start_list.shape) == tuple(end_list.shape)             # <<<<<<<<<<<<<<
@@ -2474,7 +2474,7 @@ static PyObject *__pyx_pf_4util_2fill_index_array(CYTHON_UNUSED PyObject *__pyx_
   }
   #endif
 
-  /* "util.pyx":16
+  /* "pyBedGraph/util.pyx":16
  *     assert tuple(start_list.shape) == tuple(end_list.shape)
  * 
  *     cdef size_t size = start_list.size, i, start, end             # <<<<<<<<<<<<<<
@@ -2490,7 +2490,7 @@ static PyObject *__pyx_pf_4util_2fill_index_array(CYTHON_UNUSED PyObject *__pyx_
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __pyx_v_size = __pyx_t_5;
 
-  /* "util.pyx":18
+  /* "pyBedGraph/util.pyx":18
  *     cdef size_t size = start_list.size, i, start, end
  * 
  *     for i in range(size):             # <<<<<<<<<<<<<<
@@ -2502,7 +2502,7 @@ static PyObject *__pyx_pf_4util_2fill_index_array(CYTHON_UNUSED PyObject *__pyx_
   for (__pyx_t_7 = 0; __pyx_t_7 < __pyx_t_6; __pyx_t_7+=1) {
     __pyx_v_i = __pyx_t_7;
 
-    /* "util.pyx":19
+    /* "pyBedGraph/util.pyx":19
  * 
  *     for i in range(size):
  *         start = start_list[i]             # <<<<<<<<<<<<<<
@@ -2518,7 +2518,7 @@ static PyObject *__pyx_pf_4util_2fill_index_array(CYTHON_UNUSED PyObject *__pyx_
     }
     __pyx_v_start = (*((unsigned int *) ( /* dim=0 */ (__pyx_v_start_list.data + __pyx_t_8 * __pyx_v_start_list.strides[0]) )));
 
-    /* "util.pyx":20
+    /* "pyBedGraph/util.pyx":20
  *     for i in range(size):
  *         start = start_list[i]
  *         end = end_list[i]             # <<<<<<<<<<<<<<
@@ -2534,7 +2534,7 @@ static PyObject *__pyx_pf_4util_2fill_index_array(CYTHON_UNUSED PyObject *__pyx_
     }
     __pyx_v_end = (*((unsigned int *) ( /* dim=0 */ (__pyx_v_end_list.data + __pyx_t_10 * __pyx_v_end_list.strides[0]) )));
 
-    /* "util.pyx":21
+    /* "pyBedGraph/util.pyx":21
  *         start = start_list[i]
  *         end = end_list[i]
  *         index_list[start:end]= i             # <<<<<<<<<<<<<<
@@ -2581,7 +2581,7 @@ static PyObject *__pyx_pf_4util_2fill_index_array(CYTHON_UNUSED PyObject *__pyx_
     __pyx_t_11.data = NULL;
   }
 
-  /* "util.pyx":12
+  /* "pyBedGraph/util.pyx":12
  *         value_list[start:end] = value_map[i]
  * 
  * def fill_index_array(unsigned int[:] start_list, unsigned int[:] end_list,             # <<<<<<<<<<<<<<
@@ -2597,7 +2597,7 @@ static PyObject *__pyx_pf_4util_2fill_index_array(CYTHON_UNUSED PyObject *__pyx_
   __Pyx_XDECREF(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_3);
   __PYX_XDEC_MEMVIEW(&__pyx_t_11, 1);
-  __Pyx_AddTraceback("util.fill_index_array", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("pyBedGraph.util.fill_index_array", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __PYX_XDEC_MEMVIEW(&__pyx_v_start_list, 1);
@@ -2609,7 +2609,7 @@ static PyObject *__pyx_pf_4util_2fill_index_array(CYTHON_UNUSED PyObject *__pyx_
   return __pyx_r;
 }
 
-/* "util.pyx":23
+/* "pyBedGraph/util.pyx":23
  *         index_list[start:end]= i
  * 
  * cpdef get_bin_value(double[:] value_map, int[:] index_list,             # <<<<<<<<<<<<<<
@@ -2617,8 +2617,8 @@ static PyObject *__pyx_pf_4util_2fill_index_array(CYTHON_UNUSED PyObject *__pyx_
  *                  int start, int end):
  */
 
-static PyObject *__pyx_pw_4util_5get_bin_value(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static PyObject *__pyx_f_4util_get_bin_value(__Pyx_memviewslice __pyx_v_value_map, __Pyx_memviewslice __pyx_v_index_list, __Pyx_memviewslice __pyx_v_interval_start, __Pyx_memviewslice __pyx_v_interval_end, int __pyx_v_start, int __pyx_v_end, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_pw_10pyBedGraph_4util_5get_bin_value(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static PyObject *__pyx_f_10pyBedGraph_4util_get_bin_value(__Pyx_memviewslice __pyx_v_value_map, __Pyx_memviewslice __pyx_v_index_list, __Pyx_memviewslice __pyx_v_interval_start, __Pyx_memviewslice __pyx_v_interval_end, int __pyx_v_start, int __pyx_v_end, CYTHON_UNUSED int __pyx_skip_dispatch) {
   size_t __pyx_v_value_index;
   unsigned int __pyx_v_numb_value;
   unsigned int __pyx_v_temp_end;
@@ -2641,7 +2641,7 @@ static PyObject *__pyx_f_4util_get_bin_value(__Pyx_memviewslice __pyx_v_value_ma
   size_t __pyx_t_12;
   __Pyx_RefNannySetupContext("get_bin_value", 0);
 
-  /* "util.pyx":28
+  /* "pyBedGraph/util.pyx":28
  * 
  *     cdef size_t i, value_index
  *     cdef unsigned int numb_value, temp_end, interval_size, numb_intervals = interval_start.size             # <<<<<<<<<<<<<<
@@ -2657,7 +2657,7 @@ static PyObject *__pyx_f_4util_get_bin_value(__Pyx_memviewslice __pyx_v_value_ma
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_v_numb_intervals = __pyx_t_3;
 
-  /* "util.pyx":31
+  /* "pyBedGraph/util.pyx":31
  *     cdef double total
  * 
  *     total = 0             # <<<<<<<<<<<<<<
@@ -2666,7 +2666,7 @@ static PyObject *__pyx_f_4util_get_bin_value(__Pyx_memviewslice __pyx_v_value_ma
  */
   __pyx_v_total = 0.0;
 
-  /* "util.pyx":32
+  /* "pyBedGraph/util.pyx":32
  * 
  *     total = 0
  *     numb_value = 0             # <<<<<<<<<<<<<<
@@ -2675,7 +2675,7 @@ static PyObject *__pyx_f_4util_get_bin_value(__Pyx_memviewslice __pyx_v_value_ma
  */
   __pyx_v_numb_value = 0;
 
-  /* "util.pyx":35
+  /* "pyBedGraph/util.pyx":35
  * 
  *     # get to an interval
  *     while start < index_list.size and index_list[start] == -1 and start < end:             # <<<<<<<<<<<<<<
@@ -2721,7 +2721,7 @@ static PyObject *__pyx_f_4util_get_bin_value(__Pyx_memviewslice __pyx_v_value_ma
     __pyx_L5_bool_binop_done:;
     if (!__pyx_t_4) break;
 
-    /* "util.pyx":36
+    /* "pyBedGraph/util.pyx":36
  *     # get to an interval
  *     while start < index_list.size and index_list[start] == -1 and start < end:
  *         start += 1             # <<<<<<<<<<<<<<
@@ -2731,7 +2731,7 @@ static PyObject *__pyx_f_4util_get_bin_value(__Pyx_memviewslice __pyx_v_value_ma
     __pyx_v_start = (__pyx_v_start + 1);
   }
 
-  /* "util.pyx":38
+  /* "pyBedGraph/util.pyx":38
  *         start += 1
  * 
  *     if start == end or start == index_list.size:             # <<<<<<<<<<<<<<
@@ -2760,7 +2760,7 @@ static PyObject *__pyx_f_4util_get_bin_value(__Pyx_memviewslice __pyx_v_value_ma
   __pyx_L9_bool_binop_done:;
   if (__pyx_t_4) {
 
-    /* "util.pyx":39
+    /* "pyBedGraph/util.pyx":39
  * 
  *     if start == end or start == index_list.size:
  *         return -1             # <<<<<<<<<<<<<<
@@ -2772,7 +2772,7 @@ static PyObject *__pyx_f_4util_get_bin_value(__Pyx_memviewslice __pyx_v_value_ma
     __pyx_r = __pyx_int_neg_1;
     goto __pyx_L0;
 
-    /* "util.pyx":38
+    /* "pyBedGraph/util.pyx":38
  *         start += 1
  * 
  *     if start == end or start == index_list.size:             # <<<<<<<<<<<<<<
@@ -2781,7 +2781,7 @@ static PyObject *__pyx_f_4util_get_bin_value(__Pyx_memviewslice __pyx_v_value_ma
  */
   }
 
-  /* "util.pyx":41
+  /* "pyBedGraph/util.pyx":41
  *         return -1
  * 
  *     value_index = index_list[start]             # <<<<<<<<<<<<<<
@@ -2800,7 +2800,7 @@ static PyObject *__pyx_f_4util_get_bin_value(__Pyx_memviewslice __pyx_v_value_ma
   }
   __pyx_v_value_index = (*((int *) ( /* dim=0 */ (__pyx_v_index_list.data + __pyx_t_9 * __pyx_v_index_list.strides[0]) )));
 
-  /* "util.pyx":42
+  /* "pyBedGraph/util.pyx":42
  * 
  *     value_index = index_list[start]
  *     while start < end:             # <<<<<<<<<<<<<<
@@ -2811,7 +2811,7 @@ static PyObject *__pyx_f_4util_get_bin_value(__Pyx_memviewslice __pyx_v_value_ma
     __pyx_t_4 = ((__pyx_v_start < __pyx_v_end) != 0);
     if (!__pyx_t_4) break;
 
-    /* "util.pyx":43
+    /* "pyBedGraph/util.pyx":43
  *     value_index = index_list[start]
  *     while start < end:
  *         temp_end = interval_end[value_index]             # <<<<<<<<<<<<<<
@@ -2827,7 +2827,7 @@ static PyObject *__pyx_f_4util_get_bin_value(__Pyx_memviewslice __pyx_v_value_ma
     }
     __pyx_v_temp_end = (*((unsigned int *) ( /* dim=0 */ (__pyx_v_interval_end.data + __pyx_t_10 * __pyx_v_interval_end.strides[0]) )));
 
-    /* "util.pyx":44
+    /* "pyBedGraph/util.pyx":44
  *     while start < end:
  *         temp_end = interval_end[value_index]
  *         if temp_end > end:             # <<<<<<<<<<<<<<
@@ -2837,7 +2837,7 @@ static PyObject *__pyx_f_4util_get_bin_value(__Pyx_memviewslice __pyx_v_value_ma
     __pyx_t_4 = ((__pyx_v_temp_end > __pyx_v_end) != 0);
     if (__pyx_t_4) {
 
-      /* "util.pyx":45
+      /* "pyBedGraph/util.pyx":45
  *         temp_end = interval_end[value_index]
  *         if temp_end > end:
  *             temp_end = end             # <<<<<<<<<<<<<<
@@ -2846,7 +2846,7 @@ static PyObject *__pyx_f_4util_get_bin_value(__Pyx_memviewslice __pyx_v_value_ma
  */
       __pyx_v_temp_end = __pyx_v_end;
 
-      /* "util.pyx":44
+      /* "pyBedGraph/util.pyx":44
  *     while start < end:
  *         temp_end = interval_end[value_index]
  *         if temp_end > end:             # <<<<<<<<<<<<<<
@@ -2855,7 +2855,7 @@ static PyObject *__pyx_f_4util_get_bin_value(__Pyx_memviewslice __pyx_v_value_ma
  */
     }
 
-    /* "util.pyx":46
+    /* "pyBedGraph/util.pyx":46
  *         if temp_end > end:
  *             temp_end = end
  *         interval_size = temp_end - start             # <<<<<<<<<<<<<<
@@ -2864,7 +2864,7 @@ static PyObject *__pyx_f_4util_get_bin_value(__Pyx_memviewslice __pyx_v_value_ma
  */
     __pyx_v_interval_size = (__pyx_v_temp_end - __pyx_v_start);
 
-    /* "util.pyx":48
+    /* "pyBedGraph/util.pyx":48
  *         interval_size = temp_end - start
  * 
  *         total += value_map[value_index] * interval_size             # <<<<<<<<<<<<<<
@@ -2880,7 +2880,7 @@ static PyObject *__pyx_f_4util_get_bin_value(__Pyx_memviewslice __pyx_v_value_ma
     }
     __pyx_v_total = (__pyx_v_total + ((*((double *) ( /* dim=0 */ (__pyx_v_value_map.data + __pyx_t_11 * __pyx_v_value_map.strides[0]) ))) * __pyx_v_interval_size));
 
-    /* "util.pyx":49
+    /* "pyBedGraph/util.pyx":49
  * 
  *         total += value_map[value_index] * interval_size
  *         numb_value += interval_size             # <<<<<<<<<<<<<<
@@ -2889,7 +2889,7 @@ static PyObject *__pyx_f_4util_get_bin_value(__Pyx_memviewslice __pyx_v_value_ma
  */
     __pyx_v_numb_value = (__pyx_v_numb_value + __pyx_v_interval_size);
 
-    /* "util.pyx":51
+    /* "pyBedGraph/util.pyx":51
  *         numb_value += interval_size
  * 
  *         value_index += 1             # <<<<<<<<<<<<<<
@@ -2898,7 +2898,7 @@ static PyObject *__pyx_f_4util_get_bin_value(__Pyx_memviewslice __pyx_v_value_ma
  */
     __pyx_v_value_index = (__pyx_v_value_index + 1);
 
-    /* "util.pyx":52
+    /* "pyBedGraph/util.pyx":52
  * 
  *         value_index += 1
  *         if value_index == numb_intervals:             # <<<<<<<<<<<<<<
@@ -2908,7 +2908,7 @@ static PyObject *__pyx_f_4util_get_bin_value(__Pyx_memviewslice __pyx_v_value_ma
     __pyx_t_4 = ((__pyx_v_value_index == __pyx_v_numb_intervals) != 0);
     if (__pyx_t_4) {
 
-      /* "util.pyx":53
+      /* "pyBedGraph/util.pyx":53
  *         value_index += 1
  *         if value_index == numb_intervals:
  *             break             # <<<<<<<<<<<<<<
@@ -2917,7 +2917,7 @@ static PyObject *__pyx_f_4util_get_bin_value(__Pyx_memviewslice __pyx_v_value_ma
  */
       goto __pyx_L12_break;
 
-      /* "util.pyx":52
+      /* "pyBedGraph/util.pyx":52
  * 
  *         value_index += 1
  *         if value_index == numb_intervals:             # <<<<<<<<<<<<<<
@@ -2926,7 +2926,7 @@ static PyObject *__pyx_f_4util_get_bin_value(__Pyx_memviewslice __pyx_v_value_ma
  */
     }
 
-    /* "util.pyx":54
+    /* "pyBedGraph/util.pyx":54
  *         if value_index == numb_intervals:
  *             break
  *         start = interval_start[value_index]             # <<<<<<<<<<<<<<
@@ -2944,7 +2944,7 @@ static PyObject *__pyx_f_4util_get_bin_value(__Pyx_memviewslice __pyx_v_value_ma
   }
   __pyx_L12_break:;
 
-  /* "util.pyx":56
+  /* "pyBedGraph/util.pyx":56
  *         start = interval_start[value_index]
  * 
  *     return total             # <<<<<<<<<<<<<<
@@ -2956,7 +2956,7 @@ static PyObject *__pyx_f_4util_get_bin_value(__Pyx_memviewslice __pyx_v_value_ma
   __pyx_t_5 = 0;
   goto __pyx_L0;
 
-  /* "util.pyx":23
+  /* "pyBedGraph/util.pyx":23
  *         index_list[start:end]= i
  * 
  * cpdef get_bin_value(double[:] value_map, int[:] index_list,             # <<<<<<<<<<<<<<
@@ -2969,7 +2969,7 @@ static PyObject *__pyx_f_4util_get_bin_value(__Pyx_memviewslice __pyx_v_value_ma
   __Pyx_XDECREF(__pyx_t_1);
   __Pyx_XDECREF(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_5);
-  __Pyx_AddTraceback("util.get_bin_value", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("pyBedGraph.util.get_bin_value", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -2978,8 +2978,8 @@ static PyObject *__pyx_f_4util_get_bin_value(__Pyx_memviewslice __pyx_v_value_ma
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_4util_5get_bin_value(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static PyObject *__pyx_pw_4util_5get_bin_value(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+static PyObject *__pyx_pw_10pyBedGraph_4util_5get_bin_value(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static PyObject *__pyx_pw_10pyBedGraph_4util_5get_bin_value(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   __Pyx_memviewslice __pyx_v_value_map = { 0, 0, { 0 }, { 0 }, { 0 } };
   __Pyx_memviewslice __pyx_v_index_list = { 0, 0, { 0 }, { 0 }, { 0 } };
   __Pyx_memviewslice __pyx_v_interval_start = { 0, 0, { 0 }, { 0 }, { 0 } };
@@ -3071,18 +3071,18 @@ static PyObject *__pyx_pw_4util_5get_bin_value(PyObject *__pyx_self, PyObject *_
   __pyx_L5_argtuple_error:;
   __Pyx_RaiseArgtupleInvalid("get_bin_value", 1, 6, 6, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 23, __pyx_L3_error)
   __pyx_L3_error:;
-  __Pyx_AddTraceback("util.get_bin_value", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("pyBedGraph.util.get_bin_value", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_4util_4get_bin_value(__pyx_self, __pyx_v_value_map, __pyx_v_index_list, __pyx_v_interval_start, __pyx_v_interval_end, __pyx_v_start, __pyx_v_end);
+  __pyx_r = __pyx_pf_10pyBedGraph_4util_4get_bin_value(__pyx_self, __pyx_v_value_map, __pyx_v_index_list, __pyx_v_interval_start, __pyx_v_interval_end, __pyx_v_start, __pyx_v_end);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_4util_4get_bin_value(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_value_map, __Pyx_memviewslice __pyx_v_index_list, __Pyx_memviewslice __pyx_v_interval_start, __Pyx_memviewslice __pyx_v_interval_end, int __pyx_v_start, int __pyx_v_end) {
+static PyObject *__pyx_pf_10pyBedGraph_4util_4get_bin_value(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_value_map, __Pyx_memviewslice __pyx_v_index_list, __Pyx_memviewslice __pyx_v_interval_start, __Pyx_memviewslice __pyx_v_interval_end, int __pyx_v_start, int __pyx_v_end) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -3092,7 +3092,7 @@ static PyObject *__pyx_pf_4util_4get_bin_value(CYTHON_UNUSED PyObject *__pyx_sel
   if (unlikely(!__pyx_v_index_list.memview)) { __Pyx_RaiseUnboundLocalError("index_list"); __PYX_ERR(0, 23, __pyx_L1_error) }
   if (unlikely(!__pyx_v_interval_start.memview)) { __Pyx_RaiseUnboundLocalError("interval_start"); __PYX_ERR(0, 23, __pyx_L1_error) }
   if (unlikely(!__pyx_v_interval_end.memview)) { __Pyx_RaiseUnboundLocalError("interval_end"); __PYX_ERR(0, 23, __pyx_L1_error) }
-  __pyx_t_1 = __pyx_f_4util_get_bin_value(__pyx_v_value_map, __pyx_v_index_list, __pyx_v_interval_start, __pyx_v_interval_end, __pyx_v_start, __pyx_v_end, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 23, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_10pyBedGraph_4util_get_bin_value(__pyx_v_value_map, __pyx_v_index_list, __pyx_v_interval_start, __pyx_v_interval_end, __pyx_v_start, __pyx_v_end, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 23, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -3101,7 +3101,7 @@ static PyObject *__pyx_pf_4util_4get_bin_value(CYTHON_UNUSED PyObject *__pyx_sel
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("util.get_bin_value", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("pyBedGraph.util.get_bin_value", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __PYX_XDEC_MEMVIEW(&__pyx_v_value_map, 1);
@@ -16261,7 +16261,7 @@ static PyBufferProcs __pyx_tp_as_buffer_array = {
 
 static PyTypeObject __pyx_type___pyx_array = {
   PyVarObject_HEAD_INIT(0, 0)
-  "util.array", /*tp_name*/
+  "pyBedGraph.util.array", /*tp_name*/
   sizeof(struct __pyx_array_obj), /*tp_basicsize*/
   0, /*tp_itemsize*/
   __pyx_tp_dealloc_array, /*tp_dealloc*/
@@ -16372,7 +16372,7 @@ static PyMethodDef __pyx_methods_Enum[] = {
 
 static PyTypeObject __pyx_type___pyx_MemviewEnum = {
   PyVarObject_HEAD_INIT(0, 0)
-  "util.Enum", /*tp_name*/
+  "pyBedGraph.util.Enum", /*tp_name*/
   sizeof(struct __pyx_MemviewEnum_obj), /*tp_basicsize*/
   0, /*tp_itemsize*/
   __pyx_tp_dealloc_Enum, /*tp_dealloc*/
@@ -16625,7 +16625,7 @@ static PyBufferProcs __pyx_tp_as_buffer_memoryview = {
 
 static PyTypeObject __pyx_type___pyx_memoryview = {
   PyVarObject_HEAD_INIT(0, 0)
-  "util.memoryview", /*tp_name*/
+  "pyBedGraph.util.memoryview", /*tp_name*/
   sizeof(struct __pyx_memoryview_obj), /*tp_basicsize*/
   0, /*tp_itemsize*/
   __pyx_tp_dealloc_memoryview, /*tp_dealloc*/
@@ -16755,7 +16755,7 @@ static struct PyGetSetDef __pyx_getsets__memoryviewslice[] = {
 
 static PyTypeObject __pyx_type___pyx_memoryviewslice = {
   PyVarObject_HEAD_INIT(0, 0)
-  "util._memoryviewslice", /*tp_name*/
+  "pyBedGraph.util._memoryviewslice", /*tp_name*/
   sizeof(struct __pyx_memoryviewslice_obj), /*tp_basicsize*/
   0, /*tp_itemsize*/
   __pyx_tp_dealloc__memoryviewslice, /*tp_dealloc*/
@@ -16823,7 +16823,7 @@ static PyTypeObject __pyx_type___pyx_memoryviewslice = {
 };
 
 static PyMethodDef __pyx_methods[] = {
-  {"get_bin_value", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_4util_5get_bin_value, METH_VARARGS|METH_KEYWORDS, 0},
+  {"get_bin_value", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_10pyBedGraph_4util_5get_bin_value, METH_VARARGS|METH_KEYWORDS, 0},
   {0, 0, 0, 0}
 };
 
@@ -16934,6 +16934,8 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_obj, __pyx_k_obj, sizeof(__pyx_k_obj), 0, 0, 1, 1},
   {&__pyx_n_s_pack, __pyx_k_pack, sizeof(__pyx_k_pack), 0, 0, 1, 1},
   {&__pyx_n_s_pickle, __pyx_k_pickle, sizeof(__pyx_k_pickle), 0, 0, 1, 1},
+  {&__pyx_n_s_pyBedGraph_util, __pyx_k_pyBedGraph_util, sizeof(__pyx_k_pyBedGraph_util), 0, 0, 1, 1},
+  {&__pyx_kp_s_pyBedGraph_util_pyx, __pyx_k_pyBedGraph_util_pyx, sizeof(__pyx_k_pyBedGraph_util_pyx), 0, 0, 1, 0},
   {&__pyx_n_s_pyx_PickleError, __pyx_k_pyx_PickleError, sizeof(__pyx_k_pyx_PickleError), 0, 0, 1, 1},
   {&__pyx_n_s_pyx_checksum, __pyx_k_pyx_checksum, sizeof(__pyx_k_pyx_checksum), 0, 0, 1, 1},
   {&__pyx_n_s_pyx_getbuffer, __pyx_k_pyx_getbuffer, sizeof(__pyx_k_pyx_getbuffer), 0, 0, 1, 1},
@@ -16964,8 +16966,6 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_kp_s_unable_to_allocate_shape_and_str, __pyx_k_unable_to_allocate_shape_and_str, sizeof(__pyx_k_unable_to_allocate_shape_and_str), 0, 0, 1, 0},
   {&__pyx_n_s_unpack, __pyx_k_unpack, sizeof(__pyx_k_unpack), 0, 0, 1, 1},
   {&__pyx_n_s_update, __pyx_k_update, sizeof(__pyx_k_update), 0, 0, 1, 1},
-  {&__pyx_n_s_util, __pyx_k_util, sizeof(__pyx_k_util), 0, 0, 1, 1},
-  {&__pyx_kp_s_util_pyx, __pyx_k_util_pyx, sizeof(__pyx_k_util_pyx), 0, 0, 1, 0},
   {&__pyx_n_s_value_list, __pyx_k_value_list, sizeof(__pyx_k_value_list), 0, 0, 1, 1},
   {&__pyx_n_s_value_map, __pyx_k_value_map, sizeof(__pyx_k_value_map), 0, 0, 1, 1},
   {0, 0, 0, 0, 0, 0, 0}
@@ -17180,7 +17180,7 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __Pyx_GOTREF(__pyx_tuple__18);
   __Pyx_GIVEREF(__pyx_tuple__18);
 
-  /* "util.pyx":1
+  /* "pyBedGraph/util.pyx":1
  * def fill_value_array(unsigned int[:] start_list, unsigned int[:] end_list,             # <<<<<<<<<<<<<<
  *                     double[:] value_map, double[:] value_list):
  *     assert tuple(start_list.shape) == tuple(end_list.shape)
@@ -17188,9 +17188,9 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __pyx_tuple__19 = PyTuple_Pack(8, __pyx_n_s_start_list, __pyx_n_s_end_list, __pyx_n_s_value_map, __pyx_n_s_value_list, __pyx_n_s_size, __pyx_n_s_i, __pyx_n_s_start, __pyx_n_s_end); if (unlikely(!__pyx_tuple__19)) __PYX_ERR(0, 1, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__19);
   __Pyx_GIVEREF(__pyx_tuple__19);
-  __pyx_codeobj__20 = (PyObject*)__Pyx_PyCode_New(4, 0, 8, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__19, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_util_pyx, __pyx_n_s_fill_value_array, 1, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__20)) __PYX_ERR(0, 1, __pyx_L1_error)
+  __pyx_codeobj__20 = (PyObject*)__Pyx_PyCode_New(4, 0, 8, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__19, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_pyBedGraph_util_pyx, __pyx_n_s_fill_value_array, 1, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__20)) __PYX_ERR(0, 1, __pyx_L1_error)
 
-  /* "util.pyx":12
+  /* "pyBedGraph/util.pyx":12
  *         value_list[start:end] = value_map[i]
  * 
  * def fill_index_array(unsigned int[:] start_list, unsigned int[:] end_list,             # <<<<<<<<<<<<<<
@@ -17200,7 +17200,7 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __pyx_tuple__21 = PyTuple_Pack(8, __pyx_n_s_start_list, __pyx_n_s_end_list, __pyx_n_s_value_map, __pyx_n_s_index_list, __pyx_n_s_size, __pyx_n_s_i, __pyx_n_s_start, __pyx_n_s_end); if (unlikely(!__pyx_tuple__21)) __PYX_ERR(0, 12, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__21);
   __Pyx_GIVEREF(__pyx_tuple__21);
-  __pyx_codeobj__22 = (PyObject*)__Pyx_PyCode_New(4, 0, 8, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__21, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_util_pyx, __pyx_n_s_fill_index_array, 12, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__22)) __PYX_ERR(0, 12, __pyx_L1_error)
+  __pyx_codeobj__22 = (PyObject*)__Pyx_PyCode_New(4, 0, 8, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__21, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_pyBedGraph_util_pyx, __pyx_n_s_fill_index_array, 12, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__22)) __PYX_ERR(0, 12, __pyx_L1_error)
 
   /* "View.MemoryView":286
  *         return self.name
@@ -17577,14 +17577,14 @@ if (!__Pyx_RefNanny) {
   #if PY_MAJOR_VERSION < 3 && (__PYX_DEFAULT_STRING_ENCODING_IS_ASCII || __PYX_DEFAULT_STRING_ENCODING_IS_DEFAULT)
   if (__Pyx_init_sys_getdefaultencoding_params() < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   #endif
-  if (__pyx_module_is_main_util) {
+  if (__pyx_module_is_main_pyBedGraph__util) {
     if (PyObject_SetAttr(__pyx_m, __pyx_n_s_name_2, __pyx_n_s_main) < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   }
   #if PY_MAJOR_VERSION >= 3
   {
     PyObject *modules = PyImport_GetModuleDict(); if (unlikely(!modules)) __PYX_ERR(0, 1, __pyx_L1_error)
-    if (!PyDict_GetItemString(modules, "util")) {
-      if (unlikely(PyDict_SetItemString(modules, "util", __pyx_m) < 0)) __PYX_ERR(0, 1, __pyx_L1_error)
+    if (!PyDict_GetItemString(modules, "pyBedGraph.util")) {
+      if (unlikely(PyDict_SetItemString(modules, "pyBedGraph.util", __pyx_m) < 0)) __PYX_ERR(0, 1, __pyx_L1_error)
     }
   }
   #endif
@@ -17605,29 +17605,29 @@ if (!__Pyx_RefNanny) {
   if (__Pyx_patch_abc() < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   #endif
 
-  /* "util.pyx":1
+  /* "pyBedGraph/util.pyx":1
  * def fill_value_array(unsigned int[:] start_list, unsigned int[:] end_list,             # <<<<<<<<<<<<<<
  *                     double[:] value_map, double[:] value_list):
  *     assert tuple(start_list.shape) == tuple(end_list.shape)
  */
-  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_4util_1fill_value_array, NULL, __pyx_n_s_util); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1, __pyx_L1_error)
+  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_10pyBedGraph_4util_1fill_value_array, NULL, __pyx_n_s_pyBedGraph_util); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_fill_value_array, __pyx_t_1) < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "util.pyx":12
+  /* "pyBedGraph/util.pyx":12
  *         value_list[start:end] = value_map[i]
  * 
  * def fill_index_array(unsigned int[:] start_list, unsigned int[:] end_list,             # <<<<<<<<<<<<<<
  *                     double[:] value_map, int[:] index_list):
  *     assert tuple(start_list.shape) == tuple(end_list.shape)
  */
-  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_4util_3fill_index_array, NULL, __pyx_n_s_util); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 12, __pyx_L1_error)
+  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_10pyBedGraph_4util_3fill_index_array, NULL, __pyx_n_s_pyBedGraph_util); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 12, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_fill_index_array, __pyx_t_1) < 0) __PYX_ERR(0, 12, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "util.pyx":1
+  /* "pyBedGraph/util.pyx":1
  * def fill_value_array(unsigned int[:] start_list, unsigned int[:] end_list,             # <<<<<<<<<<<<<<
  *                     double[:] value_map, double[:] value_list):
  *     assert tuple(start_list.shape) == tuple(end_list.shape)
@@ -17797,11 +17797,11 @@ if (!__Pyx_RefNanny) {
   __Pyx_XDECREF(__pyx_t_1);
   if (__pyx_m) {
     if (__pyx_d) {
-      __Pyx_AddTraceback("init util", __pyx_clineno, __pyx_lineno, __pyx_filename);
+      __Pyx_AddTraceback("init pyBedGraph.util", __pyx_clineno, __pyx_lineno, __pyx_filename);
     }
     Py_CLEAR(__pyx_m);
   } else if (!PyErr_Occurred()) {
-    PyErr_SetString(PyExc_ImportError, "init util");
+    PyErr_SetString(PyExc_ImportError, "init pyBedGraph.util");
   }
   __pyx_L0:;
   __Pyx_RefNannyFinishContext();

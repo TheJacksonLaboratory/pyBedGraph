@@ -7,10 +7,13 @@ from .Chrom_Data_Complete import Chrom_Data_Complete
 import numpy as np
 import time
 import os
+import logging
 
 CHROM_NAME_INDEX = 0
 BUFFER_COUNTER = 10000  # 10^4
 BUFFER_COUNTER = 100000  # 10^4
+
+log = logging.getLogger()
 
 
 class BedGraph:
@@ -23,28 +26,29 @@ class BedGraph:
         self.chrom_sizes = {}
         self.ignore_missing_bp = ignore_missing_bp
 
-        print(f"Reading in {chrom_size_file_name} ...")
+        log.info(f"Reading in {chrom_size_file_name} ...")
         with open(chrom_size_file_name) as chrom_size_file:
             for line in chrom_size_file:
                 data = line.split()
                 if len(data) != 2:
-                    print(f"\n{chrom_size_file} has an incorrect format."
-                          f"It must be in the format:\n"
-                          "chr1 100000\n"
-                          "chr2 50000")
+                    log.critical(f"\n{chrom_size_file} has an incorrect format."
+                                 f"It must be in the format:\n"
+                                 "chr1 100000\n"
+                                 "chr2 50000")
                     break
 
                 self.chrom_sizes[data[0]] = int(data[1])
 
         current_chrom = None
-        print(f"Reading in {data_file_name} ...")
+        log.info(f"Reading in {data_file_name} ...")
         with open(data_file_name) as data_file:
             for line in data_file:
                 data = line.split()
                 chrom_name = data[CHROM_NAME_INDEX]
 
                 if chrom_name not in self.chrom_sizes:
-                    print(f"{chrom_name} was not included in {chrom_size_file}")
+                    log.warning(
+                        f"{chrom_name} was not included in {chrom_size_file}")
                     continue
 
                 if chrom_wanted is not None and chrom_wanted != chrom_name:
@@ -62,11 +66,11 @@ class BedGraph:
                         current_chrom.trim_extra_space()
 
                     if ignore_missing_bp:
-                        current_chrom =\
+                        current_chrom = \
                             Chrom_Data(chrom_name, self.chrom_sizes[chrom_name],
                                        min_value)
                     else:
-                        current_chrom =\
+                        current_chrom = \
                             Chrom_Data_Complete(chrom_name,
                                                 self.chrom_sizes[chrom_name],
                                                 min_value)
@@ -79,8 +83,8 @@ class BedGraph:
             current_chrom.trim_extra_space()
 
             if current_chrom is None:
-                print(f"{chrom_wanted} was not found in {data_file_name}")
-                exit(-1)
+                log.critical(
+                    f"{chrom_wanted} was not found in {data_file_name}")
 
     def get_chrom(self, chrom_name):
         return self.chromosome_map[chrom_name]
@@ -100,13 +104,14 @@ class BedGraph:
     def get_method(self, chrom_name, stat):
 
         if chrom_name not in self.chromosome_map:
-            print(f"{chrom_name} is not a valid chromosome")
+            log.error(f"{chrom_name} is not a valid chromosome")
             return None
 
         chrom = self.chromosome_map[chrom_name]
 
         if not chrom.loaded_chrom:
-            print(f"{chrom.name} needs to be loaded before it can be searched.")
+            log.error(
+                f"{chrom.name} needs to be loaded before it can be searched.")
             return None
 
         return chrom.get_method(stat)
@@ -119,9 +124,10 @@ class BedGraph:
         end_list = np.zeros(num_tests, dtype=np.int32)
         for i in range(num_tests):
             if len(intervals[i]) != 3:
-                print(f"List given has incorrect formatting. It must be in the format:\n"
-                      "[[chr1, 1, 100], [chr1, 101, 200], ...]")
-                print(intervals[i])
+                log.error(
+                    f"List given has incorrect formatting. It must be in the format:\n"
+                    "[[chr1, 1, 100], [chr1, 101, 200], ...]")
+                log.error(intervals[i])
                 continue
 
             start_list[i] = intervals[i][1]
@@ -139,7 +145,8 @@ class BedGraph:
             start_list, end_list = self.change_shape(intervals)
 
         if start_list is None or end_list is None or chrom_name is None:
-            print("Must either have intervals or start_list, end_list, chrom_name")
+            log.error(
+                "Must either have intervals or start_list, end_list, chrom_name")
             return None
 
         if not type(start_list) is np.ndarray:
@@ -157,7 +164,7 @@ class BedGraph:
 
         start_time = time.time()
         result = method_to_call(start_list, end_list)
-        #print(f"Time for {stat}:", time.time() - start_time)
+        # log.info(f"Time for {stat}:", time.time() - start_time)
         return result
 
     # output to output_file if given, otherwise return a list of results
@@ -174,16 +181,18 @@ class BedGraph:
                 interval = line.split()
 
                 if len(interval) != 3:
-                    print(f"{interval_file} has incorrect formatting. It must be in the format:\n"
-                          "chr1\t100\t401\n"
-                          "chr1\t600\t1000\n"
-                          "chr2\t0\t1000\n"
-                          "...")
-                    print(interval)
+                    log.error(
+                        f"{interval_file} has incorrect formatting. It must be in the format:\n"
+                        "chr1\t100\t401\n"
+                        "chr1\t600\t1000\n"
+                        "chr2\t0\t1000\n"
+                        "...")
+                    log.error(interval)
                     break
 
                 # change current_chrom if interval wants a different chrom
-                if current_chrom_name is None or current_chrom_name != interval[0]:
+                if current_chrom_name is None or current_chrom_name != interval[
+                    0]:
                     current_chrom_name = interval[0]
                     if current_chrom_name not in test_intervals:
                         test_intervals[current_chrom_name] = {}
@@ -201,9 +210,12 @@ class BedGraph:
                 return
 
             start_time = time.time()
-            result = method_to_call(np.array(test_intervals[chrom_name]['start_list'], dtype=np.int32),
-                                    np.array(test_intervals[chrom_name]['end_list'], dtype=np.int32))
-            print(f"Time for {stat}:", time.time() - start_time)
+            result = method_to_call(
+                np.array(test_intervals[chrom_name]['start_list'],
+                         dtype=np.int32),
+                np.array(test_intervals[chrom_name]['end_list'],
+                         dtype=np.int32))
+            log.info(f"Time for {stat}:", time.time() - start_time)
 
             results[chrom_name] = result
             if output_to_file:

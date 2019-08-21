@@ -17,6 +17,7 @@
 !test/test_files/
 !test/test_files/*
 !test/*.py
+!test/*.conf
 !graphs/
 !graphs/*
 !graphs/v-1_graphs/**

@@ -12,6 +12,7 @@ A Python package for fast operations on 1-dimensional genomic signal tracks.
     - 16 bytes per line in bedGraph file
     - 4 bytes per basePair in every chromosome loaded
 - Loading the bedGraph file can take up to a minute or two
+- Only works with sorted bedgraph files
 
 ## Installation
 
@@ -32,6 +33,9 @@ https://thejacksonlaboratory.ent.box.com/s/3jglutwf3d54pnomnp33ivo7a9546vhe
 ### Create the object:
 ```python
 from pyBedGraph import BedGraph
+from logging.config import fileConfig
+
+fileConfig('default.conf')
 
 # arg1 - chromosome sizes file
 # arg2 - bedgraph file
