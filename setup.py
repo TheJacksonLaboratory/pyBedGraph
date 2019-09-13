@@ -9,7 +9,7 @@ extensions = [
 ]
 
 NAME = 'pyBedGraph'
-VERSION = '0.5.22'
+VERSION = '0.5.31'
 
 setuptools.setup(
 
