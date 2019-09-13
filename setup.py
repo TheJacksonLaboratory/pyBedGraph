@@ -33,7 +33,7 @@ setuptools.setup(
 
     install_requires=['numpy>=1.17.0'],
 
-    ext_modules=cythonize(extensions, language_level="3"),
+    ext_modules=cythonize(extensions, language_level=3),
 
     data_files=[("", ["LICENSE"])],
 
