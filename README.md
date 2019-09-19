@@ -18,6 +18,7 @@ A Python package for fast operations on 1-dimensional genomic signal tracks.
 
 Dependency requirements:
 - Numpy v1.16.4
+- Cython v0.29.13
 - pyBigWig v0.3.16 (for benchmark)
 
 With pip:

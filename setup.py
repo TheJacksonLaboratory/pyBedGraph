@@ -9,7 +9,7 @@ extensions = [
 ]
 
 NAME = 'pyBedGraph'
-VERSION = '0.5.31'
+VERSION = '0.5.32'
 
 setuptools.setup(
 
@@ -31,7 +31,8 @@ setuptools.setup(
 
     packages=setuptools.find_packages(),
 
-    install_requires=['numpy>=1.17.0'],
+    install_requires=['numpy>=1.16.4', 'pyBigWig>=0.3.16', 'cython>=0.29.12
+'],
 
     ext_modules=cythonize(extensions, language_level=3),
 
