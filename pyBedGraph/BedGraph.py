@@ -215,7 +215,7 @@ class BedGraph:
                          dtype=np.int32),
                 np.array(test_intervals[chrom_name]['end_list'],
                          dtype=np.int32))
-            log.info(f"Time for {stat}:", time.time() - start_time)
+            log.info(f"Time for {stat}: {time.time() - start_time}")
 
             results[chrom_name] = result
             if output_to_file:

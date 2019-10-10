@@ -1,15 +1,27 @@
 import setuptools
 from distutils.extension import Extension
-from Cython.Build import cythonize
+
+USE_CYTHON = False
+try:
+    from Cython.Distutils import build_ext
+    USE_CYTHON = True
+except ImportError:
+    pass
+
+ext = '.pyx' if USE_CYTHON else '.c'
 
 extensions = [
-    Extension('pyBedGraph.ignore_missing_bp', ['pyBedGraph/ignore_missing_bp.pyx']),
-    Extension('pyBedGraph.include_missing_bp', ['pyBedGraph/include_missing_bp.pyx']),
-    Extension('pyBedGraph.util', ['pyBedGraph/util.pyx']),
+    Extension('pyBedGraph.ignore_missing_bp', ['pyBedGraph/ignore_missing_bp' + ext]),
+    Extension('pyBedGraph.include_missing_bp', ['pyBedGraph/include_missing_bp' + ext]),
+    Extension('pyBedGraph.util', ['pyBedGraph/util' + ext]),
 ]
 
+if USE_CYTHON:
+    from Cython.Build import cythonize
+    extensions = cythonize(extensions, language_level=3)
+
 NAME = 'pyBedGraph'
-VERSION = '0.5.32'
+VERSION = '0.5.33'
 
 setuptools.setup(
 
@@ -31,9 +43,9 @@ setuptools.setup(
 
     packages=setuptools.find_packages(),
 
-    install_requires=['numpy>=1.16.4', 'pyBigWig>=0.3.16', 'cython>=0.29.12'],
+    install_requires=['numpy>=1.16.4'],
 
-    ext_modules=cythonize(extensions, language_level=3),
+    ext_modules=extensions,
 
     data_files=[("", ["LICENSE"])],
 
