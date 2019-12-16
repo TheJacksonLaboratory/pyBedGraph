@@ -1,2 +1,5 @@
 recursive-include pyBedGraph *.pyx
 recursive-include pyBedGraph *.c
+
+exclude pyBedGraph/Benchmark.py
+exclude test/*
