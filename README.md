@@ -17,13 +17,20 @@ A Python package for fast operations on 1-dimensional genomic signal tracks.
 ## Installation
 
 Dependency requirements:
-- Numpy v1.16.4
-- Cython v0.29.13
-- pyBigWig v0.3.16
+- Numpy >= v1.16.4
+- pyBigWig >= v0.3.16 (For reading bigWig files)
+    - pyBigWig == 0.3.16 (For Benchmarking)
 
 With pip:
 ```bash
 pip3 install pyBedGraph
+```
+
+With conda:
+```bash
+conda create -n test
+conda activate test
+conda install -c bioconda pyBedGraph
 ```
 
 ## Usage
@@ -31,12 +38,13 @@ pip3 install pyBedGraph
 ### Download the test files here:
 https://thejacksonlaboratory.ent.box.com/s/3jglutwf3d54pnomnp33ivo7a9546vhe
 
+Test files are also included in this Github repository: `test/test_files`.
+
+Enter the directory with the test files.
+
 ### Create the object:
 ```python
 from pyBedGraph import BedGraph
-from logging.config import fileConfig
-
-fileConfig('default.conf')
 
 # arg1 - chromosome sizes file
 # arg2 - bedgraph file
@@ -86,6 +94,9 @@ test_intervals = [
     ['chr1', 0, 5]
 ]
 values = bedGraph.stats(intervals=test_intervals)
+
+# [-1.    0.9   0.1  -1.    0.82]
+print(values)
 
 # Option 2
 start_list = np.array([24, 12, 8, 9, 0], dtype=np.int32)
@@ -158,15 +169,22 @@ inclusive_bedGraph.stats('max', test_intervals)
 inclusive_bedGraph.stats('std', test_intervals)
 ```
 
-## Benchmark:
+## Benchmarking pyBedGraph:
 Actual values are found from the `stats` function in pyBigWig with the `exact` argument being `True`. The error for exact stats will be ~1e-8 due to rounding error of conversion of bigWig and bedGraph files.
 
-Alternatively, one can make actual values be pyBedGraph's exact statistics. 
-```python
-from pyBedGraph import  BedGraph
-from graphs import Benchmark
+Alternatively, one can make actual values be pyBedGraph's exact statistics.
 
+Enter the `graphs` folder in the Github project repository.
+```python
+from pyBedGraph import BedGraph
+from Benchmark import Benchmark
+
+# These files can be downloaded from the link given above
 bedGraph = BedGraph('mm10.chrom.sizes', 'ENCFF376VCU.bedGraph', 'chr1')
+
+# Alternatively using a bigwig file
+# bedGraph = BedGraph('mm10.chrom.sizes', 'ENCFF376VCU.bigWig', 'chr1')
+
 bedGraph.load_chrom_data('chr1')
 bedGraph.load_chrom_bins('chr1', 100)
 
@@ -182,33 +200,27 @@ bench = Benchmark(bedGraph, 'ENCFF376VCU.bigWig')
 # arg6 - just_runtime (optional) (Default is False)
 # arg6 - bench_pyBigWig_approx (optional) (Default is True)
 # arg6 - make_pyBigWig_baseline (optional) (Default is True)
-result = bench.benchmark(10000, 500, 'chr1', 100, stats=['mean'])
+# Test all statistics
+result = bench.benchmark(10000, 5000, 'chr1', 100)
 
 for key in result:
     print(key, result[key])
-# formatted
-# mean {'run_time': 0.002971172332763672, 'error': {'percent_error': 1.1133849453411403e-08, 'ms_error': 1.1558877957200436e-15, 'abs_error': 5.565259658128112e-09, 'not_included': 0}}
-# pyBigWig_mean {'approx_run_time': 0.570319652557373, 'exact_run_time': 0.5670754909515381, 'error': {'percent_error': 0.0, 'ms_error': 0.0, 'abs_error': 0.0, 'not_included': 0}}
 
-
-# Test all statistics
-result = bench.benchmark(10000, 500, 'chr1', 100)
-
-# mean {'run_time': 0.0033969879150390625, 'error': {'percent_error': 1.1133849453411403e-08, 'ms_error': 1.1558877957200436e-15, 'abs_error': 5.565259658128112e-09, 'not_included': 0}}
-# pyBigWig_mean {'approx_run_time': 1.4938299655914307, 'exact_run_time': 1.4855470657348633, 'error': {'percent_error': 0.0, 'ms_error': 0.0, 'abs_error': 0.0, 'not_included': 0}}
-# approx_mean {'run_time': 0.0029401779174804688, 'error': {'percent_error': 0.05871362950772767, 'ms_error': 0.0007750126193535608, 'abs_error': 0.017845196959357015, 'not_included': 107}}
-# max {'run_time': 0.003038167953491211, 'error': {'percent_error': 2.1245231544977356e-08, 'ms_error': 9.128975974031677e-13, 'abs_error': 6.218157096711807e-08, 'not_included': 0}}
-# pyBigWig_max {'approx_run_time': 1.4961540699005127, 'exact_run_time': 1.5022919178009033, 'error': {'percent_error': 0.0, 'ms_error': 0.0, 'abs_error': 0.0, 'not_included': 0}}
-# min {'run_time': 0.002947092056274414, 'error': {'percent_error': 2.3296755440892273e-10, 'ms_error': 9.931400247350677e-19, 'abs_error': 7.883071898306948e-11, 'not_included': 0}}
-# pyBigWig_min {'approx_run_time': 1.4919359683990479, 'exact_run_time': 1.4932668209075928, 'error': {'percent_error': 0.0, 'ms_error': 0.0, 'abs_error': 0.0, 'not_included': 0}}
-# coverage {'run_time': 0.002975940704345703, 'error': {'percent_error': 0.0, 'ms_error': 0.0, 'abs_error': 0.0, 'not_included': 0}}
-# pyBigWig_coverage {'approx_run_time': 1.4844129085540771, 'exact_run_time': 1.5427591800689697, 'error': {'percent_error': 0.0, 'ms_error': 0.0, 'abs_error': 0.0, 'not_included': 0}}
-# std {'run_time': 0.010123968124389648, 'error': {'percent_error': 0.0008802452423860437, 'ms_error': 3.5123006260771487e-07, 'abs_error': 0.0004987475752671237, 'not_included': 0}}
-# pyBigWig_std {'approx_run_time': 1.5250320434570312, 'exact_run_time': 1.4730277061462402, 'error': {'percent_error': 0.0, 'ms_error': 0.0, 'abs_error': 0.0, 'not_included': 0}}
+# mean {'run_time': 0.008324861526489258, 'error': {'percent_error': 0.0, 'ms_error': 0.0, 'abs_error': 0.0, 'not_included': 0}}
+# pyBigWig_mean {'approx_run_time': 1.4333949089050293, 'exact_run_time': 0.7698564529418945, 'error': {'percent_error': 0.06567272540694802, 'ms_error': 0.001222419386871348, 'abs_error': 0.023540340949669364, 'not_included': 79}}
+# approx_mean {'run_time': 0.002111673355102539, 'error': {'percent_error': 0.006529644707171326, 'ms_error': 7.858080037556034e-06, 'abs_error': 0.001824641073039555, 'not_included': 4}}
+# max {'run_time': 0.005040645599365234, 'error': {'percent_error': 0.0, 'ms_error': 0.0, 'abs_error': 0.0, 'not_included': 0}}
+# pyBigWig_max {'approx_run_time': 1.2673799991607666, 'exact_run_time': 0.7933700084686279, 'error': {'percent_error': 0.10220448242023446, 'ms_error': 1.2678718593032368, 'abs_error': 0.25865022624731066, 'not_included': 79}}
+# min {'run_time': 0.005083560943603516, 'error': {'percent_error': 0.0, 'ms_error': 0.0, 'abs_error': 0.0, 'not_included': 0}}
+# pyBigWig_min {'approx_run_time': 1.2120039463043213, 'exact_run_time': 0.7468140125274658, 'error': {'percent_error': 0.0001, 'ms_error': 7.109862619931795e-07, 'abs_error': 8.432000130414962e-06, 'not_included': 0}}
+# coverage {'run_time': 0.0063626766204833984, 'error': {'percent_error': 0.0, 'ms_error': 0.0, 'abs_error': 0.0, 'not_included': 0}}
+# pyBigWig_coverage {'approx_run_time': 1.2101118564605713, 'exact_run_time': 0.7483360767364502, 'error': {'percent_error': 0.0, 'ms_error': 0.0, 'abs_error': 0.0, 'not_included': 0}}
+# std {'run_time': 0.0422673225402832, 'error': {'percent_error': 9.690484548456011e-05, 'ms_error': 4.764358150024449e-09, 'abs_error': 6.25265457158463e-05, 'not_included': 0}}
+# pyBigWig_std {'approx_run_time': 1.219078540802002, 'exact_run_time': 0.7484426498413086, 'error': {'percent_error': 0.04560011737269686, 'ms_error': 0.005008324729263816, 'abs_error': 0.02569405301725115, 'not_included': 79}}
 ```
 
 ## Reference 
 [pyBedGraph: a Python package for fast operations on 1-dimensional genomic signal tracks](https://www.biorxiv.org/content/10.1101/709683v1), Zhang et al., bioRxiv, 2019
 
 ## Bug reports
-To report bugs, contact Henry (henry.zhang@jax.org) and Minji (minji.kim@jax.org) or visit the [Issues](https://github.com/TheJacksonLaboratory/pyBedGraph/issues) page. 
+To report bugs, contact Henry (henrybzhang.99@gmail.com) and Minji (minji.kim@jax.org) or visit the [Issues](https://github.com/TheJacksonLaboratory/pyBedGraph/issues) page. 

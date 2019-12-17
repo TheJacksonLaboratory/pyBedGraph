@@ -23,4 +23,6 @@
 !graphs/v-1_graphs/**
 !graphs/v1_graphs/**
 !graphs/v2_graphs/**
+!graphs/v3_graphs/**
 graphs/log.txt
+*.swp

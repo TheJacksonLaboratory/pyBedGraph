@@ -62,8 +62,6 @@ class Benchmark:
 
         self.chromosome = self.bedGraph.chromosome_map[chrom_name]
         self.bedGraph.load_chrom_data(chrom_name)
-        print(self.bedGraph.chromosome_map[chrom_name].index_list)
-        print(len(self.bedGraph.chromosome_map[chrom_name].index_list))
         if 'approx_mean' in stats:
             if bin_size is None:
                 print("Must give a bin_size if benchmarking approx_mean")

@@ -43,8 +43,7 @@ setuptools.setup(
 
     packages=setuptools.find_packages(),
 
-    install_requires=['numpy>=1.16.4',
-                      'pyBigWig==0.3.16'],
+    install_requires=['numpy>=1.16.4'],
 
     ext_modules=extensions,
 

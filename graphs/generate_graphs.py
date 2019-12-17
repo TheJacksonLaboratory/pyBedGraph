@@ -25,12 +25,24 @@ TABLE_HEADERS = [
     '# Actual is 0'
 ]
 
+RUNTIME_TABLE_HEADERS = [
+    'Dataset',
+    'pyBW exact',
+    'pyBW app.',
+    'pyBG exact',
+    'pyBG app. bin=100',
+    'pyBG app. bin=50',
+    'pyBG app. bin=25'
+]
+
 TITLE_FONT_SIZE = 16
 AXIS_FONT_SIZE = 12
 LEGEND_FONT_SIZE = 10
 
 GRAPH_ROOT_LOCATION = 'graphs'
 NUM_ERROR_TYPES = 4
+
+sample_runtimes = {}
 
 
 # Interval size: 500
@@ -47,6 +59,10 @@ def create_runtime_num_test(infile, data_name):
 
         results = infile.readline().split()
         run_times[name] = [float(x) for x in results]
+
+    sample_runtimes[data_name] = {}
+    for test in run_times:
+        sample_runtimes[data_name][test] = run_times[test][-1]
 
     i = 0
     for name in run_times:
@@ -96,6 +112,12 @@ def create_interval_error(in_file, data_name):
                 error = round(error, 5)
 
                 table_cells[name][x].append(error)
+
+    # Don't include intervals of over 10k in the graph
+    while intervals[-1] >= 10000:
+        intervals.pop()
+        for name in errors:
+            errors[name]['percent_error'].pop()
 
     i = 0
     for name in errors:
@@ -148,6 +170,12 @@ def create_interval_runtime(in_file, data_name):
         results = in_file.readline().split()
         run_times[name] = [float(x) for x in results]
 
+    # Don't include intervals of over 10k in the graph
+    while intervals[-1] >= 10000:
+        intervals.pop()
+        for name in run_times:
+            run_times[name].pop()
+
     i = 0
     for name in run_times:
         plt.plot(intervals, [np.log10(x) for x in run_times[name]],
@@ -179,6 +207,49 @@ def create_values_indexed(in_file, data_name):
     plt.close()
 
 
+def create_million_runtime_table():
+    name_order = [
+        'ENCFF050CCI',
+        'ENCFF321FZQ',
+        'ENCFF376VCU',
+        'ENCFF384CMP',
+        'ENCFF631HEX',
+        'ENCFF643WMY',
+        'ENCFF770CQD',
+        'ENCFF847JMY',
+        'ENCFF726XVA',
+        'ENCFF877IHY',
+        'ENCFF000LAB',
+        'ENCFF000KYT'
+    ]
+    table_cells = [[name] + [round(sample_runtimes[name][stat], 3) for stat in RUNTIME_TABLE_HEADERS[1:]] for name in name_order]
+    average = [round(np.mean([sample_runtimes[sample][stat] for sample in sample_runtimes]), 3) for stat in RUNTIME_TABLE_HEADERS[1:]]
+    table_cells.append(['Average'] + average)
+
+    plt.figure()
+    # plt.title(f"Runtime for 1 Million Test Intervals", fontsize=AXIS_FONT_SIZE)
+    table = plt.table(
+        cellText=table_cells,
+        colWidths=[1/7 for _ in range(7)],
+        colLabels=RUNTIME_TABLE_HEADERS,
+        loc='center'
+    )
+    table.auto_set_font_size(False)
+    table.set_fontsize(LEGEND_FONT_SIZE)
+    table.scale(2, 2)
+    plt.tick_params(axis='x', which='both', bottom=False, top=False,
+                    labelbottom=False)
+    plt.tick_params(axis='y', which='both', right=False, left=False,
+                    labelleft=False)
+
+    for pos in ['right', 'top', 'bottom', 'left']:
+        plt.gca().spines[pos].set_visible(False)
+
+    plt.savefig(f'graphs/runtime_table.png',
+                bbox_inches='tight', pad_inches=0.05)
+    plt.close()
+
+
 def main():
     # create_values_indexed(open('graphs/ENCFF376VCU/values_indexed.txt'), 'ENCFF376VCU')
 
@@ -191,16 +262,19 @@ def main():
             with open(file_path) as in_file:
                 if file_name == 'run_time_results.txt':
                     pass
-                    #create_runtime_num_test(in_file, data_name)
+                    create_runtime_num_test(in_file, data_name)
                 elif file_name == 'interval_error_results.txt':
-                    create_interval_error(in_file, data_name)
+                    pass
+                    # create_interval_error(in_file, data_name)
                 elif file_name == 'interval_runtime_results.txt':
                     pass
-                    #create_interval_runtime(in_file, data_name)
-                elif file_name[-4:] == '.png':
+                    # create_interval_runtime(in_file, data_name)
+                elif file_name[-4:] == '.png' or file_name[-4:] == '.swp':
                     continue
                 else:
                     print(f"Unknown file: {file_name}")
+
+    create_million_runtime_table()
 
 
 if __name__ == '__main__':
