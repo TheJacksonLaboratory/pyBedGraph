@@ -18,7 +18,26 @@ def fill_index_array(unsigned int[:] start_list, unsigned int[:] end_list,
     for i in range(size):
         start = start_list[i]
         end = end_list[i]
-        index_list[start:end]= i
+        index_list[start:end] = i
+
+def fill_index_array_test(unsigned int[:] start_list, unsigned int[:] end_list,
+                    double[:] value_map, int[:] index_list):
+    assert tuple(start_list.shape) == tuple(end_list.shape)
+
+    cdef size_t size = start_list.size, i, start, end, prev_start
+    cdef unsigned int prev_value = -1
+
+    prev_start = size
+    for i in range(size - 1, -1, -1):
+
+        start = start_list[i]
+        end = end_list[i]
+
+        index_list[start:end] = i
+
+        index_list[end:prev_start] = prev_value
+        prev_start = start
+        prev_value = -1 * i
 
 cpdef get_bin_value(double[:] value_map, int[:] index_list,
                  unsigned int[:] interval_start, unsigned int[:] interval_end,
