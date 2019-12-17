@@ -1,9 +1,7 @@
-import time
 import sys
 import math
 sys.path.append("..")
 from pyBedGraph.BedGraph import BedGraph
-from pyBedGraph.Benchmark import Benchmark
 
 if len(sys.argv) < 5:
     print("Needs 4 arguments:\n"

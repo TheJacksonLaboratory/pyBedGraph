@@ -21,7 +21,10 @@ class BedGraph:
     def __init__(self, chrom_size_file_name, data_file_name, chrom_wanted=None,
                  ignore_missing_bp=True, min_value=-1):
 
-        self.name = os.path.basename(data_file_name).split('.')[0]
+        file_parts = os.path.basename(data_file_name).split('.')
+        using_bigwig = (file_parts[1].lower() == 'bigwig')
+
+        self.name = file_parts[0]
         self.chromosome_map = {}
         self.chrom_sizes = {}
         self.ignore_missing_bp = ignore_missing_bp
@@ -37,54 +40,78 @@ class BedGraph:
                                  "chr2 50000")
                     break
 
-                self.chrom_sizes[data[0]] = int(data[1])
+                chrom_name = data[0]
+                self.chrom_sizes[chrom_name] = int(data[1])
 
-        current_chrom = None
-        log.info(f"Reading in {data_file_name} ...")
-        with open(data_file_name) as data_file:
-            for line in data_file:
-                data = line.split()
-                chrom_name = data[CHROM_NAME_INDEX]
+        if not using_bigwig:
+            current_chrom = None
+            log.info(f"Reading in {data_file_name} ...")
+            with open(data_file_name) as data_file:
+                for line in data_file:
+                    data = line.split()
+                    chrom_name = data[CHROM_NAME_INDEX]
 
-                if chrom_name not in self.chrom_sizes:
-                    log.warning(
-                        f"{chrom_name} was not included in {chrom_size_file}")
-                    continue
-
-                if chrom_wanted is not None and chrom_wanted != chrom_name:
-                    # have not yet created specified chromosome and added data
-                    if current_chrom is None:
+                    if chrom_name not in self.chrom_sizes:
+                        if chrom_wanted is None:
+                            log.warning(
+                                f"{chrom_name} was not included in {chrom_size_file}")
                         continue
 
-                    # done with adding data, stop now
-                    else:
-                        break
+                    # Create chromosome object here to trim right after adding
+                    if chrom_name not in self.chromosome_map:
+                        if ignore_missing_bp:
+                            self.chromosome_map[chrom_name] = \
+                                Chrom_Data(chrom_name,
+                                           self.chrom_sizes[chrom_name],
+                                           min_value)
+                        else:
+                            self.chromosome_map[chrom_name] = \
+                                Chrom_Data_Complete(chrom_name,
+                                                    self.chrom_sizes[
+                                                        chrom_name],
+                                                    min_value)
 
-                if current_chrom is None or chrom_name != current_chrom.name:
-                    # clean up the current chromosome before moving on
-                    if current_chrom is not None:
+                    if current_chrom is None:
+                        current_chrom = self.chromosome_map[chrom_name]
+
+                    if current_chrom.name != chrom_name:
                         current_chrom.trim_extra_space()
+                        current_chrom = self.chromosome_map[chrom_name]
 
-                    if ignore_missing_bp:
-                        current_chrom = \
-                            Chrom_Data(chrom_name, self.chrom_sizes[chrom_name],
-                                       min_value)
-                    else:
-                        current_chrom = \
-                            Chrom_Data_Complete(chrom_name,
-                                                self.chrom_sizes[chrom_name],
-                                                min_value)
+                    current_chrom.add_data(data)
 
-                    self.chromosome_map[chrom_name] = current_chrom
+                if current_chrom is None:
+                    log.critical(
+                        f"{chrom_wanted} was not found in {data_file_name}")
 
-                current_chrom.add_data(data)
+                # clean up the last chromosome found in the bedGraph file
+                current_chrom.trim_extra_space()
 
-            # clean up the last chromosome found in the bedGraph file
-            current_chrom.trim_extra_space()
+        else:
+            import pyBigWig
+            bw = pyBigWig.open(data_file_name)
 
-            if current_chrom is None:
-                log.critical(
-                    f"{chrom_wanted} was not found in {data_file_name}")
+            for chrom_name in self.chrom_sizes:
+                try:
+                    chrom_intervals = bw.intervals(chrom_name)
+                except RuntimeError:
+                    continue
+
+                if ignore_missing_bp:
+                    self.chromosome_map[chrom_name] = \
+                        Chrom_Data(chrom_name,
+                                   self.chrom_sizes[chrom_name],
+                                   min_value)
+                else:
+                    self.chromosome_map[chrom_name] = \
+                        Chrom_Data_Complete(chrom_name,
+                                            self.chrom_sizes[chrom_name],
+                                            min_value)
+
+                current_chrom = self.chromosome_map[chrom_name]
+                for interval in chrom_intervals:
+                    current_chrom.add_bigwig_data(interval)
+                current_chrom.trim_extra_space()
 
     def get_chrom(self, chrom_name):
         return self.chromosome_map[chrom_name]

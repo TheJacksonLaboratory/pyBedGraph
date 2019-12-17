@@ -6,9 +6,10 @@ from .util import *
 
 log = logging.getLogger()
 
-START_INDEX = 1
-END_INDEX = 2
-VALUE_INDEX = 3
+# Values from bigWig come in array of length 3 instead of 4 from bedgraph files
+START_INDEX = -3
+END_INDEX = -2
+VALUE_INDEX = -1
 
 MAX_NUMB_BIN_LIST = 1
 MIN_BIN_SIZE = 2
@@ -66,6 +67,35 @@ class Chrom_Data:
         self.num_intervals += 1
         self.num_samples += value * (end - start)
         self.total_coverage += (end - start)
+
+    def add_bigwig_data(self, data):
+        value = data[VALUE_INDEX]
+
+        if value < self.min_value:
+            return
+
+        start = data[START_INDEX]
+        end = data[END_INDEX]
+
+        self.intervals[0][self.num_intervals] = start
+        self.intervals[1][self.num_intervals] = end
+        self.value_map[self.num_intervals] = value
+
+        self.num_intervals += 1
+        interval_size = end - start
+        self.num_samples += value * interval_size
+        self.total_coverage += interval_size
+
+        # self.intervals = np.array([d[:2] for d in data], dtype=np.uint32)
+        # self.intervals = np.swapaxes(self.intervals, 0, 1)
+        # self.value_map = np.array([d[-1] for d in data], dtype=np.float64)
+        #
+        # self.num_intervals += len(data)
+        #
+        # for i in range(self.num_intervals):
+        #     interval_size = self.intervals[1][i] - self.intervals[0][i]
+        #     self.num_samples += self.value_map[i] * interval_size
+        #     self.total_coverage += interval_size
 
     # shorten length to # of intervals in bedGraph file for the chromosome
     def trim_extra_space(self):

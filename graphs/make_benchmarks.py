@@ -2,10 +2,10 @@ import sys
 import os
 import time
 from pathlib import Path
-import math
-sys.path.append("..")
-from pyBedGraph.BedGraph import BedGraph
-from pyBedGraph.Benchmark import Benchmark
+from Benchmark import Benchmark
+
+# sys.path.append("..")
+from pyBedGraph import BedGraph
 
 MIN_NUM_TEST = 100000
 MAX_NUM_TEST = 1000000
@@ -30,7 +30,7 @@ INTERVAL_RUNTIME_NAMES = [
 
 total_start_time = time.time()
 
-interval_test_list = [100, 250, 500, 750, 1000, 2000, 3000, 4000, 5000]
+interval_test_list = [100, 250, 500, 750, 1000, 2500, 5000, 10000, 50000, 100000]
 bin_size_test_list = [5, 10, 20]
 
 # Tests to make sure it works
@@ -122,7 +122,7 @@ def runtime_benchmark():
 
     run_time_results = {}
 
-    '''stats_to_bench = ['mean']
+    stats_to_bench = ['mean']
     for name in RUN_TIME_NAMES:
         run_time_results[name] = []
 
@@ -133,7 +133,7 @@ def runtime_benchmark():
         run_time_results['pyBW app.'].append(result['pyBigWig_mean']['approx_run_time'])
         run_time_results['pyBW exact'].append(result['pyBigWig_mean']['exact_run_time'])
 
-        print(f"Total time taken so far (min): {(time.time() - total_start_time) / 60}")'''
+        print(f"Total time taken so far (min): {(time.time() - total_start_time) / 60}")
 
     stats_to_bench = ['approx_mean']
     for bin_size_divide in bin_size_test_list:
@@ -167,7 +167,7 @@ if len(sys.argv) != 4:
 chrom_name = 'chr1'
 
 start_time = time.time()
-bedGraph = BedGraph(sys.argv[1], sys.argv[2], chrom_name)
+bedGraph = BedGraph(sys.argv[1], sys.argv[3], chrom_name)
 print("Time for loading bedGraph file: ", time.time() - start_time)
 
 start_time = time.time()
@@ -183,4 +183,4 @@ if not os.path.isdir(f'graphs/{data_name}'):
 
 runtime_benchmark()
 interval_size_error_benchmark()
-#interval_size_runtime_benchmark()
+interval_size_runtime_benchmark()

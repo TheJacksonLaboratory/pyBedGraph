@@ -5,10 +5,6 @@ import math
 
 log = logging.getLogger()
 
-START_INDEX = 1
-END_INDEX = 2
-VALUE_INDEX = 3
-
 MAX_NUMB_BIN_LIST = 1
 MIN_BIN_SIZE = 2
 

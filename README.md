@@ -19,7 +19,7 @@ A Python package for fast operations on 1-dimensional genomic signal tracks.
 Dependency requirements:
 - Numpy v1.16.4
 - Cython v0.29.13
-- pyBigWig v0.3.16 (for benchmark)
+- pyBigWig v0.3.16
 
 With pip:
 ```bash
@@ -122,7 +122,7 @@ print(result)
 # [-1.    0.9   0.1  -1.    0.82]
 bedGraph.stats('mean', test_intervals)
 
-# [-1.          0.9        -1.         -1.          0.76666667]
+# [-1.          0.9        0.1.         -1.          0.8076923076923077]
 bedGraph.stats('approx_mean', test_intervals)
 
 # [0.         0.33333333 0.25       0.         1.        ]
@@ -163,7 +163,8 @@ Actual values are found from the `stats` function in pyBigWig with the `exact` a
 
 Alternatively, one can make actual values be pyBedGraph's exact statistics. 
 ```python
-from pyBedGraph import Benchmark, BedGraph
+from pyBedGraph import  BedGraph
+from graphs import Benchmark
 
 bedGraph = BedGraph('mm10.chrom.sizes', 'ENCFF376VCU.bedGraph', 'chr1')
 bedGraph.load_chrom_data('chr1')
