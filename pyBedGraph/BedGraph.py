@@ -34,11 +34,13 @@ class BedGraph:
             for line in chrom_size_file:
                 data = line.split()
                 if len(data) != 2:
-                    log.critical(f"\n{chrom_size_file} has an incorrect format."
-                                 f"It must be in the format:\n"
-                                 "chr1 100000\n"
-                                 "chr2 50000")
-                    break
+                    error_msg = f"\n{chrom_size_file} has an incorrect format."\
+                                f"It must be in the format:\n"\
+                                "chr1 100000\n"\
+                                "chr2 50000"
+                    log.critical(error_msg)
+
+                    raise RuntimeError(error_msg)
 
                 chrom_name = data[0]
                 self.chrom_sizes[chrom_name] = int(data[1])
@@ -83,8 +85,11 @@ class BedGraph:
                     current_chrom.add_data(data)
 
                 if current_chrom is None:
-                    log.critical(
-                        f"{chrom_wanted} was not found in {data_file_name}")
+                    error_msg = f"{chrom_wanted} was not found in " \
+                                f"{data_file_name}"
+                    log.critical(error_msg)
+
+                    raise RuntimeError(error_msg)
 
                 # clean up the last chromosome found in the bedGraph file
                 current_chrom.trim_extra_space()

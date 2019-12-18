@@ -32,6 +32,7 @@ class Chrom_Data:
         self.avg_interval_value = -1
         self.avg_interval_size = -1
 
+        # Max possible number of intervals is length of chromosome
         # starting length is the size of chromosome
         # later shorten to save memory
         self.value_map = np.zeros(size, dtype=np.float64)
@@ -111,6 +112,13 @@ class Chrom_Data:
         log.info(f"Average interval size: {self.avg_interval_size}")
         log.info(f"Average chromosome value: {self.avg_chrom_value}")
         log.info(f'Average interval value: {self.avg_interval_value}')
+
+        if self.max_index > self.size:
+            error_msg = f'Interval: ' \
+                        f'{self.intervals[0][-1], self.intervals[1][-1]} is ' \
+                        f'not valid for a chromosome with size: {self.size}'
+            log.critical(error_msg)
+            raise RuntimeError(error_msg)
 
     def remove_intervals(self, interval_index_list):
         for interval_index in interval_index_list:
