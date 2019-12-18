@@ -52,9 +52,11 @@ class BedGraph:
                     chrom_name = data[CHROM_NAME_INDEX]
 
                     if chrom_name not in self.chrom_sizes:
-                        if chrom_wanted is None:
-                            log.warning(
-                                f"{chrom_name} was not included in {chrom_size_file}")
+                        log.warning(
+                            f"{chrom_name} was not included in {chrom_size_file}")
+                        continue
+
+                    if chrom_wanted is not None and chrom_name != chrom_wanted:
                         continue
 
                     # Create chromosome object here to trim right after adding
@@ -88,10 +90,15 @@ class BedGraph:
                 current_chrom.trim_extra_space()
 
         else:
+            # start_time = time.time()
             import pyBigWig
             bw = pyBigWig.open(data_file_name)
 
             for chrom_name in self.chrom_sizes:
+
+                if chrom_wanted is not None and chrom_name != chrom_wanted:
+                    continue
+
                 try:
                     chrom_intervals = bw.intervals(chrom_name)
                 except RuntimeError:
@@ -111,7 +118,10 @@ class BedGraph:
                 current_chrom = self.chromosome_map[chrom_name]
                 for interval in chrom_intervals:
                     current_chrom.add_bigwig_data(interval)
+                # current_chrom.add_bigwig_data(chrom_intervals)
                 current_chrom.trim_extra_space()
+
+            # print(time.time() - start_time)
 
     def get_chrom(self, chrom_name):
         return self.chromosome_map[chrom_name]
