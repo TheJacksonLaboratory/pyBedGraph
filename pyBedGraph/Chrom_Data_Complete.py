@@ -11,8 +11,8 @@ MIN_BIN_SIZE = 2
 
 class Chrom_Data_Complete(Chrom_Data):
 
-    def __init__(self, name, size, min_value):
-        super().__init__(name, size, min_value)
+    def __init__(self, name, size, min_value, debug):
+        super().__init__(name, size, min_value, debug)
 
         # coverage is not used in this class
         self.bins_list_coverages = None

@@ -18,8 +18,11 @@ log = logging.getLogger()
 
 class BedGraph:
 
+    """
+    min_value only works when loading bedgraphs
+    """
     def __init__(self, chrom_size_file_name, data_file_name, chrom_wanted=None,
-                 ignore_missing_bp=True, min_value=-1):
+                 ignore_missing_bp=True, min_value=-1, debug=False):
 
         file_parts = os.path.basename(data_file_name).split('.')
         using_bigwig = (file_parts[1].lower() == 'bigwig')
@@ -67,13 +70,13 @@ class BedGraph:
                             self.chromosome_map[chrom_name] = \
                                 Chrom_Data(chrom_name,
                                            self.chrom_sizes[chrom_name],
-                                           min_value)
+                                           min_value, debug=debug)
                         else:
                             self.chromosome_map[chrom_name] = \
                                 Chrom_Data_Complete(chrom_name,
                                                     self.chrom_sizes[
                                                         chrom_name],
-                                                    min_value)
+                                                    min_value, debug=debug)
 
                     if current_chrom is None:
                         current_chrom = self.chromosome_map[chrom_name]
@@ -113,17 +116,19 @@ class BedGraph:
                     self.chromosome_map[chrom_name] = \
                         Chrom_Data(chrom_name,
                                    self.chrom_sizes[chrom_name],
-                                   min_value)
+                                   min_value, debug=debug)
                 else:
                     self.chromosome_map[chrom_name] = \
                         Chrom_Data_Complete(chrom_name,
                                             self.chrom_sizes[chrom_name],
-                                            min_value)
+                                            min_value, debug=debug)
 
                 current_chrom = self.chromosome_map[chrom_name]
-                for interval in chrom_intervals:
-                    current_chrom.add_bigwig_data(interval)
-                # current_chrom.add_bigwig_data(chrom_intervals)
+                if min_value > -1:
+                    for interval in chrom_intervals:
+                        current_chrom.add_data(interval)
+                else:
+                    current_chrom.add_bigwig_data(chrom_intervals)
                 current_chrom.trim_extra_space()
 
             # print(time.time() - start_time)

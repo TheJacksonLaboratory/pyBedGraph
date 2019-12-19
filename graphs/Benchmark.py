@@ -7,7 +7,7 @@ APPROX_MEAN_INDEX = 1
 MOD_APPROX_MEAN_INDEX = 2
 RANDOM_SEED = 1
 
-ERROR = 0.00000001
+ALMOST_ZERO_ERROR = 0.00000001
 
 mean_names = [
     'pyBigWig_exact',
@@ -235,6 +235,7 @@ class Benchmark:
         mse_error_values = []
         abs_error_values = []
         not_included = 0
+        numb_actual_0 = 0
         for i in range(len(predicted_values)):
             actual = actual_values[i]
             predicted = predicted_values[i]
@@ -242,13 +243,16 @@ class Benchmark:
             if actual is None or actual == -1:
                 actual = 0
 
-            if predicted is None or predicted == -1 or predicted <= ERROR:
+            if predicted is None or predicted == -1 or predicted <= ALMOST_ZERO_ERROR:
                 predicted = 0
 
             abs_error_values.append(abs(actual - predicted))
             mse_error_values.append((actual - predicted) * (actual - predicted))
 
-            if actual == 0 and predicted > ERROR:
+            if actual == 0:
+                numb_actual_0 += 1
+
+            if actual == 0 and predicted > ALMOST_ZERO_ERROR:
                 not_included += 1
                 #start = self.test_cases[0][i]
                 #end = self.test_cases[1][i]
@@ -259,15 +263,18 @@ class Benchmark:
                 #print(i, bin_list[bin_start:bin_end], bin_coverage_list[bin_start:bin_end], predicted,
                 #      self.bedGraph.stats('approx_mean', intervals=[['chr1', start, end]]))
                 continue
-            elif actual == 0 and predicted <= ERROR:
+            elif actual == 0 and predicted <= ALMOST_ZERO_ERROR:
                 percent_error_values.append(0)
             else:
                 percent_error = abs(actual - predicted) / actual
 
-                # if care_about_high_error and percent_error > 0.0001:
-                #   print(percent_error)
+                # if percent_error > 100:
+                #     print(percent_error, self.test_cases[0][i], self.test_cases[1][i], actual, predicted)
 
                 percent_error_values.append(percent_error)
+
+        # print(f'Number of actual is zero: {numb_actual_0}')
+        # print(f'Number of tests counted: {len(percent_error_values)}')
 
         return np.mean(percent_error_values), np.mean(mse_error_values),\
             np.mean(abs_error_values), not_included

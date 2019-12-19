@@ -5,6 +5,8 @@ import numpy as np
 sys.path.append("..")
 from pyBedGraph.BedGraph import BedGraph
 
+DEBUG = False
+
 # arg1 - chromosome sizes file
 # arg2 - bedgraph file
 # arg3 - (optional) chromosome_name
@@ -130,8 +132,9 @@ except RuntimeError:
     print("Passed giving wrong chrom size test!")
 
 start_time = time.time()
-bedGraph = BedGraph('test_files/mm10.chrom.sizes', 'test_files/ENCFF376VCU.bedGraph')
+bedGraph = BedGraph('test_files/mm10.chrom.sizes', 'test_files/ENCFF376VCU.bedGraph', debug=DEBUG)
 print(f"Loading ENCFF376VCU.bedgraph took {time.time() - start_time}")
+# Takes 170 seconds on i5-7300HQ
 
 bedGraph.load_chrom_data('chr1')
 bedGraph.load_chrom_bins('chr1', 100)
@@ -139,14 +142,15 @@ bedGraph.load_chrom_bins('chr1', 100)
 bedGraph.load_chrom_data('chr4')
 bedGraph.load_chrom_bins('chr4', 100)
 
-total_num_intervals = 0
-avg_interval_sizes = {
-    'chr1': 26.447609,
-    'chr10': 25.53135
-}
+if DEBUG:
+    total_num_intervals = 0
+    avg_interval_sizes = {
+        'chr1': 26.447609,
+        'chr10': 25.53135
+    }
 
-for chrom in avg_interval_sizes:
-    assert abs(bedGraph.chromosome_map[chrom].avg_interval_size - avg_interval_sizes[chrom]) < 0.00001
+    for chrom in avg_interval_sizes:
+        assert abs(bedGraph.chromosome_map[chrom].avg_interval_size - avg_interval_sizes[chrom]) < 0.00001
 
 test_intervals = [
     ['chr1', 0, 3000000],
@@ -213,8 +217,9 @@ for i in range(len(result)):
 print("Passed all bedgraph tests!")
 
 start_time = time.time()
-bedGraph = BedGraph('test_files/mm10.chrom.sizes', 'test_files/ENCFF376VCU.bigWig')
+bedGraph = BedGraph('test_files/mm10.chrom.sizes', 'test_files/ENCFF376VCU.bigWig', debug=DEBUG)
 print(f"Loading ENCFF376VCU.bigWig took {time.time() - start_time}")
+# Takes 69 seconds on i5-7300HQ
 
 bedGraph.load_chrom_data('chr1')
 bedGraph.load_chrom_bins('chr1', 100)
@@ -222,14 +227,14 @@ bedGraph.load_chrom_bins('chr1', 100)
 bedGraph.load_chrom_data('chr4')
 bedGraph.load_chrom_bins('chr4', 100)
 
-total_num_intervals = 0
-avg_interval_sizes = {
-    'chr1': 26.447609,
-    'chr10': 25.53135
-}
+if DEBUG:
+    avg_interval_sizes = {
+        'chr1': 26.447609,
+        'chr10': 25.53135
+    }
 
-for chrom in avg_interval_sizes:
-    assert abs(bedGraph.chromosome_map[chrom].avg_interval_size - avg_interval_sizes[chrom]) < 0.00001
+    for chrom in avg_interval_sizes:
+        assert abs(bedGraph.chromosome_map[chrom].avg_interval_size - avg_interval_sizes[chrom]) < 0.00001
 
 test_intervals = [
     ['chr1', 0, 3000000],

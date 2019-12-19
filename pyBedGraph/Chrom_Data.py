@@ -17,10 +17,11 @@ MIN_BIN_SIZE = 2
 
 class Chrom_Data:
 
-    def __init__(self, name, size, min_value):
+    def __init__(self, name, size, min_value, debug):
         self.name = name
         self.size = size
         self.min_value = min_value
+        self.debug = debug
 
         # don't use this until user loads this chromosome for searching
         self.loaded_chrom = False
@@ -66,37 +67,44 @@ class Chrom_Data:
         self.value_map[self.num_intervals] = value
 
         self.num_intervals += 1
-        self.num_samples += value * (end - start)
-        self.total_coverage += (end - start)
 
-    def add_bigwig_data(self, data):
-        value = data[VALUE_INDEX]
+        if self.debug:
+            self.num_samples += value * (end - start)
+            self.total_coverage += (end - start)
 
-        if value < self.min_value:
-            return
-
-        start = data[START_INDEX]
-        end = data[END_INDEX]
-
-        self.intervals[0][self.num_intervals] = start
-        self.intervals[1][self.num_intervals] = end
-        self.value_map[self.num_intervals] = value
-
-        self.num_intervals += 1
-        interval_size = end - start
-        self.num_samples += value * interval_size
-        self.total_coverage += interval_size
-
-        # self.intervals = np.array([d[:2] for d in data], dtype=np.uint32)
-        # self.intervals = np.swapaxes(self.intervals, 0, 1)
-        # self.value_map = np.array([d[-1] for d in data], dtype=np.float64)
+    def add_bigwig_data(self, interval_data_list):
+        # value = data[VALUE_INDEX]
         #
-        # self.num_intervals += len(data)
+        # if value < self.min_value:
+        #     return
         #
-        # for i in range(self.num_intervals):
-        #     interval_size = self.intervals[1][i] - self.intervals[0][i]
-        #     self.num_samples += self.value_map[i] * interval_size
+        # start = data[START_INDEX]
+        # end = data[END_INDEX]
+        #
+        # self.intervals[0][self.num_intervals] = start
+        # self.intervals[1][self.num_intervals] = end
+        # self.value_map[self.num_intervals] = value
+        #
+        # self.num_intervals += 1
+        #
+        # if self.debug:
+        #     interval_size = end - start
+        #     self.num_samples += value * interval_size
         #     self.total_coverage += interval_size
+
+        interval_data_list = np.array(interval_data_list).T
+
+        self.intervals[0] = np.array(interval_data_list[0], dtype=np.uint32)
+        self.intervals[1] = np.array(interval_data_list[1], dtype=np.uint32)
+        self.value_map = np.array(interval_data_list[2], dtype=np.float64)
+
+        self.num_intervals = self.value_map.size
+
+        if self.debug:
+            for i in range(self.num_intervals):
+                interval_size = self.intervals[1][i] - self.intervals[0][i]
+                self.num_samples += self.value_map[i] * interval_size
+                self.total_coverage += interval_size
 
     # shorten length to # of intervals in bedGraph file for the chromosome
     def trim_extra_space(self):
@@ -105,13 +113,15 @@ class Chrom_Data:
         self.intervals[1] = self.intervals[1][:self.num_intervals]
 
         self.max_index = self.intervals[1][-1]
-        self.avg_chrom_value = self.num_samples / self.total_coverage
-        self.avg_interval_value = np.sum(self.value_map) / self.num_intervals
-        self.avg_interval_size = self.total_coverage / self.num_intervals
 
-        log.info(f"Average interval size: {self.avg_interval_size}")
-        log.info(f"Average chromosome value: {self.avg_chrom_value}")
-        log.info(f'Average interval value: {self.avg_interval_value}')
+        if self.debug:
+            self.avg_chrom_value = self.num_samples / self.total_coverage
+            self.avg_interval_value = np.sum(self.value_map) / self.num_intervals
+            self.avg_interval_size = self.total_coverage / self.num_intervals
+
+            log.info(f"Average interval size: {self.avg_interval_size}")
+            log.info(f"Average chromosome value: {self.avg_chrom_value}")
+            log.info(f'Average interval value: {self.avg_interval_value}')
 
         if self.max_index > self.size:
             error_msg = f'Interval: ' \

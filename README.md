@@ -169,7 +169,7 @@ inclusive_bedGraph.stats('max', test_intervals)
 inclusive_bedGraph.stats('std', test_intervals)
 ```
 
-## Benchmarking pyBedGraph:
+## Benchmarking pyBedGraph
 Actual values are found from the `stats` function in pyBigWig with the `exact` argument being `True`. The error for exact stats will be ~1e-8 due to rounding error of conversion of bigWig and bedGraph files.
 
 Alternatively, one can make actual values be pyBedGraph's exact statistics.
@@ -219,8 +219,18 @@ for key in result:
 # pyBigWig_std {'approx_run_time': 1.219078540802002, 'exact_run_time': 0.7484426498413086, 'error': {'percent_error': 0.04560011737269686, 'ms_error': 0.005008324729263816, 'abs_error': 0.02569405301725115, 'not_included': 79}}
 ```
 
+## Testing pyBedGraph
+Some tests are provided in `test/test.py`. Additional bedgraph and bigwig files for ENCFF376VCU are needed to run it.
+
 ## Reference 
 [pyBedGraph: a Python package for fast operations on 1-dimensional genomic signal tracks](https://www.biorxiv.org/content/10.1101/709683v1), Zhang et al., bioRxiv, 2019
 
 ## Bug reports
 To report bugs, contact Henry (henrybzhang.99@gmail.com) and Minji (minji.kim@jax.org) or visit the [Issues](https://github.com/TheJacksonLaboratory/pyBedGraph/issues) page. 
+
+## Potential Improvements
+Make index array use negative numbers to show index of closest interval instead of just -1. This will help for datasets that have low coverage (RNA-seq)
+
+Use index dictionary instead of index array if there is a memory efficient option.
+
+Store intervals differently as a space between two intervals and length of each interval instead of just the start and end. This might allow usage of 2 byte shorts.

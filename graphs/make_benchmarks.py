@@ -31,6 +31,7 @@ INTERVAL_RUNTIME_NAMES = [
 total_start_time = time.time()
 
 interval_test_list = [100, 250, 500, 750, 1000, 2500, 5000, 10000, 50000, 100000]
+interval_test_list = [100, 250, 500, 1000]
 bin_size_test_list = [5, 10, 20]
 
 # Tests to make sure it works
@@ -67,7 +68,7 @@ def interval_size_error_benchmark():
 
     print(interval_error_results)
     error_types = ['percent_error', 'ms_error', 'abs_error', 'not_included']
-    with open(f'graphs/{data_name}/interval_error_results.txt', 'a+') as out:
+    with open(f'graphs/{data_name}/interval_error_results.txt', 'w') as out:
         out.write(" ".join([str(x) for x in interval_test_list]) + '\n')
         for key in interval_error_results:
             out.write(key + '\n')
@@ -109,7 +110,7 @@ def interval_size_runtime_benchmark():
             print(f"Total time taken so far (min): {(time.time() - total_start_time) / 60}")
 
     print(interval_runtime_results)
-    with open(f'graphs/{data_name}/interval_runtime_results.txt', 'a+') as out:
+    with open(f'graphs/{data_name}/interval_runtime_results.txt', 'w') as out:
         out.write(" ".join([str(x) for x in interval_test_list]) + '\n')
         for key in interval_runtime_results:
             output = key + "\n" + " ".join([str(x) for x in interval_runtime_results[key]]) + '\n'
@@ -148,7 +149,7 @@ def runtime_benchmark():
             print(f"Total time taken so far (min): {(time.time() - total_start_time) / 60}")
 
     print(run_time_results)
-    with open(f'graphs/{data_name}/run_time_results.txt', 'a') as out:
+    with open(f'graphs/{data_name}/run_time_results.txt', 'w') as out:
         out.write(" ".join([str(x) for x in num_test_list]) + '\n')
         for key in run_time_results:
             output = key + "\n" + " ".join([str(x) for x in run_time_results[key]]) + '\n'
@@ -157,23 +158,22 @@ def runtime_benchmark():
     # generate_images.create_runtime_num_test(data_name, num_test_list, run_time_results)
 
 
-if len(sys.argv) != 4:
-    print("Needs 3 arguments:\n"
+if len(sys.argv) != 3:
+    print("Needs 2 arguments:\n"
           "arg 1 - chrom_sizes_file\n"
-          "arg 2 - bedGraph_file\n"
-          "arg 3 - bigWig file")
+          "arg 2 - bigWig file")
     exit(-1)
 
 chrom_name = 'chr1'
 
 start_time = time.time()
-bedGraph = BedGraph(sys.argv[1], sys.argv[3], chrom_name)
+bedGraph = BedGraph(sys.argv[1], sys.argv[2], chrom_name)
 print("Time for loading bedGraph file: ", time.time() - start_time)
 
 start_time = time.time()
 print(f"Time for loading {chrom_name}: ", time.time() - start_time, '\n')
 
-bench = Benchmark(bedGraph, sys.argv[3])
+bench = Benchmark(bedGraph, sys.argv[2])
 
 data_name = Path(sys.argv[2]).stem
 if not os.path.isdir(f'graphs'):
@@ -181,6 +181,6 @@ if not os.path.isdir(f'graphs'):
 if not os.path.isdir(f'graphs/{data_name}'):
     os.mkdir(f'graphs/{data_name}')
 
-runtime_benchmark()
+# runtime_benchmark()
 interval_size_error_benchmark()
-interval_size_runtime_benchmark()
+# interval_size_runtime_benchmark()
