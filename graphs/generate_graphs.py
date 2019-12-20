@@ -17,6 +17,15 @@ colors = {
     'pyBG app. bin=25': 'blue'
 }
 
+METHOD_LIST = [
+    'pyBW exact',
+    'pyBW app.',
+    'pyBG exact',
+    'pyBG app. bin=int_size/5',
+    'pyBG app. bin=int_size/10',
+    'pyBG app. bin=int_size/20'
+]
+
 TABLE_HEADERS = [
     'Interval Size (bPS)',
     'Error Rate (%)',
@@ -124,7 +133,7 @@ def create_interval_error(in_file, data_name):
         plt.plot(intervals, [x * 100 for x in errors[name]['percent_error']], color=colors[name], label=name)
         i += 1
 
-    plt.title(f"Error vs. Interval Size for {data_name}", fontsize=TITLE_FONT_SIZE)
+    plt.title(f"Percentage Error Rate vs. Interval Size for {data_name}", fontsize=TITLE_FONT_SIZE)
     plt.xlabel("Interval Size (basepairs)", fontsize=AXIS_FONT_SIZE)
     plt.ylabel("Percentage Error Rate (%)", fontsize=AXIS_FONT_SIZE)
     plt.legend(loc='best', fontsize=LEGEND_FONT_SIZE)
@@ -151,7 +160,7 @@ def create_interval_error(in_file, data_name):
 
         save_name = name.replace(" ", "_").replace('/', '')
         plt.savefig(f'graphs/{data_name}/{save_name}_table.png',
-                    bbox_inches='tight', pad_inches=0.05)
+                    bbox_inches='tight', pad_inches=0.05, dpi=300)
         plt.close()
 
 
@@ -170,6 +179,33 @@ def create_interval_runtime(in_file, data_name):
         results = in_file.readline().split()
         run_times[name] = [float(x) for x in results]
 
+    table_cells = [[x] for x in intervals]
+    for i, interval in enumerate(intervals):
+        for name in METHOD_LIST:
+            table_cells[i].append(round(run_times[name][i], 5))
+
+    plt.figure()
+    plt.title(f"Runtime (seconds) vs. Interval Size for {data_name}\n",
+              fontsize=TITLE_FONT_SIZE, y=1.2)
+    table = plt.table(
+        cellText=table_cells,
+        colWidths=[0.1, 0.1, 0.1, 0.1, 0.2, 0.2, 0.2],
+        colLabels=['Interval Size'] + METHOD_LIST,
+        loc='center'
+    )
+    table.auto_set_font_size(False)
+    table.set_fontsize(LEGEND_FONT_SIZE)
+    table.scale(2, 3)
+
+    plt.tick_params(axis='x', which='both', bottom=False, top=False, labelbottom=False)
+    plt.tick_params(axis='y', which='both', right=False, left=False, labelleft=False)
+    for pos in ['right', 'top', 'bottom', 'left']:
+        plt.gca().spines[pos].set_visible(False)
+
+    plt.savefig(f'graphs/{data_name}/interval_runtime_table.png',
+                bbox_inches='tight', pad_inches=0.05, dpi=300)
+    plt.close()
+
     # Don't include intervals of over 10k in the graph
     while intervals[-1] >= 10000:
         intervals.pop()
@@ -182,8 +218,8 @@ def create_interval_runtime(in_file, data_name):
                  color=colors[name], label=name)
         i += 1
 
-    plt.title(f"Interval vs. Run Time for {data_name}", fontsize=TITLE_FONT_SIZE)
-    plt.xlabel("Interval Size", fontsize=AXIS_FONT_SIZE)
+    plt.title(f"Run Time vs. Interval Size for {data_name}", fontsize=TITLE_FONT_SIZE)
+    plt.xlabel("Interval Size (basepairs)", fontsize=AXIS_FONT_SIZE)
     plt.ylabel("log10(runtime (seconds))", fontsize=AXIS_FONT_SIZE)
     plt.legend(loc='best', fontsize=LEGEND_FONT_SIZE)
     plt.savefig(f'graphs/{data_name}/interval_run_time.png', dpi=300)
@@ -262,19 +298,19 @@ def main():
             with open(file_path) as in_file:
                 if file_name == 'run_time_results.txt':
                     pass
-                    create_runtime_num_test(in_file, data_name)
+                    # create_runtime_num_test(in_file, data_name)
                 elif file_name == 'interval_error_results.txt':
                     pass
                     # create_interval_error(in_file, data_name)
                 elif file_name == 'interval_runtime_results.txt':
                     pass
-                    # create_interval_runtime(in_file, data_name)
+                    create_interval_runtime(in_file, data_name)
                 elif file_name[-4:] == '.png' or file_name[-4:] == '.swp':
                     continue
                 else:
                     print(f"Unknown file: {file_name}")
 
-    create_million_runtime_table()
+    # create_million_runtime_table()
 
 
 if __name__ == '__main__':
