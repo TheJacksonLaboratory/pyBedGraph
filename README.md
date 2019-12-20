@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/c0ver/pyBedGraph.svg?branch=master)](https://travis-ci.org/c0ver/pyBedGraph)
+
 # pyBedGraph
 A Python package for fast operations on 1-dimensional genomic signal tracks.
 
