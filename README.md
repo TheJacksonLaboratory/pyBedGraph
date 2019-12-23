@@ -222,7 +222,7 @@ for key in result:
 ```
 
 ## Testing pyBedGraph
-Some tests are provided in `test/test.py`. Additional bedgraph and bigwig files for ENCFF376VCU are needed to run it.
+Some tests are provided in `test/test.py`. Additional bedgraph and bigwig files for ENCFF376VCU are needed to run extensive_test.py. Build badge comes from a forked repository, [https://github.com/c0ver/pyBedGraph](https://github.com/c0ver/pyBedGraph), that has the same version as this repository.
 
 ## Reference 
 [pyBedGraph: a Python package for fast operations on 1-dimensional genomic signal tracks](https://www.biorxiv.org/content/10.1101/709683v1), Zhang et al., bioRxiv, 2019
