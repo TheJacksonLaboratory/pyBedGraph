@@ -26,6 +26,7 @@ Dependency requirements:
 With pip:
 ```bash
 pip3 install pyBedGraph
+pip3 install pyBigWig # if using bigwig files
 ```
 
 With conda:
@@ -33,6 +34,7 @@ With conda:
 conda create -n test
 conda activate test
 conda install -c bioconda pyBedGraph
+conda install -c bioconda pyBigWig # if using bigwig files
 ```
 
 ## Usage
