@@ -1,10 +1,13 @@
 import time
+import pyBedGraph
 from pyBedGraph import BedGraph
+
+print(f'Using {pyBedGraph.__file__}')
 
 DEBUG = False
 
 try:
-    bedGraph = BedGraph('test_files/hg38.chrom.sizes', 'test_files/ENCFF376VCU.bigWig', 'chr14')
+    bedGraph = BedGraph('test_files/hg38.chrom.sizes', 'test_files/ENCFF376VCU.bigWig', ['chr14'])
     assert False
 except RuntimeError:
     print("Passed giving wrong chrom size test!")

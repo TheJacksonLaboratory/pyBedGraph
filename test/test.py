@@ -1,11 +1,25 @@
 import numpy as np
+import pyBedGraph
 from pyBedGraph import BedGraph
 
-bedGraph = BedGraph('test_files/myChrom.sizes', 'test_files/random_test.bedGraph', 'chr1')
-bedGraph = BedGraph('test_files/myChrom.sizes', 'test_files/random_test.bedGraph')
+print(f'Using {pyBedGraph.__file__}')
 
+try:
+    bedGraph = BedGraph('test_files/myChrom.sizes', 'test_files/random_test.bigWig', ['chrasdf'])
+    assert False
+except RuntimeError:
+    print("Passed giving unknown chromosome!")
+
+single_bedGraph = BedGraph('test_files/myChrom.sizes', 'test_files/random_test.bedGraph', ['chr1'])
+bedGraph = BedGraph('test_files/myChrom.sizes', 'test_files/random_test.bedGraph')
+bigWig = BedGraph('test_files/myChrom.sizes', 'test_files/random_test.bigWig')
+
+single_bedGraph.load_chrom_data('chr1')
+single_bedGraph.load_chrom_bins('chr1', 3)
 bedGraph.load_chrom_data('chr1')
 bedGraph.load_chrom_bins('chr1', 3)
+bigWig.load_chrom_data('chr1')
+bigWig.load_chrom_bins('chr1', 3)
 
 inclusive_bedGraph = BedGraph('test_files/myChrom.sizes', 'test_files/random_test.bedGraph', ignore_missing_bp=False)
 inclusive_bedGraph.load_chrom_data('chr1')
@@ -19,6 +33,8 @@ test_intervals = [
     ['chr1', 0, 5]
 ]
 values = bedGraph.stats(intervals=test_intervals)
+single_values = bedGraph.stats(intervals=test_intervals)
+bigWig_values = bigWig.stats(intervals=test_intervals)
 
 start_list = np.array([24, 12, 8, 9, 0], dtype=np.int32)
 end_list = np.array([26, 15, 12, 10, 5], dtype=np.int32)
@@ -30,7 +46,9 @@ correct = [-1, 0.9, 0.1, -1, 0.82]
 assert len(result) == len(values)
 for i in range(len(result)):
     assert result[i] == values[i]
+    assert single_values[i] == values[i]
     assert result[i] == correct[i]
+    assert abs(bigWig_values[i] - correct[i]) < 0.0000001
 
 result = bedGraph.stats_from_file('test_files/test_intervals.txt', output_to_file=False, stat='mean')
 

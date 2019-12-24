@@ -21,7 +21,7 @@ class BedGraph:
     """
     min_value only works when loading bedgraphs
     """
-    def __init__(self, chrom_size_file_name, data_file_name, chrom_wanted=None,
+    def __init__(self, chrom_size_file_name, data_file_name, chroms_to_load=None,
                  ignore_missing_bp=True, min_value=-1, debug=False):
 
         file_parts = os.path.basename(data_file_name).split('.')
@@ -61,7 +61,7 @@ class BedGraph:
                             f"{chrom_name} was not included in {chrom_size_file}")
                         continue
 
-                    if chrom_wanted is not None and chrom_name != chrom_wanted:
+                    if chroms_to_load is not None and chrom_name not in chroms_to_load:
                         continue
 
                     # Create chromosome object here to trim right after adding
@@ -87,15 +87,9 @@ class BedGraph:
 
                     current_chrom.add_data(data)
 
-                if current_chrom is None:
-                    error_msg = f"{chrom_wanted} was not found in " \
-                                f"{data_file_name}"
-                    log.critical(error_msg)
-
-                    raise RuntimeError(error_msg)
-
                 # clean up the last chromosome found in the bedGraph file
-                current_chrom.trim_extra_space()
+                if current_chrom:
+                    current_chrom.trim_extra_space()
 
         else:
             # start_time = time.time()
@@ -104,7 +98,8 @@ class BedGraph:
 
             for chrom_name in self.chrom_sizes:
 
-                if chrom_wanted is not None and chrom_name != chrom_wanted:
+                if chroms_to_load is not None and \
+                        chrom_name not in chroms_to_load:
                     continue
 
                 try:
@@ -132,6 +127,15 @@ class BedGraph:
                 current_chrom.trim_extra_space()
 
             # print(time.time() - start_time)
+
+        if chroms_to_load:
+            for chrom_name in chroms_to_load:
+                if chrom_name not in self.chromosome_map:
+                    error_msg = f"{chrom_name} was not found in " \
+                                f"{data_file_name}"
+                    log.critical(error_msg)
+
+                    raise RuntimeError(error_msg)
 
     def get_chrom(self, chrom_name):
         return self.chromosome_map[chrom_name]
