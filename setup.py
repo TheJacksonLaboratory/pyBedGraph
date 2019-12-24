@@ -21,7 +21,7 @@ if USE_CYTHON:
     extensions = cythonize(extensions, language_level=3)
 
 NAME = 'pyBedGraph'
-VERSION = '0.5.40'
+VERSION = '0.5.41'
 
 setuptools.setup(
 
@@ -44,6 +44,8 @@ setuptools.setup(
     packages=setuptools.find_packages(),
 
     install_requires=['numpy>=1.16.4'],
+
+    python_requires='>=3.6',
 
     ext_modules=extensions,
 

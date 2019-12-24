@@ -32,6 +32,9 @@ class BedGraph:
         self.chrom_sizes = {}
         self.ignore_missing_bp = ignore_missing_bp
 
+        if chroms_to_load:
+            chroms_to_load = set(chroms_to_load)
+
         log.info(f"Reading in {chrom_size_file_name} ...")
         with open(chrom_size_file_name) as chrom_size_file:
             for line in chrom_size_file:
