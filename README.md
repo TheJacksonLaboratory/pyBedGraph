@@ -231,10 +231,3 @@ Some tests are provided in `test/test.py`. Additional bedgraph and bigwig files 
 
 ## Bug reports
 To report bugs, contact Henry (henrybzhang.99@gmail.com) and Minji (minji.kim@jax.org) or visit the [Issues](https://github.com/TheJacksonLaboratory/pyBedGraph/issues) page. 
-
-## Potential Improvements
-Make index array use negative numbers to show index of closest interval instead of just -1. This will help for datasets that have low coverage (RNA-seq)
-
-Use index dictionary instead of index array if there is a memory efficient option.
-
-Store intervals differently as a space between two intervals and length of each interval instead of just the start and end. This might allow usage of 2 byte shorts.
