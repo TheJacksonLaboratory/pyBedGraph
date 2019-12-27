@@ -25,7 +25,12 @@ class BedGraph:
                  ignore_missing_bp=True, min_value=-1, debug=False):
 
         file_parts = os.path.basename(data_file_name).split('.')
-        using_bigwig = (file_parts[1].lower() == 'bigwig')
+        using_bigwig = (file_parts[-1].lower() == 'bigwig')
+
+        if using_bigwig:
+            log.info('Detected bigwig file')
+        else:
+            log.info('Assuming bedgraph file')
 
         self.name = file_parts[0]
         self.chromosome_map = {}

@@ -3,8 +3,8 @@ cimport cython
 from libc.float cimport DBL_MAX
 from libc.math cimport ceil, sqrt
 
-#@cython.boundscheck(False)  # Deactivate bounds checking
-#@cython.wraparound(False)   # Deactivate negative indexing.
+@cython.boundscheck(False)  # Deactivate bounds checking
+@cython.wraparound(False)   # Deactivate negative indexing.
 
 def load_smallest_bins(double[:] value_map, int[:] index_list, unsigned int size,
                        unsigned int[:] interval_start, unsigned int[:] interval_end,
@@ -116,7 +116,7 @@ cpdef get_exact_means(double[:] value_map, int[:] index_list,
         curr_start = start
 
         # get to an interval
-        while index_list[curr_start] == -1 and curr_start < end:
+        while curr_start < end and index_list[curr_start] == -1:
             curr_start += 1
 
         if curr_start == end:
@@ -158,7 +158,7 @@ def get_approx_means(double[:] bin_list, int max_bin_size, int[:] start_list,
         end = end_list[i]
 
         bin_index = <unsigned int>(start / max_bin_size)
-        bin_end = <unsigned int>(end / max_bin_size)
+        bin_end = <unsigned int>((end - 1) / max_bin_size)
 
         # special case where interval is within a single bin
         if bin_index == bin_end:
@@ -173,7 +173,7 @@ def get_approx_means(double[:] bin_list, int max_bin_size, int[:] start_list,
         # first bin
         value = bin_list[bin_index]
         if value > 0:
-            fraction = (max_bin_size - start % max_bin_size) / max_bin_size
+            fraction = <double>(max_bin_size - start % max_bin_size) / max_bin_size
             total += bin_list[bin_index] * fraction
             numb_value += max_bin_size * fraction
         bin_index += 1
@@ -190,7 +190,9 @@ def get_approx_means(double[:] bin_list, int max_bin_size, int[:] start_list,
         # last bin
         value = bin_list[bin_index]
         if value > 0:
-            fraction = (end % max_bin_size) / max_bin_size
+            fraction = <double>(end % max_bin_size) / max_bin_size
+            if fraction == 0:
+                fraction = 1
             total += bin_list[bin_index] * fraction
             numb_value += max_bin_size * fraction
 
@@ -220,7 +222,7 @@ def get_minimums(double[:] value_map, int[:] index_list,
         end = end_list[i]
 
         # get to an interval
-        while index_list[start] == -1 and start < end:
+        while start < end and index_list[start] == -1:
             minimum = 0
             start += 1
 
@@ -260,7 +262,7 @@ def get_maximums(double[:] value_map, int[:] index_list,
         end = end_list[i]
 
         # get to an interval
-        while index_list[start] == -1 and start < end:
+        while start < end and index_list[start] == -1:
             start += 1
 
         if start == end:
@@ -305,7 +307,7 @@ def get_max_indexes(double[:] value_map, int[:] index_list,
         end = orig_end
 
         # get to an interval
-        while index_list[start] == -1 and start < end:
+        while start < end and index_list[start] == -1:
             start += 1
 
         if start == end:
@@ -355,7 +357,7 @@ def get_coverages(double[:] value_map, int[:] index_list, unsigned int[:] interv
         current_start = start
 
         # get to an interval
-        while index_list[current_start] == -1 and current_start < end:
+        while current_start < end and index_list[current_start] == -1:
             current_start += 1
 
         if current_start == end:
@@ -407,7 +409,7 @@ def get_stds(double[:] value_map, int[:] index_list,
         curr_start = start
 
         # get to an interval
-        while index_list[curr_start] == -1 and curr_start < end:
+        while curr_start < end and index_list[curr_start] == -1:
             curr_start += 1
 
         if curr_start == end:
@@ -432,7 +434,7 @@ def get_stds(double[:] value_map, int[:] index_list,
                 break
             curr_start = interval_start[value_index]
 
-        if numb_value == 0:
+        if numb_value == 0: # ???
             print("why?")
             continue
 

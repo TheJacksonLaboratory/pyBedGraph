@@ -99,7 +99,7 @@ test_intervals = [
 ]
 values = bedGraph.stats(intervals=test_intervals)
 
-# [-1.    0.9   0.1  -1.    0.82]
+# [-1.          0.9         0.1        -1.          0.82        0.72222222]
 print(values)
 
 # Option 2
@@ -116,7 +116,7 @@ chrom_name = 'chr1'
 # returns a numpy array of values
 result = bedGraph.stats(start_list=start_list, end_list=end_list, chrom_name=chrom_name)
 
-# [-1.    0.9   0.1  -1.    0.82]
+# [-1.          0.9         0.1        -1.          0.82        0.72222222]
 print(result)
 ```
 
@@ -128,48 +128,49 @@ print(result)
 # returns a dictionary; keys are chromosome names, values are numpy arrays
 result = bedGraph.stats_from_file('test_intervals.txt', output_to_file=False, stat='mean')
 
-# {'chr1': array([-1.  ,  0.9 ,  0.1 , -1.  ,  0.82])}
+# {'chr1': array([-1.        ,  0.9       ,  0.1       , -1.        ,  0.82      ,
+#        0.72222222])}
 print(result)
 ```
 
 ### Sample Tests (from included test files):
 ```python
-# [-1.    0.9   0.1  -1.    0.82]
+# [-1.    0.9   0.1  -1.    0.82    0.72222222]
 bedGraph.stats('mean', test_intervals)
 
-# [-1.          0.9        0.1.         -1.          0.8076923076923077]
+# [-1.          0.9         0.1        -1.          0.80769231  0.72222222]
 bedGraph.stats('approx_mean', test_intervals)
 
-# [0.         0.33333333 0.25       0.         1.        ]
+# [0.         0.33333333 0.25       0.         1.         0.3       ]
 bedGraph.stats('coverage', test_intervals)
 
-# [-1.   0.9  0.1 -1.   0.7]
+# [-1.   0.9  0.1 -1.   0.7  0.1]
 bedGraph.stats('min', test_intervals)
 
-# [-1.   0.9  0.1 -1.   0.9]
+# [-1.   0.9  0.1 -1.   0.9  1. ]
 bedGraph.stats('max', test_intervals)
 
-# [-1.          0.          0.         -1.          0.09797959]
+# [-1.          0.          0.         -1.          0.09797959  0.27799991]
 bedGraph.stats('std', test_intervals)
 ```
 
 ```python
-# [0.    0.3   0.025 0.    0.82 ]
+# [0.         0.3        0.025      0.         0.82       0.21666667]
 inclusive_bedGraph.stats('mean', test_intervals)
 
-# [0.         0.3        0.00833333 0.         0.7       ]
+# [0.         0.3        0.00833333 0.         0.7        0.21666667]
 inclusive_bedGraph.stats('approx_mean', test_intervals)
 
-# [0.         0.33333333 0.25       0.         1.        ]
+# [0.         0.33333333 0.25       0.         1.         0.3       ]
 inclusive_bedGraph.stats('coverage', test_intervals)
 
-# [0.  0.  0.1 0.  0.7]
+# [0.  0.  0.1 0.  0.7 0.1]
 inclusive_bedGraph.stats('min', test_intervals)
 
-# [0.  0.9 0.1 0.  0.9]
+# [0.  0.9 0.1 0.  0.9 1. ]
 inclusive_bedGraph.stats('max', test_intervals)
 
-# [0.         0.42426407 0.04330127 0.         0.09797959]
+# [0.         0.42426407 0.04330127 0.         0.09797959 0.36431061]
 inclusive_bedGraph.stats('std', test_intervals)
 ```
 
@@ -228,6 +229,14 @@ Some tests are provided in `test/test.py`. Additional bedgraph and bigwig files 
 
 ## Reference 
 [pyBedGraph: a Python package for fast operations on 1-dimensional genomic signal tracks](https://www.biorxiv.org/content/10.1101/709683v1), Zhang et al., bioRxiv, 2019
+
+## Common Errors
+```
+pyBedGraph/include_missing_bp.pyx in pyBedGraph.include_missing_bp.get_exact_means()
+pyBedGraph/include_missing_bp.pyx in pyBedGraph.include_missing_bp.get_exact_means()
+IndexError: Out of bounds on buffer access (axis 0)
+```
+This is frequently caused by giving an interval that is outside the chromosome size.
 
 ## Bug reports
 To report bugs, contact Henry (henrybzhang.99@gmail.com) and Minji (minji.kim@jax.org) or visit the [Issues](https://github.com/TheJacksonLaboratory/pyBedGraph/issues) page. 

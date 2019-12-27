@@ -3,3 +3,4 @@ chr1	12	15
 chr1	8	12
 chr1	9	10
 chr1	0	5
+chr1    0   30

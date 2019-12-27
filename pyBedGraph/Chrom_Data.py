@@ -23,7 +23,6 @@ class Chrom_Data:
         self.min_value = min_value
         self.debug = debug
 
-        # don't use this until user loads this chromosome for searching
         self.loaded_chrom = False
         self.index_list = None
         self.total_coverage = 0
@@ -263,7 +262,7 @@ class Chrom_Data:
                 return None
             return self.get_approx_mean
         elif stat == "median":
-            log.warning("Median has not been implemented yet")
+            log.error("Median has not been implemented yet")
             return None
             # return self.get_median
         elif stat == "max":
@@ -277,7 +276,7 @@ class Chrom_Data:
         elif stat == "std":
             return self.get_std
         else:
-            log.warning(f"{stat} is not a valid statistic to search for")
+            log.error(f"{stat} is not a valid statistic to search for")
             return None
 
     def get_approx_mean(self, start_list, end_list):

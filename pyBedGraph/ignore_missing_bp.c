@@ -3794,7 +3794,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_4get_approx_means(CYT
  *         end = end_list[i]
  * 
  *         bin_index = <unsigned int>(start / max_bin_size)             # <<<<<<<<<<<<<<
- *         bin_end = <unsigned int>(end / max_bin_size)
+ *         bin_end = <unsigned int>((end - 1) / max_bin_size)
  * 
  */
     __pyx_v_bin_index = ((unsigned int)(__pyx_v_start / ((size_t)__pyx_v_max_bin_size)));
@@ -3802,11 +3802,11 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_4get_approx_means(CYT
     /* "pyBedGraph/ignore_missing_bp.pyx":124
  * 
  *         bin_index = <unsigned int>(start / max_bin_size)
- *         bin_end = <unsigned int>(end / max_bin_size)             # <<<<<<<<<<<<<<
+ *         bin_end = <unsigned int>((end - 1) / max_bin_size)             # <<<<<<<<<<<<<<
  * 
  *         # special case where interval is within a single bin
  */
-    __pyx_v_bin_end = ((unsigned int)(__pyx_v_end / ((size_t)__pyx_v_max_bin_size)));
+    __pyx_v_bin_end = ((unsigned int)((__pyx_v_end - 1) / ((size_t)__pyx_v_max_bin_size)));
 
     /* "pyBedGraph/ignore_missing_bp.pyx":127
  * 
@@ -4045,7 +4045,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_4get_approx_means(CYT
  *         weight = bin_coverage_list[bin_index]
  *         if weight > 0:             # <<<<<<<<<<<<<<
  *             fraction = <double>(end % max_bin_size) / max_bin_size
- *             total += bin_list[bin_index] * fraction
+ *             if fraction == 0:
  */
     __pyx_t_4 = ((__pyx_v_weight > 0) != 0);
     if (__pyx_t_4) {
@@ -4054,14 +4054,42 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_4get_approx_means(CYT
  *         weight = bin_coverage_list[bin_index]
  *         if weight > 0:
  *             fraction = <double>(end % max_bin_size) / max_bin_size             # <<<<<<<<<<<<<<
- *             total += bin_list[bin_index] * fraction
- *             numb_value += weight * fraction
+ *             if fraction == 0:
+ *                 fraction = 1
  */
       __pyx_v_fraction = (((double)(__pyx_v_end % __pyx_v_max_bin_size)) / ((double)__pyx_v_max_bin_size));
 
       /* "pyBedGraph/ignore_missing_bp.pyx":157
  *         if weight > 0:
  *             fraction = <double>(end % max_bin_size) / max_bin_size
+ *             if fraction == 0:             # <<<<<<<<<<<<<<
+ *                 fraction = 1
+ *             total += bin_list[bin_index] * fraction
+ */
+      __pyx_t_4 = ((__pyx_v_fraction == 0.0) != 0);
+      if (__pyx_t_4) {
+
+        /* "pyBedGraph/ignore_missing_bp.pyx":158
+ *             fraction = <double>(end % max_bin_size) / max_bin_size
+ *             if fraction == 0:
+ *                 fraction = 1             # <<<<<<<<<<<<<<
+ *             total += bin_list[bin_index] * fraction
+ *             numb_value += weight * fraction
+ */
+        __pyx_v_fraction = 1.0;
+
+        /* "pyBedGraph/ignore_missing_bp.pyx":157
+ *         if weight > 0:
+ *             fraction = <double>(end % max_bin_size) / max_bin_size
+ *             if fraction == 0:             # <<<<<<<<<<<<<<
+ *                 fraction = 1
+ *             total += bin_list[bin_index] * fraction
+ */
+      }
+
+      /* "pyBedGraph/ignore_missing_bp.pyx":159
+ *             if fraction == 0:
+ *                 fraction = 1
  *             total += bin_list[bin_index] * fraction             # <<<<<<<<<<<<<<
  *             numb_value += weight * fraction
  * 
@@ -4069,8 +4097,8 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_4get_approx_means(CYT
       __pyx_t_22 = __pyx_v_bin_index;
       __pyx_v_total = (__pyx_v_total + ((*((double *) ( /* dim=0 */ (__pyx_v_bin_list.data + __pyx_t_22 * __pyx_v_bin_list.strides[0]) ))) * __pyx_v_fraction));
 
-      /* "pyBedGraph/ignore_missing_bp.pyx":158
- *             fraction = <double>(end % max_bin_size) / max_bin_size
+      /* "pyBedGraph/ignore_missing_bp.pyx":160
+ *                 fraction = 1
  *             total += bin_list[bin_index] * fraction
  *             numb_value += weight * fraction             # <<<<<<<<<<<<<<
  * 
@@ -4083,11 +4111,11 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_4get_approx_means(CYT
  *         weight = bin_coverage_list[bin_index]
  *         if weight > 0:             # <<<<<<<<<<<<<<
  *             fraction = <double>(end % max_bin_size) / max_bin_size
- *             total += bin_list[bin_index] * fraction
+ *             if fraction == 0:
  */
     }
 
-    /* "pyBedGraph/ignore_missing_bp.pyx":160
+    /* "pyBedGraph/ignore_missing_bp.pyx":162
  *             numb_value += weight * fraction
  * 
  *         if numb_value == 0:             # <<<<<<<<<<<<<<
@@ -4097,7 +4125,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_4get_approx_means(CYT
     __pyx_t_4 = ((__pyx_v_numb_value == 0.0) != 0);
     if (__pyx_t_4) {
 
-      /* "pyBedGraph/ignore_missing_bp.pyx":161
+      /* "pyBedGraph/ignore_missing_bp.pyx":163
  * 
  *         if numb_value == 0:
  *             continue             # <<<<<<<<<<<<<<
@@ -4106,7 +4134,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_4get_approx_means(CYT
  */
       goto __pyx_L3_continue;
 
-      /* "pyBedGraph/ignore_missing_bp.pyx":160
+      /* "pyBedGraph/ignore_missing_bp.pyx":162
  *             numb_value += weight * fraction
  * 
  *         if numb_value == 0:             # <<<<<<<<<<<<<<
@@ -4115,7 +4143,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_4get_approx_means(CYT
  */
     }
 
-    /* "pyBedGraph/ignore_missing_bp.pyx":163
+    /* "pyBedGraph/ignore_missing_bp.pyx":165
  *             continue
  * 
  *         result_view[i] = total / numb_value             # <<<<<<<<<<<<<<
@@ -4127,7 +4155,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_4get_approx_means(CYT
     __pyx_L3_continue:;
   }
 
-  /* "pyBedGraph/ignore_missing_bp.pyx":165
+  /* "pyBedGraph/ignore_missing_bp.pyx":167
  *         result_view[i] = total / numb_value
  * 
  *     return result             # <<<<<<<<<<<<<<
@@ -4169,7 +4197,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_4get_approx_means(CYT
   return __pyx_r;
 }
 
-/* "pyBedGraph/ignore_missing_bp.pyx":169
+/* "pyBedGraph/ignore_missing_bp.pyx":171
  * @cython.cdivision(True)
  * @cython.boundscheck(False)
  * cpdef get_exact_means(double[:] value_map, int[:] index_list,             # <<<<<<<<<<<<<<
@@ -4206,8 +4234,8 @@ static PyObject *__pyx_f_10pyBedGraph_17ignore_missing_bp_get_exact_means(__Pyx_
   size_t __pyx_t_11;
   size_t __pyx_t_12;
   size_t __pyx_t_13;
-  size_t __pyx_t_14;
-  int __pyx_t_15;
+  int __pyx_t_14;
+  size_t __pyx_t_15;
   size_t __pyx_t_16;
   size_t __pyx_t_17;
   size_t __pyx_t_18;
@@ -4215,7 +4243,7 @@ static PyObject *__pyx_f_10pyBedGraph_17ignore_missing_bp_get_exact_means(__Pyx_
   size_t __pyx_t_20;
   __Pyx_RefNannySetupContext("get_exact_means", 0);
 
-  /* "pyBedGraph/ignore_missing_bp.pyx":172
+  /* "pyBedGraph/ignore_missing_bp.pyx":174
  *                  unsigned int[:] interval_start, unsigned int[:] interval_end,
  *                  int[:] start_list, int[:] end_list):
  *     assert tuple(start_list.shape) == tuple(end_list.shape)             # <<<<<<<<<<<<<<
@@ -4224,75 +4252,75 @@ static PyObject *__pyx_f_10pyBedGraph_17ignore_missing_bp_get_exact_means(__Pyx_
  */
   #ifndef CYTHON_WITHOUT_ASSERTIONS
   if (unlikely(!Py_OptimizeFlag)) {
-    __pyx_t_1 = __Pyx_carray_to_py_Py_ssize_t(__pyx_v_start_list.shape, 8); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 172, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_carray_to_py_Py_ssize_t(__pyx_v_start_list.shape, 8); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 174, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_2 = __Pyx_PySequence_Tuple(__pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 172, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PySequence_Tuple(__pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 174, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __pyx_t_1 = __Pyx_carray_to_py_Py_ssize_t(__pyx_v_end_list.shape, 8); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 172, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_carray_to_py_Py_ssize_t(__pyx_v_end_list.shape, 8); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 174, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_3 = __Pyx_PySequence_Tuple(__pyx_t_1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 172, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PySequence_Tuple(__pyx_t_1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 174, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __pyx_t_1 = PyObject_RichCompare(__pyx_t_2, __pyx_t_3, Py_EQ); __Pyx_XGOTREF(__pyx_t_1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 172, __pyx_L1_error)
+    __pyx_t_1 = PyObject_RichCompare(__pyx_t_2, __pyx_t_3, Py_EQ); __Pyx_XGOTREF(__pyx_t_1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 174, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __pyx_t_4 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_4 < 0)) __PYX_ERR(0, 172, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_4 < 0)) __PYX_ERR(0, 174, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     if (unlikely(!__pyx_t_4)) {
       PyErr_SetNone(PyExc_AssertionError);
-      __PYX_ERR(0, 172, __pyx_L1_error)
+      __PYX_ERR(0, 174, __pyx_L1_error)
     }
   }
   #endif
 
-  /* "pyBedGraph/ignore_missing_bp.pyx":174
+  /* "pyBedGraph/ignore_missing_bp.pyx":176
  *     assert tuple(start_list.shape) == tuple(end_list.shape)
  * 
  *     cdef size_t i, num_tests = start_list.size, start, end, value_index             # <<<<<<<<<<<<<<
  *     cdef unsigned int numb_value, temp_end, interval_size, numb_intervals = interval_start.size
  *     cdef double total
  */
-  __pyx_t_1 = __pyx_memoryview_fromslice(__pyx_v_start_list, 1, (PyObject *(*)(char *)) __pyx_memview_get_int, (int (*)(char *, PyObject *)) __pyx_memview_set_int, 0);; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 174, __pyx_L1_error)
+  __pyx_t_1 = __pyx_memoryview_fromslice(__pyx_v_start_list, 1, (PyObject *(*)(char *)) __pyx_memview_get_int, (int (*)(char *, PyObject *)) __pyx_memview_set_int, 0);; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 176, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_size); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 174, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_size); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 176, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_5 = __Pyx_PyInt_As_size_t(__pyx_t_3); if (unlikely((__pyx_t_5 == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 174, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyInt_As_size_t(__pyx_t_3); if (unlikely((__pyx_t_5 == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 176, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __pyx_v_num_tests = __pyx_t_5;
 
-  /* "pyBedGraph/ignore_missing_bp.pyx":175
+  /* "pyBedGraph/ignore_missing_bp.pyx":177
  * 
  *     cdef size_t i, num_tests = start_list.size, start, end, value_index
  *     cdef unsigned int numb_value, temp_end, interval_size, numb_intervals = interval_start.size             # <<<<<<<<<<<<<<
  *     cdef double total
  * 
  */
-  __pyx_t_3 = __pyx_memoryview_fromslice(__pyx_v_interval_start, 1, (PyObject *(*)(char *)) __pyx_memview_get_unsigned_int, (int (*)(char *, PyObject *)) __pyx_memview_set_unsigned_int, 0);; if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 175, __pyx_L1_error)
+  __pyx_t_3 = __pyx_memoryview_fromslice(__pyx_v_interval_start, 1, (PyObject *(*)(char *)) __pyx_memview_get_unsigned_int, (int (*)(char *, PyObject *)) __pyx_memview_set_unsigned_int, 0);; if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 177, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_size); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 175, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_size); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 177, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_6 = __Pyx_PyInt_As_unsigned_int(__pyx_t_1); if (unlikely((__pyx_t_6 == (unsigned int)-1) && PyErr_Occurred())) __PYX_ERR(0, 175, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_PyInt_As_unsigned_int(__pyx_t_1); if (unlikely((__pyx_t_6 == (unsigned int)-1) && PyErr_Occurred())) __PYX_ERR(0, 177, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_numb_intervals = __pyx_t_6;
 
-  /* "pyBedGraph/ignore_missing_bp.pyx":178
+  /* "pyBedGraph/ignore_missing_bp.pyx":180
  *     cdef double total
  * 
  *     result = np.full(num_tests, -1, dtype=np.float64)             # <<<<<<<<<<<<<<
  *     cdef double[:] result_view = result
  * 
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_np); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 178, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_np); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 180, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_full); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 178, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_full); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 180, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyInt_FromSize_t(__pyx_v_num_tests); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 178, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_FromSize_t(__pyx_v_num_tests); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 180, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = PyTuple_New(2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 178, __pyx_L1_error)
+  __pyx_t_2 = PyTuple_New(2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 180, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_GIVEREF(__pyx_t_1);
   PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_t_1);
@@ -4300,16 +4328,16 @@ static PyObject *__pyx_f_10pyBedGraph_17ignore_missing_bp_get_exact_means(__Pyx_
   __Pyx_GIVEREF(__pyx_int_neg_1);
   PyTuple_SET_ITEM(__pyx_t_2, 1, __pyx_int_neg_1);
   __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 178, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 180, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __Pyx_GetModuleGlobalName(__pyx_t_7, __pyx_n_s_np); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 178, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_7, __pyx_n_s_np); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 180, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
-  __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_t_7, __pyx_n_s_float64); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 178, __pyx_L1_error)
+  __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_t_7, __pyx_n_s_float64); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 180, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_8);
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_dtype, __pyx_t_8) < 0) __PYX_ERR(0, 178, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_dtype, __pyx_t_8) < 0) __PYX_ERR(0, 180, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-  __pyx_t_8 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_2, __pyx_t_1); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 178, __pyx_L1_error)
+  __pyx_t_8 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_2, __pyx_t_1); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 180, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_8);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
@@ -4317,19 +4345,19 @@ static PyObject *__pyx_f_10pyBedGraph_17ignore_missing_bp_get_exact_means(__Pyx_
   __pyx_v_result = __pyx_t_8;
   __pyx_t_8 = 0;
 
-  /* "pyBedGraph/ignore_missing_bp.pyx":179
+  /* "pyBedGraph/ignore_missing_bp.pyx":181
  * 
  *     result = np.full(num_tests, -1, dtype=np.float64)
  *     cdef double[:] result_view = result             # <<<<<<<<<<<<<<
  * 
  *     for i in range(num_tests):
  */
-  __pyx_t_9 = __Pyx_PyObject_to_MemoryviewSlice_ds_double(__pyx_v_result, PyBUF_WRITABLE); if (unlikely(!__pyx_t_9.memview)) __PYX_ERR(0, 179, __pyx_L1_error)
+  __pyx_t_9 = __Pyx_PyObject_to_MemoryviewSlice_ds_double(__pyx_v_result, PyBUF_WRITABLE); if (unlikely(!__pyx_t_9.memview)) __PYX_ERR(0, 181, __pyx_L1_error)
   __pyx_v_result_view = __pyx_t_9;
   __pyx_t_9.memview = NULL;
   __pyx_t_9.data = NULL;
 
-  /* "pyBedGraph/ignore_missing_bp.pyx":181
+  /* "pyBedGraph/ignore_missing_bp.pyx":183
  *     cdef double[:] result_view = result
  * 
  *     for i in range(num_tests):             # <<<<<<<<<<<<<<
@@ -4341,7 +4369,7 @@ static PyObject *__pyx_f_10pyBedGraph_17ignore_missing_bp_get_exact_means(__Pyx_
   for (__pyx_t_11 = 0; __pyx_t_11 < __pyx_t_10; __pyx_t_11+=1) {
     __pyx_v_i = __pyx_t_11;
 
-    /* "pyBedGraph/ignore_missing_bp.pyx":182
+    /* "pyBedGraph/ignore_missing_bp.pyx":184
  * 
  *     for i in range(num_tests):
  *         total = 0             # <<<<<<<<<<<<<<
@@ -4350,7 +4378,7 @@ static PyObject *__pyx_f_10pyBedGraph_17ignore_missing_bp_get_exact_means(__Pyx_
  */
     __pyx_v_total = 0.0;
 
-    /* "pyBedGraph/ignore_missing_bp.pyx":183
+    /* "pyBedGraph/ignore_missing_bp.pyx":185
  *     for i in range(num_tests):
  *         total = 0
  *         numb_value = 0             # <<<<<<<<<<<<<<
@@ -4359,7 +4387,7 @@ static PyObject *__pyx_f_10pyBedGraph_17ignore_missing_bp_get_exact_means(__Pyx_
  */
     __pyx_v_numb_value = 0;
 
-    /* "pyBedGraph/ignore_missing_bp.pyx":184
+    /* "pyBedGraph/ignore_missing_bp.pyx":186
  *         total = 0
  *         numb_value = 0
  *         start = start_list[i]             # <<<<<<<<<<<<<<
@@ -4369,7 +4397,7 @@ static PyObject *__pyx_f_10pyBedGraph_17ignore_missing_bp_get_exact_means(__Pyx_
     __pyx_t_12 = __pyx_v_i;
     __pyx_v_start = (*((int *) ( /* dim=0 */ (__pyx_v_start_list.data + __pyx_t_12 * __pyx_v_start_list.strides[0]) )));
 
-    /* "pyBedGraph/ignore_missing_bp.pyx":185
+    /* "pyBedGraph/ignore_missing_bp.pyx":187
  *         numb_value = 0
  *         start = start_list[i]
  *         end = end_list[i]             # <<<<<<<<<<<<<<
@@ -4379,29 +4407,29 @@ static PyObject *__pyx_f_10pyBedGraph_17ignore_missing_bp_get_exact_means(__Pyx_
     __pyx_t_13 = __pyx_v_i;
     __pyx_v_end = (*((int *) ( /* dim=0 */ (__pyx_v_end_list.data + __pyx_t_13 * __pyx_v_end_list.strides[0]) )));
 
-    /* "pyBedGraph/ignore_missing_bp.pyx":188
+    /* "pyBedGraph/ignore_missing_bp.pyx":190
  * 
  *         # get to an interval
- *         while index_list[start] == -1 and start < end:             # <<<<<<<<<<<<<<
+ *         while start < end and index_list[start] == -1:             # <<<<<<<<<<<<<<
  *             start += 1
  * 
  */
     while (1) {
-      __pyx_t_14 = __pyx_v_start;
-      __pyx_t_15 = (((*((int *) ( /* dim=0 */ (__pyx_v_index_list.data + __pyx_t_14 * __pyx_v_index_list.strides[0]) ))) == -1L) != 0);
-      if (__pyx_t_15) {
+      __pyx_t_14 = ((__pyx_v_start < __pyx_v_end) != 0);
+      if (__pyx_t_14) {
       } else {
-        __pyx_t_4 = __pyx_t_15;
+        __pyx_t_4 = __pyx_t_14;
         goto __pyx_L7_bool_binop_done;
       }
-      __pyx_t_15 = ((__pyx_v_start < __pyx_v_end) != 0);
-      __pyx_t_4 = __pyx_t_15;
+      __pyx_t_15 = __pyx_v_start;
+      __pyx_t_14 = (((*((int *) ( /* dim=0 */ (__pyx_v_index_list.data + __pyx_t_15 * __pyx_v_index_list.strides[0]) ))) == -1L) != 0);
+      __pyx_t_4 = __pyx_t_14;
       __pyx_L7_bool_binop_done:;
       if (!__pyx_t_4) break;
 
-      /* "pyBedGraph/ignore_missing_bp.pyx":189
+      /* "pyBedGraph/ignore_missing_bp.pyx":191
  *         # get to an interval
- *         while index_list[start] == -1 and start < end:
+ *         while start < end and index_list[start] == -1:
  *             start += 1             # <<<<<<<<<<<<<<
  * 
  *         if start == end:
@@ -4409,7 +4437,7 @@ static PyObject *__pyx_f_10pyBedGraph_17ignore_missing_bp_get_exact_means(__Pyx_
       __pyx_v_start = (__pyx_v_start + 1);
     }
 
-    /* "pyBedGraph/ignore_missing_bp.pyx":191
+    /* "pyBedGraph/ignore_missing_bp.pyx":193
  *             start += 1
  * 
  *         if start == end:             # <<<<<<<<<<<<<<
@@ -4419,7 +4447,7 @@ static PyObject *__pyx_f_10pyBedGraph_17ignore_missing_bp_get_exact_means(__Pyx_
     __pyx_t_4 = ((__pyx_v_start == __pyx_v_end) != 0);
     if (__pyx_t_4) {
 
-      /* "pyBedGraph/ignore_missing_bp.pyx":192
+      /* "pyBedGraph/ignore_missing_bp.pyx":194
  * 
  *         if start == end:
  *             continue             # <<<<<<<<<<<<<<
@@ -4428,7 +4456,7 @@ static PyObject *__pyx_f_10pyBedGraph_17ignore_missing_bp_get_exact_means(__Pyx_
  */
       goto __pyx_L3_continue;
 
-      /* "pyBedGraph/ignore_missing_bp.pyx":191
+      /* "pyBedGraph/ignore_missing_bp.pyx":193
  *             start += 1
  * 
  *         if start == end:             # <<<<<<<<<<<<<<
@@ -4437,7 +4465,7 @@ static PyObject *__pyx_f_10pyBedGraph_17ignore_missing_bp_get_exact_means(__Pyx_
  */
     }
 
-    /* "pyBedGraph/ignore_missing_bp.pyx":194
+    /* "pyBedGraph/ignore_missing_bp.pyx":196
  *             continue
  * 
  *         value_index = index_list[start]             # <<<<<<<<<<<<<<
@@ -4447,7 +4475,7 @@ static PyObject *__pyx_f_10pyBedGraph_17ignore_missing_bp_get_exact_means(__Pyx_
     __pyx_t_16 = __pyx_v_start;
     __pyx_v_value_index = (*((int *) ( /* dim=0 */ (__pyx_v_index_list.data + __pyx_t_16 * __pyx_v_index_list.strides[0]) )));
 
-    /* "pyBedGraph/ignore_missing_bp.pyx":195
+    /* "pyBedGraph/ignore_missing_bp.pyx":197
  * 
  *         value_index = index_list[start]
  *         while start < end:             # <<<<<<<<<<<<<<
@@ -4458,7 +4486,7 @@ static PyObject *__pyx_f_10pyBedGraph_17ignore_missing_bp_get_exact_means(__Pyx_
       __pyx_t_4 = ((__pyx_v_start < __pyx_v_end) != 0);
       if (!__pyx_t_4) break;
 
-      /* "pyBedGraph/ignore_missing_bp.pyx":196
+      /* "pyBedGraph/ignore_missing_bp.pyx":198
  *         value_index = index_list[start]
  *         while start < end:
  *             temp_end = interval_end[value_index]             # <<<<<<<<<<<<<<
@@ -4468,7 +4496,7 @@ static PyObject *__pyx_f_10pyBedGraph_17ignore_missing_bp_get_exact_means(__Pyx_
       __pyx_t_17 = __pyx_v_value_index;
       __pyx_v_temp_end = (*((unsigned int *) ( /* dim=0 */ (__pyx_v_interval_end.data + __pyx_t_17 * __pyx_v_interval_end.strides[0]) )));
 
-      /* "pyBedGraph/ignore_missing_bp.pyx":197
+      /* "pyBedGraph/ignore_missing_bp.pyx":199
  *         while start < end:
  *             temp_end = interval_end[value_index]
  *             if temp_end > end:             # <<<<<<<<<<<<<<
@@ -4478,7 +4506,7 @@ static PyObject *__pyx_f_10pyBedGraph_17ignore_missing_bp_get_exact_means(__Pyx_
       __pyx_t_4 = ((__pyx_v_temp_end > __pyx_v_end) != 0);
       if (__pyx_t_4) {
 
-        /* "pyBedGraph/ignore_missing_bp.pyx":198
+        /* "pyBedGraph/ignore_missing_bp.pyx":200
  *             temp_end = interval_end[value_index]
  *             if temp_end > end:
  *                 temp_end = end             # <<<<<<<<<<<<<<
@@ -4487,7 +4515,7 @@ static PyObject *__pyx_f_10pyBedGraph_17ignore_missing_bp_get_exact_means(__Pyx_
  */
         __pyx_v_temp_end = __pyx_v_end;
 
-        /* "pyBedGraph/ignore_missing_bp.pyx":197
+        /* "pyBedGraph/ignore_missing_bp.pyx":199
  *         while start < end:
  *             temp_end = interval_end[value_index]
  *             if temp_end > end:             # <<<<<<<<<<<<<<
@@ -4496,7 +4524,7 @@ static PyObject *__pyx_f_10pyBedGraph_17ignore_missing_bp_get_exact_means(__Pyx_
  */
       }
 
-      /* "pyBedGraph/ignore_missing_bp.pyx":199
+      /* "pyBedGraph/ignore_missing_bp.pyx":201
  *             if temp_end > end:
  *                 temp_end = end
  *             interval_size = temp_end - start             # <<<<<<<<<<<<<<
@@ -4505,7 +4533,7 @@ static PyObject *__pyx_f_10pyBedGraph_17ignore_missing_bp_get_exact_means(__Pyx_
  */
       __pyx_v_interval_size = (__pyx_v_temp_end - __pyx_v_start);
 
-      /* "pyBedGraph/ignore_missing_bp.pyx":201
+      /* "pyBedGraph/ignore_missing_bp.pyx":203
  *             interval_size = temp_end - start
  * 
  *             total += value_map[value_index] * interval_size             # <<<<<<<<<<<<<<
@@ -4515,7 +4543,7 @@ static PyObject *__pyx_f_10pyBedGraph_17ignore_missing_bp_get_exact_means(__Pyx_
       __pyx_t_18 = __pyx_v_value_index;
       __pyx_v_total = (__pyx_v_total + ((*((double *) ( /* dim=0 */ (__pyx_v_value_map.data + __pyx_t_18 * __pyx_v_value_map.strides[0]) ))) * __pyx_v_interval_size));
 
-      /* "pyBedGraph/ignore_missing_bp.pyx":202
+      /* "pyBedGraph/ignore_missing_bp.pyx":204
  * 
  *             total += value_map[value_index] * interval_size
  *             numb_value += interval_size             # <<<<<<<<<<<<<<
@@ -4524,7 +4552,7 @@ static PyObject *__pyx_f_10pyBedGraph_17ignore_missing_bp_get_exact_means(__Pyx_
  */
       __pyx_v_numb_value = (__pyx_v_numb_value + __pyx_v_interval_size);
 
-      /* "pyBedGraph/ignore_missing_bp.pyx":204
+      /* "pyBedGraph/ignore_missing_bp.pyx":206
  *             numb_value += interval_size
  * 
  *             value_index += 1             # <<<<<<<<<<<<<<
@@ -4533,7 +4561,7 @@ static PyObject *__pyx_f_10pyBedGraph_17ignore_missing_bp_get_exact_means(__Pyx_
  */
       __pyx_v_value_index = (__pyx_v_value_index + 1);
 
-      /* "pyBedGraph/ignore_missing_bp.pyx":205
+      /* "pyBedGraph/ignore_missing_bp.pyx":207
  * 
  *             value_index += 1
  *             if value_index == numb_intervals:             # <<<<<<<<<<<<<<
@@ -4543,7 +4571,7 @@ static PyObject *__pyx_f_10pyBedGraph_17ignore_missing_bp_get_exact_means(__Pyx_
       __pyx_t_4 = ((__pyx_v_value_index == __pyx_v_numb_intervals) != 0);
       if (__pyx_t_4) {
 
-        /* "pyBedGraph/ignore_missing_bp.pyx":206
+        /* "pyBedGraph/ignore_missing_bp.pyx":208
  *             value_index += 1
  *             if value_index == numb_intervals:
  *                 break             # <<<<<<<<<<<<<<
@@ -4552,7 +4580,7 @@ static PyObject *__pyx_f_10pyBedGraph_17ignore_missing_bp_get_exact_means(__Pyx_
  */
         goto __pyx_L11_break;
 
-        /* "pyBedGraph/ignore_missing_bp.pyx":205
+        /* "pyBedGraph/ignore_missing_bp.pyx":207
  * 
  *             value_index += 1
  *             if value_index == numb_intervals:             # <<<<<<<<<<<<<<
@@ -4561,7 +4589,7 @@ static PyObject *__pyx_f_10pyBedGraph_17ignore_missing_bp_get_exact_means(__Pyx_
  */
       }
 
-      /* "pyBedGraph/ignore_missing_bp.pyx":207
+      /* "pyBedGraph/ignore_missing_bp.pyx":209
  *             if value_index == numb_intervals:
  *                 break
  *             start = interval_start[value_index]             # <<<<<<<<<<<<<<
@@ -4573,7 +4601,7 @@ static PyObject *__pyx_f_10pyBedGraph_17ignore_missing_bp_get_exact_means(__Pyx_
     }
     __pyx_L11_break:;
 
-    /* "pyBedGraph/ignore_missing_bp.pyx":209
+    /* "pyBedGraph/ignore_missing_bp.pyx":211
  *             start = interval_start[value_index]
  * 
  *         if numb_value != 0:             # <<<<<<<<<<<<<<
@@ -4583,7 +4611,7 @@ static PyObject *__pyx_f_10pyBedGraph_17ignore_missing_bp_get_exact_means(__Pyx_
     __pyx_t_4 = ((__pyx_v_numb_value != 0) != 0);
     if (__pyx_t_4) {
 
-      /* "pyBedGraph/ignore_missing_bp.pyx":210
+      /* "pyBedGraph/ignore_missing_bp.pyx":212
  * 
  *         if numb_value != 0:
  *             result_view[i] = total / numb_value             # <<<<<<<<<<<<<<
@@ -4593,7 +4621,7 @@ static PyObject *__pyx_f_10pyBedGraph_17ignore_missing_bp_get_exact_means(__Pyx_
       __pyx_t_20 = __pyx_v_i;
       *((double *) ( /* dim=0 */ (__pyx_v_result_view.data + __pyx_t_20 * __pyx_v_result_view.strides[0]) )) = (__pyx_v_total / ((double)__pyx_v_numb_value));
 
-      /* "pyBedGraph/ignore_missing_bp.pyx":209
+      /* "pyBedGraph/ignore_missing_bp.pyx":211
  *             start = interval_start[value_index]
  * 
  *         if numb_value != 0:             # <<<<<<<<<<<<<<
@@ -4604,7 +4632,7 @@ static PyObject *__pyx_f_10pyBedGraph_17ignore_missing_bp_get_exact_means(__Pyx_
     __pyx_L3_continue:;
   }
 
-  /* "pyBedGraph/ignore_missing_bp.pyx":212
+  /* "pyBedGraph/ignore_missing_bp.pyx":214
  *             result_view[i] = total / numb_value
  * 
  *     return result             # <<<<<<<<<<<<<<
@@ -4616,7 +4644,7 @@ static PyObject *__pyx_f_10pyBedGraph_17ignore_missing_bp_get_exact_means(__Pyx_
   __pyx_r = __pyx_v_result;
   goto __pyx_L0;
 
-  /* "pyBedGraph/ignore_missing_bp.pyx":169
+  /* "pyBedGraph/ignore_missing_bp.pyx":171
  * @cython.cdivision(True)
  * @cython.boundscheck(False)
  * cpdef get_exact_means(double[:] value_map, int[:] index_list,             # <<<<<<<<<<<<<<
@@ -4685,35 +4713,35 @@ static PyObject *__pyx_pw_10pyBedGraph_17ignore_missing_bp_7get_exact_means(PyOb
         case  1:
         if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_index_list)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("get_exact_means", 1, 6, 6, 1); __PYX_ERR(0, 169, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("get_exact_means", 1, 6, 6, 1); __PYX_ERR(0, 171, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  2:
         if (likely((values[2] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_interval_start)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("get_exact_means", 1, 6, 6, 2); __PYX_ERR(0, 169, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("get_exact_means", 1, 6, 6, 2); __PYX_ERR(0, 171, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  3:
         if (likely((values[3] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_interval_end)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("get_exact_means", 1, 6, 6, 3); __PYX_ERR(0, 169, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("get_exact_means", 1, 6, 6, 3); __PYX_ERR(0, 171, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  4:
         if (likely((values[4] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_start_list)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("get_exact_means", 1, 6, 6, 4); __PYX_ERR(0, 169, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("get_exact_means", 1, 6, 6, 4); __PYX_ERR(0, 171, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  5:
         if (likely((values[5] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_end_list)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("get_exact_means", 1, 6, 6, 5); __PYX_ERR(0, 169, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("get_exact_means", 1, 6, 6, 5); __PYX_ERR(0, 171, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "get_exact_means") < 0)) __PYX_ERR(0, 169, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "get_exact_means") < 0)) __PYX_ERR(0, 171, __pyx_L3_error)
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 6) {
       goto __pyx_L5_argtuple_error;
@@ -4725,16 +4753,16 @@ static PyObject *__pyx_pw_10pyBedGraph_17ignore_missing_bp_7get_exact_means(PyOb
       values[4] = PyTuple_GET_ITEM(__pyx_args, 4);
       values[5] = PyTuple_GET_ITEM(__pyx_args, 5);
     }
-    __pyx_v_value_map = __Pyx_PyObject_to_MemoryviewSlice_ds_double(values[0], PyBUF_WRITABLE); if (unlikely(!__pyx_v_value_map.memview)) __PYX_ERR(0, 169, __pyx_L3_error)
-    __pyx_v_index_list = __Pyx_PyObject_to_MemoryviewSlice_ds_int(values[1], PyBUF_WRITABLE); if (unlikely(!__pyx_v_index_list.memview)) __PYX_ERR(0, 169, __pyx_L3_error)
-    __pyx_v_interval_start = __Pyx_PyObject_to_MemoryviewSlice_ds_unsigned_int(values[2], PyBUF_WRITABLE); if (unlikely(!__pyx_v_interval_start.memview)) __PYX_ERR(0, 170, __pyx_L3_error)
-    __pyx_v_interval_end = __Pyx_PyObject_to_MemoryviewSlice_ds_unsigned_int(values[3], PyBUF_WRITABLE); if (unlikely(!__pyx_v_interval_end.memview)) __PYX_ERR(0, 170, __pyx_L3_error)
-    __pyx_v_start_list = __Pyx_PyObject_to_MemoryviewSlice_ds_int(values[4], PyBUF_WRITABLE); if (unlikely(!__pyx_v_start_list.memview)) __PYX_ERR(0, 171, __pyx_L3_error)
-    __pyx_v_end_list = __Pyx_PyObject_to_MemoryviewSlice_ds_int(values[5], PyBUF_WRITABLE); if (unlikely(!__pyx_v_end_list.memview)) __PYX_ERR(0, 171, __pyx_L3_error)
+    __pyx_v_value_map = __Pyx_PyObject_to_MemoryviewSlice_ds_double(values[0], PyBUF_WRITABLE); if (unlikely(!__pyx_v_value_map.memview)) __PYX_ERR(0, 171, __pyx_L3_error)
+    __pyx_v_index_list = __Pyx_PyObject_to_MemoryviewSlice_ds_int(values[1], PyBUF_WRITABLE); if (unlikely(!__pyx_v_index_list.memview)) __PYX_ERR(0, 171, __pyx_L3_error)
+    __pyx_v_interval_start = __Pyx_PyObject_to_MemoryviewSlice_ds_unsigned_int(values[2], PyBUF_WRITABLE); if (unlikely(!__pyx_v_interval_start.memview)) __PYX_ERR(0, 172, __pyx_L3_error)
+    __pyx_v_interval_end = __Pyx_PyObject_to_MemoryviewSlice_ds_unsigned_int(values[3], PyBUF_WRITABLE); if (unlikely(!__pyx_v_interval_end.memview)) __PYX_ERR(0, 172, __pyx_L3_error)
+    __pyx_v_start_list = __Pyx_PyObject_to_MemoryviewSlice_ds_int(values[4], PyBUF_WRITABLE); if (unlikely(!__pyx_v_start_list.memview)) __PYX_ERR(0, 173, __pyx_L3_error)
+    __pyx_v_end_list = __Pyx_PyObject_to_MemoryviewSlice_ds_int(values[5], PyBUF_WRITABLE); if (unlikely(!__pyx_v_end_list.memview)) __PYX_ERR(0, 173, __pyx_L3_error)
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("get_exact_means", 1, 6, 6, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 169, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("get_exact_means", 1, 6, 6, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 171, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("pyBedGraph.ignore_missing_bp.get_exact_means", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -4753,13 +4781,13 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_6get_exact_means(CYTH
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("get_exact_means", 0);
   __Pyx_XDECREF(__pyx_r);
-  if (unlikely(!__pyx_v_value_map.memview)) { __Pyx_RaiseUnboundLocalError("value_map"); __PYX_ERR(0, 169, __pyx_L1_error) }
-  if (unlikely(!__pyx_v_index_list.memview)) { __Pyx_RaiseUnboundLocalError("index_list"); __PYX_ERR(0, 169, __pyx_L1_error) }
-  if (unlikely(!__pyx_v_interval_start.memview)) { __Pyx_RaiseUnboundLocalError("interval_start"); __PYX_ERR(0, 169, __pyx_L1_error) }
-  if (unlikely(!__pyx_v_interval_end.memview)) { __Pyx_RaiseUnboundLocalError("interval_end"); __PYX_ERR(0, 169, __pyx_L1_error) }
-  if (unlikely(!__pyx_v_start_list.memview)) { __Pyx_RaiseUnboundLocalError("start_list"); __PYX_ERR(0, 169, __pyx_L1_error) }
-  if (unlikely(!__pyx_v_end_list.memview)) { __Pyx_RaiseUnboundLocalError("end_list"); __PYX_ERR(0, 169, __pyx_L1_error) }
-  __pyx_t_1 = __pyx_f_10pyBedGraph_17ignore_missing_bp_get_exact_means(__pyx_v_value_map, __pyx_v_index_list, __pyx_v_interval_start, __pyx_v_interval_end, __pyx_v_start_list, __pyx_v_end_list, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 169, __pyx_L1_error)
+  if (unlikely(!__pyx_v_value_map.memview)) { __Pyx_RaiseUnboundLocalError("value_map"); __PYX_ERR(0, 171, __pyx_L1_error) }
+  if (unlikely(!__pyx_v_index_list.memview)) { __Pyx_RaiseUnboundLocalError("index_list"); __PYX_ERR(0, 171, __pyx_L1_error) }
+  if (unlikely(!__pyx_v_interval_start.memview)) { __Pyx_RaiseUnboundLocalError("interval_start"); __PYX_ERR(0, 171, __pyx_L1_error) }
+  if (unlikely(!__pyx_v_interval_end.memview)) { __Pyx_RaiseUnboundLocalError("interval_end"); __PYX_ERR(0, 171, __pyx_L1_error) }
+  if (unlikely(!__pyx_v_start_list.memview)) { __Pyx_RaiseUnboundLocalError("start_list"); __PYX_ERR(0, 171, __pyx_L1_error) }
+  if (unlikely(!__pyx_v_end_list.memview)) { __Pyx_RaiseUnboundLocalError("end_list"); __PYX_ERR(0, 171, __pyx_L1_error) }
+  __pyx_t_1 = __pyx_f_10pyBedGraph_17ignore_missing_bp_get_exact_means(__pyx_v_value_map, __pyx_v_index_list, __pyx_v_interval_start, __pyx_v_interval_end, __pyx_v_start_list, __pyx_v_end_list, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 171, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -4782,7 +4810,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_6get_exact_means(CYTH
   return __pyx_r;
 }
 
-/* "pyBedGraph/ignore_missing_bp.pyx":214
+/* "pyBedGraph/ignore_missing_bp.pyx":216
  *     return result
  * 
  * def get_minimums(double[:] value_map, int[:] index_list,             # <<<<<<<<<<<<<<
@@ -4834,35 +4862,35 @@ static PyObject *__pyx_pw_10pyBedGraph_17ignore_missing_bp_9get_minimums(PyObjec
         case  1:
         if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_index_list)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("get_minimums", 1, 6, 6, 1); __PYX_ERR(0, 214, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("get_minimums", 1, 6, 6, 1); __PYX_ERR(0, 216, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  2:
         if (likely((values[2] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_interval_start)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("get_minimums", 1, 6, 6, 2); __PYX_ERR(0, 214, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("get_minimums", 1, 6, 6, 2); __PYX_ERR(0, 216, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  3:
         if (likely((values[3] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_interval_end)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("get_minimums", 1, 6, 6, 3); __PYX_ERR(0, 214, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("get_minimums", 1, 6, 6, 3); __PYX_ERR(0, 216, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  4:
         if (likely((values[4] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_start_list)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("get_minimums", 1, 6, 6, 4); __PYX_ERR(0, 214, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("get_minimums", 1, 6, 6, 4); __PYX_ERR(0, 216, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  5:
         if (likely((values[5] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_end_list)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("get_minimums", 1, 6, 6, 5); __PYX_ERR(0, 214, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("get_minimums", 1, 6, 6, 5); __PYX_ERR(0, 216, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "get_minimums") < 0)) __PYX_ERR(0, 214, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "get_minimums") < 0)) __PYX_ERR(0, 216, __pyx_L3_error)
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 6) {
       goto __pyx_L5_argtuple_error;
@@ -4874,16 +4902,16 @@ static PyObject *__pyx_pw_10pyBedGraph_17ignore_missing_bp_9get_minimums(PyObjec
       values[4] = PyTuple_GET_ITEM(__pyx_args, 4);
       values[5] = PyTuple_GET_ITEM(__pyx_args, 5);
     }
-    __pyx_v_value_map = __Pyx_PyObject_to_MemoryviewSlice_ds_double(values[0], PyBUF_WRITABLE); if (unlikely(!__pyx_v_value_map.memview)) __PYX_ERR(0, 214, __pyx_L3_error)
-    __pyx_v_index_list = __Pyx_PyObject_to_MemoryviewSlice_ds_int(values[1], PyBUF_WRITABLE); if (unlikely(!__pyx_v_index_list.memview)) __PYX_ERR(0, 214, __pyx_L3_error)
-    __pyx_v_interval_start = __Pyx_PyObject_to_MemoryviewSlice_ds_unsigned_int(values[2], PyBUF_WRITABLE); if (unlikely(!__pyx_v_interval_start.memview)) __PYX_ERR(0, 215, __pyx_L3_error)
-    __pyx_v_interval_end = __Pyx_PyObject_to_MemoryviewSlice_ds_unsigned_int(values[3], PyBUF_WRITABLE); if (unlikely(!__pyx_v_interval_end.memview)) __PYX_ERR(0, 215, __pyx_L3_error)
-    __pyx_v_start_list = __Pyx_PyObject_to_MemoryviewSlice_ds_int(values[4], PyBUF_WRITABLE); if (unlikely(!__pyx_v_start_list.memview)) __PYX_ERR(0, 216, __pyx_L3_error)
-    __pyx_v_end_list = __Pyx_PyObject_to_MemoryviewSlice_ds_int(values[5], PyBUF_WRITABLE); if (unlikely(!__pyx_v_end_list.memview)) __PYX_ERR(0, 216, __pyx_L3_error)
+    __pyx_v_value_map = __Pyx_PyObject_to_MemoryviewSlice_ds_double(values[0], PyBUF_WRITABLE); if (unlikely(!__pyx_v_value_map.memview)) __PYX_ERR(0, 216, __pyx_L3_error)
+    __pyx_v_index_list = __Pyx_PyObject_to_MemoryviewSlice_ds_int(values[1], PyBUF_WRITABLE); if (unlikely(!__pyx_v_index_list.memview)) __PYX_ERR(0, 216, __pyx_L3_error)
+    __pyx_v_interval_start = __Pyx_PyObject_to_MemoryviewSlice_ds_unsigned_int(values[2], PyBUF_WRITABLE); if (unlikely(!__pyx_v_interval_start.memview)) __PYX_ERR(0, 217, __pyx_L3_error)
+    __pyx_v_interval_end = __Pyx_PyObject_to_MemoryviewSlice_ds_unsigned_int(values[3], PyBUF_WRITABLE); if (unlikely(!__pyx_v_interval_end.memview)) __PYX_ERR(0, 217, __pyx_L3_error)
+    __pyx_v_start_list = __Pyx_PyObject_to_MemoryviewSlice_ds_int(values[4], PyBUF_WRITABLE); if (unlikely(!__pyx_v_start_list.memview)) __PYX_ERR(0, 218, __pyx_L3_error)
+    __pyx_v_end_list = __Pyx_PyObject_to_MemoryviewSlice_ds_int(values[5], PyBUF_WRITABLE); if (unlikely(!__pyx_v_end_list.memview)) __PYX_ERR(0, 218, __pyx_L3_error)
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("get_minimums", 1, 6, 6, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 214, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("get_minimums", 1, 6, 6, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 216, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("pyBedGraph.ignore_missing_bp.get_minimums", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -4921,8 +4949,8 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_8get_minimums(CYTHON_
   size_t __pyx_t_11;
   int __pyx_t_12;
   size_t __pyx_t_13;
-  size_t __pyx_t_14;
-  int __pyx_t_15;
+  int __pyx_t_14;
+  size_t __pyx_t_15;
   size_t __pyx_t_16;
   size_t __pyx_t_17;
   size_t __pyx_t_18;
@@ -4930,7 +4958,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_8get_minimums(CYTHON_
   size_t __pyx_t_20;
   __Pyx_RefNannySetupContext("get_minimums", 0);
 
-  /* "pyBedGraph/ignore_missing_bp.pyx":218
+  /* "pyBedGraph/ignore_missing_bp.pyx":220
  *                  int[:] start_list, int[:] end_list):
  * 
  *     assert tuple(start_list.shape) == tuple(end_list.shape)             # <<<<<<<<<<<<<<
@@ -4939,75 +4967,75 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_8get_minimums(CYTHON_
  */
   #ifndef CYTHON_WITHOUT_ASSERTIONS
   if (unlikely(!Py_OptimizeFlag)) {
-    __pyx_t_1 = __Pyx_carray_to_py_Py_ssize_t(__pyx_v_start_list.shape, 8); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 218, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_carray_to_py_Py_ssize_t(__pyx_v_start_list.shape, 8); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 220, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_2 = __Pyx_PySequence_Tuple(__pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 218, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PySequence_Tuple(__pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 220, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __pyx_t_1 = __Pyx_carray_to_py_Py_ssize_t(__pyx_v_end_list.shape, 8); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 218, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_carray_to_py_Py_ssize_t(__pyx_v_end_list.shape, 8); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 220, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_3 = __Pyx_PySequence_Tuple(__pyx_t_1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 218, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PySequence_Tuple(__pyx_t_1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 220, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __pyx_t_1 = PyObject_RichCompare(__pyx_t_2, __pyx_t_3, Py_EQ); __Pyx_XGOTREF(__pyx_t_1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 218, __pyx_L1_error)
+    __pyx_t_1 = PyObject_RichCompare(__pyx_t_2, __pyx_t_3, Py_EQ); __Pyx_XGOTREF(__pyx_t_1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 220, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __pyx_t_4 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_4 < 0)) __PYX_ERR(0, 218, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_4 < 0)) __PYX_ERR(0, 220, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     if (unlikely(!__pyx_t_4)) {
       PyErr_SetNone(PyExc_AssertionError);
-      __PYX_ERR(0, 218, __pyx_L1_error)
+      __PYX_ERR(0, 220, __pyx_L1_error)
     }
   }
   #endif
 
-  /* "pyBedGraph/ignore_missing_bp.pyx":220
+  /* "pyBedGraph/ignore_missing_bp.pyx":222
  *     assert tuple(start_list.shape) == tuple(end_list.shape)
  * 
  *     cdef size_t i, num_tests = start_list.size, start, end, value_index             # <<<<<<<<<<<<<<
  *     cdef size_t numb_intervals = interval_start.size
  *     cdef double minimum
  */
-  __pyx_t_1 = __pyx_memoryview_fromslice(__pyx_v_start_list, 1, (PyObject *(*)(char *)) __pyx_memview_get_int, (int (*)(char *, PyObject *)) __pyx_memview_set_int, 0);; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 220, __pyx_L1_error)
+  __pyx_t_1 = __pyx_memoryview_fromslice(__pyx_v_start_list, 1, (PyObject *(*)(char *)) __pyx_memview_get_int, (int (*)(char *, PyObject *)) __pyx_memview_set_int, 0);; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 222, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_size); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 220, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_size); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 222, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_5 = __Pyx_PyInt_As_size_t(__pyx_t_3); if (unlikely((__pyx_t_5 == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 220, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyInt_As_size_t(__pyx_t_3); if (unlikely((__pyx_t_5 == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 222, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __pyx_v_num_tests = __pyx_t_5;
 
-  /* "pyBedGraph/ignore_missing_bp.pyx":221
+  /* "pyBedGraph/ignore_missing_bp.pyx":223
  * 
  *     cdef size_t i, num_tests = start_list.size, start, end, value_index
  *     cdef size_t numb_intervals = interval_start.size             # <<<<<<<<<<<<<<
  *     cdef double minimum
  * 
  */
-  __pyx_t_3 = __pyx_memoryview_fromslice(__pyx_v_interval_start, 1, (PyObject *(*)(char *)) __pyx_memview_get_unsigned_int, (int (*)(char *, PyObject *)) __pyx_memview_set_unsigned_int, 0);; if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 221, __pyx_L1_error)
+  __pyx_t_3 = __pyx_memoryview_fromslice(__pyx_v_interval_start, 1, (PyObject *(*)(char *)) __pyx_memview_get_unsigned_int, (int (*)(char *, PyObject *)) __pyx_memview_set_unsigned_int, 0);; if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 223, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_size); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 221, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_size); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 223, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_5 = __Pyx_PyInt_As_size_t(__pyx_t_1); if (unlikely((__pyx_t_5 == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 221, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyInt_As_size_t(__pyx_t_1); if (unlikely((__pyx_t_5 == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 223, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_numb_intervals = __pyx_t_5;
 
-  /* "pyBedGraph/ignore_missing_bp.pyx":224
+  /* "pyBedGraph/ignore_missing_bp.pyx":226
  *     cdef double minimum
  * 
  *     result = np.full(num_tests, -1, dtype=np.float64)             # <<<<<<<<<<<<<<
  *     cdef double[:] result_view = result
  * 
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_np); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 224, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_np); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 226, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_full); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 224, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_full); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 226, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyInt_FromSize_t(__pyx_v_num_tests); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 224, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_FromSize_t(__pyx_v_num_tests); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 226, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = PyTuple_New(2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 224, __pyx_L1_error)
+  __pyx_t_2 = PyTuple_New(2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 226, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_GIVEREF(__pyx_t_1);
   PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_t_1);
@@ -5015,16 +5043,16 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_8get_minimums(CYTHON_
   __Pyx_GIVEREF(__pyx_int_neg_1);
   PyTuple_SET_ITEM(__pyx_t_2, 1, __pyx_int_neg_1);
   __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 224, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 226, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_np); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 224, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_np); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 226, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
-  __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_float64); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 224, __pyx_L1_error)
+  __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_float64); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 226, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_dtype, __pyx_t_7) < 0) __PYX_ERR(0, 224, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_dtype, __pyx_t_7) < 0) __PYX_ERR(0, 226, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-  __pyx_t_7 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_2, __pyx_t_1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 224, __pyx_L1_error)
+  __pyx_t_7 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_2, __pyx_t_1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 226, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
@@ -5032,19 +5060,19 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_8get_minimums(CYTHON_
   __pyx_v_result = __pyx_t_7;
   __pyx_t_7 = 0;
 
-  /* "pyBedGraph/ignore_missing_bp.pyx":225
+  /* "pyBedGraph/ignore_missing_bp.pyx":227
  * 
  *     result = np.full(num_tests, -1, dtype=np.float64)
  *     cdef double[:] result_view = result             # <<<<<<<<<<<<<<
  * 
  *     for i in range(num_tests):
  */
-  __pyx_t_8 = __Pyx_PyObject_to_MemoryviewSlice_ds_double(__pyx_v_result, PyBUF_WRITABLE); if (unlikely(!__pyx_t_8.memview)) __PYX_ERR(0, 225, __pyx_L1_error)
+  __pyx_t_8 = __Pyx_PyObject_to_MemoryviewSlice_ds_double(__pyx_v_result, PyBUF_WRITABLE); if (unlikely(!__pyx_t_8.memview)) __PYX_ERR(0, 227, __pyx_L1_error)
   __pyx_v_result_view = __pyx_t_8;
   __pyx_t_8.memview = NULL;
   __pyx_t_8.data = NULL;
 
-  /* "pyBedGraph/ignore_missing_bp.pyx":227
+  /* "pyBedGraph/ignore_missing_bp.pyx":229
  *     cdef double[:] result_view = result
  * 
  *     for i in range(num_tests):             # <<<<<<<<<<<<<<
@@ -5056,7 +5084,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_8get_minimums(CYTHON_
   for (__pyx_t_10 = 0; __pyx_t_10 < __pyx_t_9; __pyx_t_10+=1) {
     __pyx_v_i = __pyx_t_10;
 
-    /* "pyBedGraph/ignore_missing_bp.pyx":228
+    /* "pyBedGraph/ignore_missing_bp.pyx":230
  * 
  *     for i in range(num_tests):
  *         minimum = DBL_MAX             # <<<<<<<<<<<<<<
@@ -5065,7 +5093,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_8get_minimums(CYTHON_
  */
     __pyx_v_minimum = DBL_MAX;
 
-    /* "pyBedGraph/ignore_missing_bp.pyx":229
+    /* "pyBedGraph/ignore_missing_bp.pyx":231
  *     for i in range(num_tests):
  *         minimum = DBL_MAX
  *         start = start_list[i]             # <<<<<<<<<<<<<<
@@ -5077,11 +5105,11 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_8get_minimums(CYTHON_
     if (unlikely(__pyx_t_11 >= (size_t)__pyx_v_start_list.shape[0])) __pyx_t_12 = 0;
     if (unlikely(__pyx_t_12 != -1)) {
       __Pyx_RaiseBufferIndexError(__pyx_t_12);
-      __PYX_ERR(0, 229, __pyx_L1_error)
+      __PYX_ERR(0, 231, __pyx_L1_error)
     }
     __pyx_v_start = (*((int *) ( /* dim=0 */ (__pyx_v_start_list.data + __pyx_t_11 * __pyx_v_start_list.strides[0]) )));
 
-    /* "pyBedGraph/ignore_missing_bp.pyx":230
+    /* "pyBedGraph/ignore_missing_bp.pyx":232
  *         minimum = DBL_MAX
  *         start = start_list[i]
  *         end = end_list[i]             # <<<<<<<<<<<<<<
@@ -5093,39 +5121,39 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_8get_minimums(CYTHON_
     if (unlikely(__pyx_t_13 >= (size_t)__pyx_v_end_list.shape[0])) __pyx_t_12 = 0;
     if (unlikely(__pyx_t_12 != -1)) {
       __Pyx_RaiseBufferIndexError(__pyx_t_12);
-      __PYX_ERR(0, 230, __pyx_L1_error)
+      __PYX_ERR(0, 232, __pyx_L1_error)
     }
     __pyx_v_end = (*((int *) ( /* dim=0 */ (__pyx_v_end_list.data + __pyx_t_13 * __pyx_v_end_list.strides[0]) )));
 
-    /* "pyBedGraph/ignore_missing_bp.pyx":233
+    /* "pyBedGraph/ignore_missing_bp.pyx":235
  * 
  *         # get to an interval
- *         while index_list[start] == -1 and start < end:             # <<<<<<<<<<<<<<
+ *         while start < end and index_list[start] == -1:             # <<<<<<<<<<<<<<
  *             start += 1
  * 
  */
     while (1) {
-      __pyx_t_14 = __pyx_v_start;
-      __pyx_t_12 = -1;
-      if (unlikely(__pyx_t_14 >= (size_t)__pyx_v_index_list.shape[0])) __pyx_t_12 = 0;
-      if (unlikely(__pyx_t_12 != -1)) {
-        __Pyx_RaiseBufferIndexError(__pyx_t_12);
-        __PYX_ERR(0, 233, __pyx_L1_error)
-      }
-      __pyx_t_15 = (((*((int *) ( /* dim=0 */ (__pyx_v_index_list.data + __pyx_t_14 * __pyx_v_index_list.strides[0]) ))) == -1L) != 0);
-      if (__pyx_t_15) {
+      __pyx_t_14 = ((__pyx_v_start < __pyx_v_end) != 0);
+      if (__pyx_t_14) {
       } else {
-        __pyx_t_4 = __pyx_t_15;
+        __pyx_t_4 = __pyx_t_14;
         goto __pyx_L7_bool_binop_done;
       }
-      __pyx_t_15 = ((__pyx_v_start < __pyx_v_end) != 0);
-      __pyx_t_4 = __pyx_t_15;
+      __pyx_t_15 = __pyx_v_start;
+      __pyx_t_12 = -1;
+      if (unlikely(__pyx_t_15 >= (size_t)__pyx_v_index_list.shape[0])) __pyx_t_12 = 0;
+      if (unlikely(__pyx_t_12 != -1)) {
+        __Pyx_RaiseBufferIndexError(__pyx_t_12);
+        __PYX_ERR(0, 235, __pyx_L1_error)
+      }
+      __pyx_t_14 = (((*((int *) ( /* dim=0 */ (__pyx_v_index_list.data + __pyx_t_15 * __pyx_v_index_list.strides[0]) ))) == -1L) != 0);
+      __pyx_t_4 = __pyx_t_14;
       __pyx_L7_bool_binop_done:;
       if (!__pyx_t_4) break;
 
-      /* "pyBedGraph/ignore_missing_bp.pyx":234
+      /* "pyBedGraph/ignore_missing_bp.pyx":236
  *         # get to an interval
- *         while index_list[start] == -1 and start < end:
+ *         while start < end and index_list[start] == -1:
  *             start += 1             # <<<<<<<<<<<<<<
  * 
  *         if start == end:
@@ -5133,7 +5161,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_8get_minimums(CYTHON_
       __pyx_v_start = (__pyx_v_start + 1);
     }
 
-    /* "pyBedGraph/ignore_missing_bp.pyx":236
+    /* "pyBedGraph/ignore_missing_bp.pyx":238
  *             start += 1
  * 
  *         if start == end:             # <<<<<<<<<<<<<<
@@ -5143,7 +5171,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_8get_minimums(CYTHON_
     __pyx_t_4 = ((__pyx_v_start == __pyx_v_end) != 0);
     if (__pyx_t_4) {
 
-      /* "pyBedGraph/ignore_missing_bp.pyx":237
+      /* "pyBedGraph/ignore_missing_bp.pyx":239
  * 
  *         if start == end:
  *             continue             # <<<<<<<<<<<<<<
@@ -5152,7 +5180,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_8get_minimums(CYTHON_
  */
       goto __pyx_L3_continue;
 
-      /* "pyBedGraph/ignore_missing_bp.pyx":236
+      /* "pyBedGraph/ignore_missing_bp.pyx":238
  *             start += 1
  * 
  *         if start == end:             # <<<<<<<<<<<<<<
@@ -5161,7 +5189,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_8get_minimums(CYTHON_
  */
     }
 
-    /* "pyBedGraph/ignore_missing_bp.pyx":239
+    /* "pyBedGraph/ignore_missing_bp.pyx":241
  *             continue
  * 
  *         value_index = index_list[start]             # <<<<<<<<<<<<<<
@@ -5173,11 +5201,11 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_8get_minimums(CYTHON_
     if (unlikely(__pyx_t_16 >= (size_t)__pyx_v_index_list.shape[0])) __pyx_t_12 = 0;
     if (unlikely(__pyx_t_12 != -1)) {
       __Pyx_RaiseBufferIndexError(__pyx_t_12);
-      __PYX_ERR(0, 239, __pyx_L1_error)
+      __PYX_ERR(0, 241, __pyx_L1_error)
     }
     __pyx_v_value_index = (*((int *) ( /* dim=0 */ (__pyx_v_index_list.data + __pyx_t_16 * __pyx_v_index_list.strides[0]) )));
 
-    /* "pyBedGraph/ignore_missing_bp.pyx":240
+    /* "pyBedGraph/ignore_missing_bp.pyx":242
  * 
  *         value_index = index_list[start]
  *         while interval_start[value_index] < end:             # <<<<<<<<<<<<<<
@@ -5190,12 +5218,12 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_8get_minimums(CYTHON_
       if (unlikely(__pyx_t_17 >= (size_t)__pyx_v_interval_start.shape[0])) __pyx_t_12 = 0;
       if (unlikely(__pyx_t_12 != -1)) {
         __Pyx_RaiseBufferIndexError(__pyx_t_12);
-        __PYX_ERR(0, 240, __pyx_L1_error)
+        __PYX_ERR(0, 242, __pyx_L1_error)
       }
       __pyx_t_4 = (((*((unsigned int *) ( /* dim=0 */ (__pyx_v_interval_start.data + __pyx_t_17 * __pyx_v_interval_start.strides[0]) ))) < __pyx_v_end) != 0);
       if (!__pyx_t_4) break;
 
-      /* "pyBedGraph/ignore_missing_bp.pyx":241
+      /* "pyBedGraph/ignore_missing_bp.pyx":243
  *         value_index = index_list[start]
  *         while interval_start[value_index] < end:
  *             if value_map[value_index] < minimum:             # <<<<<<<<<<<<<<
@@ -5207,12 +5235,12 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_8get_minimums(CYTHON_
       if (unlikely(__pyx_t_18 >= (size_t)__pyx_v_value_map.shape[0])) __pyx_t_12 = 0;
       if (unlikely(__pyx_t_12 != -1)) {
         __Pyx_RaiseBufferIndexError(__pyx_t_12);
-        __PYX_ERR(0, 241, __pyx_L1_error)
+        __PYX_ERR(0, 243, __pyx_L1_error)
       }
       __pyx_t_4 = (((*((double *) ( /* dim=0 */ (__pyx_v_value_map.data + __pyx_t_18 * __pyx_v_value_map.strides[0]) ))) < __pyx_v_minimum) != 0);
       if (__pyx_t_4) {
 
-        /* "pyBedGraph/ignore_missing_bp.pyx":242
+        /* "pyBedGraph/ignore_missing_bp.pyx":244
  *         while interval_start[value_index] < end:
  *             if value_map[value_index] < minimum:
  *                 minimum = value_map[value_index]             # <<<<<<<<<<<<<<
@@ -5224,11 +5252,11 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_8get_minimums(CYTHON_
         if (unlikely(__pyx_t_19 >= (size_t)__pyx_v_value_map.shape[0])) __pyx_t_12 = 0;
         if (unlikely(__pyx_t_12 != -1)) {
           __Pyx_RaiseBufferIndexError(__pyx_t_12);
-          __PYX_ERR(0, 242, __pyx_L1_error)
+          __PYX_ERR(0, 244, __pyx_L1_error)
         }
         __pyx_v_minimum = (*((double *) ( /* dim=0 */ (__pyx_v_value_map.data + __pyx_t_19 * __pyx_v_value_map.strides[0]) )));
 
-        /* "pyBedGraph/ignore_missing_bp.pyx":241
+        /* "pyBedGraph/ignore_missing_bp.pyx":243
  *         value_index = index_list[start]
  *         while interval_start[value_index] < end:
  *             if value_map[value_index] < minimum:             # <<<<<<<<<<<<<<
@@ -5237,7 +5265,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_8get_minimums(CYTHON_
  */
       }
 
-      /* "pyBedGraph/ignore_missing_bp.pyx":244
+      /* "pyBedGraph/ignore_missing_bp.pyx":246
  *                 minimum = value_map[value_index]
  * 
  *             value_index += 1             # <<<<<<<<<<<<<<
@@ -5246,7 +5274,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_8get_minimums(CYTHON_
  */
       __pyx_v_value_index = (__pyx_v_value_index + 1);
 
-      /* "pyBedGraph/ignore_missing_bp.pyx":245
+      /* "pyBedGraph/ignore_missing_bp.pyx":247
  * 
  *             value_index += 1
  *             if value_index == numb_intervals:             # <<<<<<<<<<<<<<
@@ -5256,7 +5284,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_8get_minimums(CYTHON_
       __pyx_t_4 = ((__pyx_v_value_index == __pyx_v_numb_intervals) != 0);
       if (__pyx_t_4) {
 
-        /* "pyBedGraph/ignore_missing_bp.pyx":246
+        /* "pyBedGraph/ignore_missing_bp.pyx":248
  *             value_index += 1
  *             if value_index == numb_intervals:
  *                 break             # <<<<<<<<<<<<<<
@@ -5265,7 +5293,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_8get_minimums(CYTHON_
  */
         goto __pyx_L11_break;
 
-        /* "pyBedGraph/ignore_missing_bp.pyx":245
+        /* "pyBedGraph/ignore_missing_bp.pyx":247
  * 
  *             value_index += 1
  *             if value_index == numb_intervals:             # <<<<<<<<<<<<<<
@@ -5276,7 +5304,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_8get_minimums(CYTHON_
     }
     __pyx_L11_break:;
 
-    /* "pyBedGraph/ignore_missing_bp.pyx":248
+    /* "pyBedGraph/ignore_missing_bp.pyx":250
  *                 break
  * 
  *         if minimum != DBL_MAX:             # <<<<<<<<<<<<<<
@@ -5286,7 +5314,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_8get_minimums(CYTHON_
     __pyx_t_4 = ((__pyx_v_minimum != DBL_MAX) != 0);
     if (__pyx_t_4) {
 
-      /* "pyBedGraph/ignore_missing_bp.pyx":249
+      /* "pyBedGraph/ignore_missing_bp.pyx":251
  * 
  *         if minimum != DBL_MAX:
  *             result_view[i] = minimum             # <<<<<<<<<<<<<<
@@ -5298,11 +5326,11 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_8get_minimums(CYTHON_
       if (unlikely(__pyx_t_20 >= (size_t)__pyx_v_result_view.shape[0])) __pyx_t_12 = 0;
       if (unlikely(__pyx_t_12 != -1)) {
         __Pyx_RaiseBufferIndexError(__pyx_t_12);
-        __PYX_ERR(0, 249, __pyx_L1_error)
+        __PYX_ERR(0, 251, __pyx_L1_error)
       }
       *((double *) ( /* dim=0 */ (__pyx_v_result_view.data + __pyx_t_20 * __pyx_v_result_view.strides[0]) )) = __pyx_v_minimum;
 
-      /* "pyBedGraph/ignore_missing_bp.pyx":248
+      /* "pyBedGraph/ignore_missing_bp.pyx":250
  *                 break
  * 
  *         if minimum != DBL_MAX:             # <<<<<<<<<<<<<<
@@ -5313,7 +5341,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_8get_minimums(CYTHON_
     __pyx_L3_continue:;
   }
 
-  /* "pyBedGraph/ignore_missing_bp.pyx":251
+  /* "pyBedGraph/ignore_missing_bp.pyx":253
  *             result_view[i] = minimum
  * 
  *     return result             # <<<<<<<<<<<<<<
@@ -5325,7 +5353,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_8get_minimums(CYTHON_
   __pyx_r = __pyx_v_result;
   goto __pyx_L0;
 
-  /* "pyBedGraph/ignore_missing_bp.pyx":214
+  /* "pyBedGraph/ignore_missing_bp.pyx":216
  *     return result
  * 
  * def get_minimums(double[:] value_map, int[:] index_list,             # <<<<<<<<<<<<<<
@@ -5357,7 +5385,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_8get_minimums(CYTHON_
   return __pyx_r;
 }
 
-/* "pyBedGraph/ignore_missing_bp.pyx":253
+/* "pyBedGraph/ignore_missing_bp.pyx":255
  *     return result
  * 
  * def get_maximums(double[:] value_map, int[:] index_list,             # <<<<<<<<<<<<<<
@@ -5409,35 +5437,35 @@ static PyObject *__pyx_pw_10pyBedGraph_17ignore_missing_bp_11get_maximums(PyObje
         case  1:
         if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_index_list)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("get_maximums", 1, 6, 6, 1); __PYX_ERR(0, 253, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("get_maximums", 1, 6, 6, 1); __PYX_ERR(0, 255, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  2:
         if (likely((values[2] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_interval_start)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("get_maximums", 1, 6, 6, 2); __PYX_ERR(0, 253, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("get_maximums", 1, 6, 6, 2); __PYX_ERR(0, 255, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  3:
         if (likely((values[3] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_interval_end)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("get_maximums", 1, 6, 6, 3); __PYX_ERR(0, 253, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("get_maximums", 1, 6, 6, 3); __PYX_ERR(0, 255, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  4:
         if (likely((values[4] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_start_list)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("get_maximums", 1, 6, 6, 4); __PYX_ERR(0, 253, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("get_maximums", 1, 6, 6, 4); __PYX_ERR(0, 255, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  5:
         if (likely((values[5] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_end_list)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("get_maximums", 1, 6, 6, 5); __PYX_ERR(0, 253, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("get_maximums", 1, 6, 6, 5); __PYX_ERR(0, 255, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "get_maximums") < 0)) __PYX_ERR(0, 253, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "get_maximums") < 0)) __PYX_ERR(0, 255, __pyx_L3_error)
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 6) {
       goto __pyx_L5_argtuple_error;
@@ -5449,16 +5477,16 @@ static PyObject *__pyx_pw_10pyBedGraph_17ignore_missing_bp_11get_maximums(PyObje
       values[4] = PyTuple_GET_ITEM(__pyx_args, 4);
       values[5] = PyTuple_GET_ITEM(__pyx_args, 5);
     }
-    __pyx_v_value_map = __Pyx_PyObject_to_MemoryviewSlice_ds_double(values[0], PyBUF_WRITABLE); if (unlikely(!__pyx_v_value_map.memview)) __PYX_ERR(0, 253, __pyx_L3_error)
-    __pyx_v_index_list = __Pyx_PyObject_to_MemoryviewSlice_ds_int(values[1], PyBUF_WRITABLE); if (unlikely(!__pyx_v_index_list.memview)) __PYX_ERR(0, 253, __pyx_L3_error)
-    __pyx_v_interval_start = __Pyx_PyObject_to_MemoryviewSlice_ds_unsigned_int(values[2], PyBUF_WRITABLE); if (unlikely(!__pyx_v_interval_start.memview)) __PYX_ERR(0, 254, __pyx_L3_error)
-    __pyx_v_interval_end = __Pyx_PyObject_to_MemoryviewSlice_ds_unsigned_int(values[3], PyBUF_WRITABLE); if (unlikely(!__pyx_v_interval_end.memview)) __PYX_ERR(0, 254, __pyx_L3_error)
-    __pyx_v_start_list = __Pyx_PyObject_to_MemoryviewSlice_ds_int(values[4], PyBUF_WRITABLE); if (unlikely(!__pyx_v_start_list.memview)) __PYX_ERR(0, 255, __pyx_L3_error)
-    __pyx_v_end_list = __Pyx_PyObject_to_MemoryviewSlice_ds_int(values[5], PyBUF_WRITABLE); if (unlikely(!__pyx_v_end_list.memview)) __PYX_ERR(0, 255, __pyx_L3_error)
+    __pyx_v_value_map = __Pyx_PyObject_to_MemoryviewSlice_ds_double(values[0], PyBUF_WRITABLE); if (unlikely(!__pyx_v_value_map.memview)) __PYX_ERR(0, 255, __pyx_L3_error)
+    __pyx_v_index_list = __Pyx_PyObject_to_MemoryviewSlice_ds_int(values[1], PyBUF_WRITABLE); if (unlikely(!__pyx_v_index_list.memview)) __PYX_ERR(0, 255, __pyx_L3_error)
+    __pyx_v_interval_start = __Pyx_PyObject_to_MemoryviewSlice_ds_unsigned_int(values[2], PyBUF_WRITABLE); if (unlikely(!__pyx_v_interval_start.memview)) __PYX_ERR(0, 256, __pyx_L3_error)
+    __pyx_v_interval_end = __Pyx_PyObject_to_MemoryviewSlice_ds_unsigned_int(values[3], PyBUF_WRITABLE); if (unlikely(!__pyx_v_interval_end.memview)) __PYX_ERR(0, 256, __pyx_L3_error)
+    __pyx_v_start_list = __Pyx_PyObject_to_MemoryviewSlice_ds_int(values[4], PyBUF_WRITABLE); if (unlikely(!__pyx_v_start_list.memview)) __PYX_ERR(0, 257, __pyx_L3_error)
+    __pyx_v_end_list = __Pyx_PyObject_to_MemoryviewSlice_ds_int(values[5], PyBUF_WRITABLE); if (unlikely(!__pyx_v_end_list.memview)) __PYX_ERR(0, 257, __pyx_L3_error)
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("get_maximums", 1, 6, 6, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 253, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("get_maximums", 1, 6, 6, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 255, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("pyBedGraph.ignore_missing_bp.get_maximums", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -5497,15 +5525,15 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_10get_maximums(CYTHON
   size_t __pyx_t_11;
   int __pyx_t_12;
   size_t __pyx_t_13;
-  size_t __pyx_t_14;
-  int __pyx_t_15;
+  int __pyx_t_14;
+  size_t __pyx_t_15;
   size_t __pyx_t_16;
   size_t __pyx_t_17;
   size_t __pyx_t_18;
   size_t __pyx_t_19;
   __Pyx_RefNannySetupContext("get_maximums", 0);
 
-  /* "pyBedGraph/ignore_missing_bp.pyx":257
+  /* "pyBedGraph/ignore_missing_bp.pyx":259
  *                  int[:] start_list, int[:] end_list):
  * 
  *     assert tuple(start_list.shape) == tuple(end_list.shape)             # <<<<<<<<<<<<<<
@@ -5514,75 +5542,75 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_10get_maximums(CYTHON
  */
   #ifndef CYTHON_WITHOUT_ASSERTIONS
   if (unlikely(!Py_OptimizeFlag)) {
-    __pyx_t_1 = __Pyx_carray_to_py_Py_ssize_t(__pyx_v_start_list.shape, 8); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 257, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_carray_to_py_Py_ssize_t(__pyx_v_start_list.shape, 8); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 259, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_2 = __Pyx_PySequence_Tuple(__pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 257, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PySequence_Tuple(__pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 259, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __pyx_t_1 = __Pyx_carray_to_py_Py_ssize_t(__pyx_v_end_list.shape, 8); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 257, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_carray_to_py_Py_ssize_t(__pyx_v_end_list.shape, 8); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 259, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_3 = __Pyx_PySequence_Tuple(__pyx_t_1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 257, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PySequence_Tuple(__pyx_t_1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 259, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __pyx_t_1 = PyObject_RichCompare(__pyx_t_2, __pyx_t_3, Py_EQ); __Pyx_XGOTREF(__pyx_t_1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 257, __pyx_L1_error)
+    __pyx_t_1 = PyObject_RichCompare(__pyx_t_2, __pyx_t_3, Py_EQ); __Pyx_XGOTREF(__pyx_t_1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 259, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __pyx_t_4 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_4 < 0)) __PYX_ERR(0, 257, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_4 < 0)) __PYX_ERR(0, 259, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     if (unlikely(!__pyx_t_4)) {
       PyErr_SetNone(PyExc_AssertionError);
-      __PYX_ERR(0, 257, __pyx_L1_error)
+      __PYX_ERR(0, 259, __pyx_L1_error)
     }
   }
   #endif
 
-  /* "pyBedGraph/ignore_missing_bp.pyx":259
+  /* "pyBedGraph/ignore_missing_bp.pyx":261
  *     assert tuple(start_list.shape) == tuple(end_list.shape)
  * 
  *     cdef size_t i, num_tests = start_list.size, start, end, value_index             # <<<<<<<<<<<<<<
  *     cdef size_t numb_intervals = interval_start.size
  *     cdef double maximum, value
  */
-  __pyx_t_1 = __pyx_memoryview_fromslice(__pyx_v_start_list, 1, (PyObject *(*)(char *)) __pyx_memview_get_int, (int (*)(char *, PyObject *)) __pyx_memview_set_int, 0);; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 259, __pyx_L1_error)
+  __pyx_t_1 = __pyx_memoryview_fromslice(__pyx_v_start_list, 1, (PyObject *(*)(char *)) __pyx_memview_get_int, (int (*)(char *, PyObject *)) __pyx_memview_set_int, 0);; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 261, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_size); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 259, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_size); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 261, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_5 = __Pyx_PyInt_As_size_t(__pyx_t_3); if (unlikely((__pyx_t_5 == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 259, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyInt_As_size_t(__pyx_t_3); if (unlikely((__pyx_t_5 == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 261, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __pyx_v_num_tests = __pyx_t_5;
 
-  /* "pyBedGraph/ignore_missing_bp.pyx":260
+  /* "pyBedGraph/ignore_missing_bp.pyx":262
  * 
  *     cdef size_t i, num_tests = start_list.size, start, end, value_index
  *     cdef size_t numb_intervals = interval_start.size             # <<<<<<<<<<<<<<
  *     cdef double maximum, value
  * 
  */
-  __pyx_t_3 = __pyx_memoryview_fromslice(__pyx_v_interval_start, 1, (PyObject *(*)(char *)) __pyx_memview_get_unsigned_int, (int (*)(char *, PyObject *)) __pyx_memview_set_unsigned_int, 0);; if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 260, __pyx_L1_error)
+  __pyx_t_3 = __pyx_memoryview_fromslice(__pyx_v_interval_start, 1, (PyObject *(*)(char *)) __pyx_memview_get_unsigned_int, (int (*)(char *, PyObject *)) __pyx_memview_set_unsigned_int, 0);; if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 262, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_size); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 260, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_size); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 262, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_5 = __Pyx_PyInt_As_size_t(__pyx_t_1); if (unlikely((__pyx_t_5 == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 260, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyInt_As_size_t(__pyx_t_1); if (unlikely((__pyx_t_5 == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 262, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_numb_intervals = __pyx_t_5;
 
-  /* "pyBedGraph/ignore_missing_bp.pyx":263
+  /* "pyBedGraph/ignore_missing_bp.pyx":265
  *     cdef double maximum, value
  * 
  *     result = np.full(num_tests, -1, dtype=np.float64)             # <<<<<<<<<<<<<<
  *     cdef double[:] result_view = result
  * 
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_np); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 263, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_np); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 265, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_full); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 263, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_full); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 265, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyInt_FromSize_t(__pyx_v_num_tests); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 263, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_FromSize_t(__pyx_v_num_tests); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 265, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = PyTuple_New(2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 263, __pyx_L1_error)
+  __pyx_t_2 = PyTuple_New(2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 265, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_GIVEREF(__pyx_t_1);
   PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_t_1);
@@ -5590,16 +5618,16 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_10get_maximums(CYTHON
   __Pyx_GIVEREF(__pyx_int_neg_1);
   PyTuple_SET_ITEM(__pyx_t_2, 1, __pyx_int_neg_1);
   __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 263, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 265, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_np); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 263, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_np); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 265, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
-  __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_float64); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 263, __pyx_L1_error)
+  __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_float64); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 265, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_dtype, __pyx_t_7) < 0) __PYX_ERR(0, 263, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_dtype, __pyx_t_7) < 0) __PYX_ERR(0, 265, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-  __pyx_t_7 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_2, __pyx_t_1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 263, __pyx_L1_error)
+  __pyx_t_7 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_2, __pyx_t_1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 265, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
@@ -5607,19 +5635,19 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_10get_maximums(CYTHON
   __pyx_v_result = __pyx_t_7;
   __pyx_t_7 = 0;
 
-  /* "pyBedGraph/ignore_missing_bp.pyx":264
+  /* "pyBedGraph/ignore_missing_bp.pyx":266
  * 
  *     result = np.full(num_tests, -1, dtype=np.float64)
  *     cdef double[:] result_view = result             # <<<<<<<<<<<<<<
  * 
  *     for i in range(num_tests):
  */
-  __pyx_t_8 = __Pyx_PyObject_to_MemoryviewSlice_ds_double(__pyx_v_result, PyBUF_WRITABLE); if (unlikely(!__pyx_t_8.memview)) __PYX_ERR(0, 264, __pyx_L1_error)
+  __pyx_t_8 = __Pyx_PyObject_to_MemoryviewSlice_ds_double(__pyx_v_result, PyBUF_WRITABLE); if (unlikely(!__pyx_t_8.memview)) __PYX_ERR(0, 266, __pyx_L1_error)
   __pyx_v_result_view = __pyx_t_8;
   __pyx_t_8.memview = NULL;
   __pyx_t_8.data = NULL;
 
-  /* "pyBedGraph/ignore_missing_bp.pyx":266
+  /* "pyBedGraph/ignore_missing_bp.pyx":268
  *     cdef double[:] result_view = result
  * 
  *     for i in range(num_tests):             # <<<<<<<<<<<<<<
@@ -5631,7 +5659,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_10get_maximums(CYTHON
   for (__pyx_t_10 = 0; __pyx_t_10 < __pyx_t_9; __pyx_t_10+=1) {
     __pyx_v_i = __pyx_t_10;
 
-    /* "pyBedGraph/ignore_missing_bp.pyx":267
+    /* "pyBedGraph/ignore_missing_bp.pyx":269
  * 
  *     for i in range(num_tests):
  *         maximum = -1             # <<<<<<<<<<<<<<
@@ -5640,7 +5668,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_10get_maximums(CYTHON
  */
     __pyx_v_maximum = -1.0;
 
-    /* "pyBedGraph/ignore_missing_bp.pyx":268
+    /* "pyBedGraph/ignore_missing_bp.pyx":270
  *     for i in range(num_tests):
  *         maximum = -1
  *         start = start_list[i]             # <<<<<<<<<<<<<<
@@ -5652,11 +5680,11 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_10get_maximums(CYTHON
     if (unlikely(__pyx_t_11 >= (size_t)__pyx_v_start_list.shape[0])) __pyx_t_12 = 0;
     if (unlikely(__pyx_t_12 != -1)) {
       __Pyx_RaiseBufferIndexError(__pyx_t_12);
-      __PYX_ERR(0, 268, __pyx_L1_error)
+      __PYX_ERR(0, 270, __pyx_L1_error)
     }
     __pyx_v_start = (*((int *) ( /* dim=0 */ (__pyx_v_start_list.data + __pyx_t_11 * __pyx_v_start_list.strides[0]) )));
 
-    /* "pyBedGraph/ignore_missing_bp.pyx":269
+    /* "pyBedGraph/ignore_missing_bp.pyx":271
  *         maximum = -1
  *         start = start_list[i]
  *         end = end_list[i]             # <<<<<<<<<<<<<<
@@ -5668,39 +5696,39 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_10get_maximums(CYTHON
     if (unlikely(__pyx_t_13 >= (size_t)__pyx_v_end_list.shape[0])) __pyx_t_12 = 0;
     if (unlikely(__pyx_t_12 != -1)) {
       __Pyx_RaiseBufferIndexError(__pyx_t_12);
-      __PYX_ERR(0, 269, __pyx_L1_error)
+      __PYX_ERR(0, 271, __pyx_L1_error)
     }
     __pyx_v_end = (*((int *) ( /* dim=0 */ (__pyx_v_end_list.data + __pyx_t_13 * __pyx_v_end_list.strides[0]) )));
 
-    /* "pyBedGraph/ignore_missing_bp.pyx":272
+    /* "pyBedGraph/ignore_missing_bp.pyx":274
  * 
  *         # get to an interval
- *         while index_list[start] == -1 and start < end:             # <<<<<<<<<<<<<<
+ *         while start < end and index_list[start] == -1:             # <<<<<<<<<<<<<<
  *             start += 1
  * 
  */
     while (1) {
-      __pyx_t_14 = __pyx_v_start;
-      __pyx_t_12 = -1;
-      if (unlikely(__pyx_t_14 >= (size_t)__pyx_v_index_list.shape[0])) __pyx_t_12 = 0;
-      if (unlikely(__pyx_t_12 != -1)) {
-        __Pyx_RaiseBufferIndexError(__pyx_t_12);
-        __PYX_ERR(0, 272, __pyx_L1_error)
-      }
-      __pyx_t_15 = (((*((int *) ( /* dim=0 */ (__pyx_v_index_list.data + __pyx_t_14 * __pyx_v_index_list.strides[0]) ))) == -1L) != 0);
-      if (__pyx_t_15) {
+      __pyx_t_14 = ((__pyx_v_start < __pyx_v_end) != 0);
+      if (__pyx_t_14) {
       } else {
-        __pyx_t_4 = __pyx_t_15;
+        __pyx_t_4 = __pyx_t_14;
         goto __pyx_L7_bool_binop_done;
       }
-      __pyx_t_15 = ((__pyx_v_start < __pyx_v_end) != 0);
-      __pyx_t_4 = __pyx_t_15;
+      __pyx_t_15 = __pyx_v_start;
+      __pyx_t_12 = -1;
+      if (unlikely(__pyx_t_15 >= (size_t)__pyx_v_index_list.shape[0])) __pyx_t_12 = 0;
+      if (unlikely(__pyx_t_12 != -1)) {
+        __Pyx_RaiseBufferIndexError(__pyx_t_12);
+        __PYX_ERR(0, 274, __pyx_L1_error)
+      }
+      __pyx_t_14 = (((*((int *) ( /* dim=0 */ (__pyx_v_index_list.data + __pyx_t_15 * __pyx_v_index_list.strides[0]) ))) == -1L) != 0);
+      __pyx_t_4 = __pyx_t_14;
       __pyx_L7_bool_binop_done:;
       if (!__pyx_t_4) break;
 
-      /* "pyBedGraph/ignore_missing_bp.pyx":273
+      /* "pyBedGraph/ignore_missing_bp.pyx":275
  *         # get to an interval
- *         while index_list[start] == -1 and start < end:
+ *         while start < end and index_list[start] == -1:
  *             start += 1             # <<<<<<<<<<<<<<
  * 
  *         if start == end:
@@ -5708,7 +5736,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_10get_maximums(CYTHON
       __pyx_v_start = (__pyx_v_start + 1);
     }
 
-    /* "pyBedGraph/ignore_missing_bp.pyx":275
+    /* "pyBedGraph/ignore_missing_bp.pyx":277
  *             start += 1
  * 
  *         if start == end:             # <<<<<<<<<<<<<<
@@ -5718,7 +5746,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_10get_maximums(CYTHON
     __pyx_t_4 = ((__pyx_v_start == __pyx_v_end) != 0);
     if (__pyx_t_4) {
 
-      /* "pyBedGraph/ignore_missing_bp.pyx":276
+      /* "pyBedGraph/ignore_missing_bp.pyx":278
  * 
  *         if start == end:
  *             continue             # <<<<<<<<<<<<<<
@@ -5727,7 +5755,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_10get_maximums(CYTHON
  */
       goto __pyx_L3_continue;
 
-      /* "pyBedGraph/ignore_missing_bp.pyx":275
+      /* "pyBedGraph/ignore_missing_bp.pyx":277
  *             start += 1
  * 
  *         if start == end:             # <<<<<<<<<<<<<<
@@ -5736,7 +5764,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_10get_maximums(CYTHON
  */
     }
 
-    /* "pyBedGraph/ignore_missing_bp.pyx":278
+    /* "pyBedGraph/ignore_missing_bp.pyx":280
  *             continue
  * 
  *         value_index = index_list[start]             # <<<<<<<<<<<<<<
@@ -5748,11 +5776,11 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_10get_maximums(CYTHON
     if (unlikely(__pyx_t_16 >= (size_t)__pyx_v_index_list.shape[0])) __pyx_t_12 = 0;
     if (unlikely(__pyx_t_12 != -1)) {
       __Pyx_RaiseBufferIndexError(__pyx_t_12);
-      __PYX_ERR(0, 278, __pyx_L1_error)
+      __PYX_ERR(0, 280, __pyx_L1_error)
     }
     __pyx_v_value_index = (*((int *) ( /* dim=0 */ (__pyx_v_index_list.data + __pyx_t_16 * __pyx_v_index_list.strides[0]) )));
 
-    /* "pyBedGraph/ignore_missing_bp.pyx":279
+    /* "pyBedGraph/ignore_missing_bp.pyx":281
  * 
  *         value_index = index_list[start]
  *         while interval_start[value_index] < end:             # <<<<<<<<<<<<<<
@@ -5765,12 +5793,12 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_10get_maximums(CYTHON
       if (unlikely(__pyx_t_17 >= (size_t)__pyx_v_interval_start.shape[0])) __pyx_t_12 = 0;
       if (unlikely(__pyx_t_12 != -1)) {
         __Pyx_RaiseBufferIndexError(__pyx_t_12);
-        __PYX_ERR(0, 279, __pyx_L1_error)
+        __PYX_ERR(0, 281, __pyx_L1_error)
       }
       __pyx_t_4 = (((*((unsigned int *) ( /* dim=0 */ (__pyx_v_interval_start.data + __pyx_t_17 * __pyx_v_interval_start.strides[0]) ))) < __pyx_v_end) != 0);
       if (!__pyx_t_4) break;
 
-      /* "pyBedGraph/ignore_missing_bp.pyx":280
+      /* "pyBedGraph/ignore_missing_bp.pyx":282
  *         value_index = index_list[start]
  *         while interval_start[value_index] < end:
  *             value = value_map[value_index]             # <<<<<<<<<<<<<<
@@ -5782,11 +5810,11 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_10get_maximums(CYTHON
       if (unlikely(__pyx_t_18 >= (size_t)__pyx_v_value_map.shape[0])) __pyx_t_12 = 0;
       if (unlikely(__pyx_t_12 != -1)) {
         __Pyx_RaiseBufferIndexError(__pyx_t_12);
-        __PYX_ERR(0, 280, __pyx_L1_error)
+        __PYX_ERR(0, 282, __pyx_L1_error)
       }
       __pyx_v_value = (*((double *) ( /* dim=0 */ (__pyx_v_value_map.data + __pyx_t_18 * __pyx_v_value_map.strides[0]) )));
 
-      /* "pyBedGraph/ignore_missing_bp.pyx":281
+      /* "pyBedGraph/ignore_missing_bp.pyx":283
  *         while interval_start[value_index] < end:
  *             value = value_map[value_index]
  *             if value > maximum:             # <<<<<<<<<<<<<<
@@ -5796,7 +5824,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_10get_maximums(CYTHON
       __pyx_t_4 = ((__pyx_v_value > __pyx_v_maximum) != 0);
       if (__pyx_t_4) {
 
-        /* "pyBedGraph/ignore_missing_bp.pyx":282
+        /* "pyBedGraph/ignore_missing_bp.pyx":284
  *             value = value_map[value_index]
  *             if value > maximum:
  *                 maximum = value             # <<<<<<<<<<<<<<
@@ -5805,7 +5833,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_10get_maximums(CYTHON
  */
         __pyx_v_maximum = __pyx_v_value;
 
-        /* "pyBedGraph/ignore_missing_bp.pyx":281
+        /* "pyBedGraph/ignore_missing_bp.pyx":283
  *         while interval_start[value_index] < end:
  *             value = value_map[value_index]
  *             if value > maximum:             # <<<<<<<<<<<<<<
@@ -5814,7 +5842,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_10get_maximums(CYTHON
  */
       }
 
-      /* "pyBedGraph/ignore_missing_bp.pyx":284
+      /* "pyBedGraph/ignore_missing_bp.pyx":286
  *                 maximum = value
  * 
  *             value_index += 1             # <<<<<<<<<<<<<<
@@ -5823,7 +5851,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_10get_maximums(CYTHON
  */
       __pyx_v_value_index = (__pyx_v_value_index + 1);
 
-      /* "pyBedGraph/ignore_missing_bp.pyx":285
+      /* "pyBedGraph/ignore_missing_bp.pyx":287
  * 
  *             value_index += 1
  *             if value_index == numb_intervals:             # <<<<<<<<<<<<<<
@@ -5833,7 +5861,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_10get_maximums(CYTHON
       __pyx_t_4 = ((__pyx_v_value_index == __pyx_v_numb_intervals) != 0);
       if (__pyx_t_4) {
 
-        /* "pyBedGraph/ignore_missing_bp.pyx":286
+        /* "pyBedGraph/ignore_missing_bp.pyx":288
  *             value_index += 1
  *             if value_index == numb_intervals:
  *                 break             # <<<<<<<<<<<<<<
@@ -5842,7 +5870,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_10get_maximums(CYTHON
  */
         goto __pyx_L11_break;
 
-        /* "pyBedGraph/ignore_missing_bp.pyx":285
+        /* "pyBedGraph/ignore_missing_bp.pyx":287
  * 
  *             value_index += 1
  *             if value_index == numb_intervals:             # <<<<<<<<<<<<<<
@@ -5853,7 +5881,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_10get_maximums(CYTHON
     }
     __pyx_L11_break:;
 
-    /* "pyBedGraph/ignore_missing_bp.pyx":288
+    /* "pyBedGraph/ignore_missing_bp.pyx":290
  *                 break
  * 
  *         if maximum != -1:             # <<<<<<<<<<<<<<
@@ -5863,7 +5891,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_10get_maximums(CYTHON
     __pyx_t_4 = ((__pyx_v_maximum != -1.0) != 0);
     if (__pyx_t_4) {
 
-      /* "pyBedGraph/ignore_missing_bp.pyx":289
+      /* "pyBedGraph/ignore_missing_bp.pyx":291
  * 
  *         if maximum != -1:
  *             result_view[i] = maximum             # <<<<<<<<<<<<<<
@@ -5875,11 +5903,11 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_10get_maximums(CYTHON
       if (unlikely(__pyx_t_19 >= (size_t)__pyx_v_result_view.shape[0])) __pyx_t_12 = 0;
       if (unlikely(__pyx_t_12 != -1)) {
         __Pyx_RaiseBufferIndexError(__pyx_t_12);
-        __PYX_ERR(0, 289, __pyx_L1_error)
+        __PYX_ERR(0, 291, __pyx_L1_error)
       }
       *((double *) ( /* dim=0 */ (__pyx_v_result_view.data + __pyx_t_19 * __pyx_v_result_view.strides[0]) )) = __pyx_v_maximum;
 
-      /* "pyBedGraph/ignore_missing_bp.pyx":288
+      /* "pyBedGraph/ignore_missing_bp.pyx":290
  *                 break
  * 
  *         if maximum != -1:             # <<<<<<<<<<<<<<
@@ -5890,7 +5918,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_10get_maximums(CYTHON
     __pyx_L3_continue:;
   }
 
-  /* "pyBedGraph/ignore_missing_bp.pyx":291
+  /* "pyBedGraph/ignore_missing_bp.pyx":293
  *             result_view[i] = maximum
  * 
  *     return result             # <<<<<<<<<<<<<<
@@ -5902,7 +5930,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_10get_maximums(CYTHON
   __pyx_r = __pyx_v_result;
   goto __pyx_L0;
 
-  /* "pyBedGraph/ignore_missing_bp.pyx":253
+  /* "pyBedGraph/ignore_missing_bp.pyx":255
  *     return result
  * 
  * def get_maximums(double[:] value_map, int[:] index_list,             # <<<<<<<<<<<<<<
@@ -5934,7 +5962,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_10get_maximums(CYTHON
   return __pyx_r;
 }
 
-/* "pyBedGraph/ignore_missing_bp.pyx":293
+/* "pyBedGraph/ignore_missing_bp.pyx":295
  *     return result
  * 
  * def get_coverages(int[:] index_list, unsigned int[:] interval_start,             # <<<<<<<<<<<<<<
@@ -5983,29 +6011,29 @@ static PyObject *__pyx_pw_10pyBedGraph_17ignore_missing_bp_13get_coverages(PyObj
         case  1:
         if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_interval_start)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("get_coverages", 1, 5, 5, 1); __PYX_ERR(0, 293, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("get_coverages", 1, 5, 5, 1); __PYX_ERR(0, 295, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  2:
         if (likely((values[2] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_interval_end)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("get_coverages", 1, 5, 5, 2); __PYX_ERR(0, 293, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("get_coverages", 1, 5, 5, 2); __PYX_ERR(0, 295, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  3:
         if (likely((values[3] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_start_list)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("get_coverages", 1, 5, 5, 3); __PYX_ERR(0, 293, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("get_coverages", 1, 5, 5, 3); __PYX_ERR(0, 295, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  4:
         if (likely((values[4] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_end_list)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("get_coverages", 1, 5, 5, 4); __PYX_ERR(0, 293, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("get_coverages", 1, 5, 5, 4); __PYX_ERR(0, 295, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "get_coverages") < 0)) __PYX_ERR(0, 293, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "get_coverages") < 0)) __PYX_ERR(0, 295, __pyx_L3_error)
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 5) {
       goto __pyx_L5_argtuple_error;
@@ -6016,15 +6044,15 @@ static PyObject *__pyx_pw_10pyBedGraph_17ignore_missing_bp_13get_coverages(PyObj
       values[3] = PyTuple_GET_ITEM(__pyx_args, 3);
       values[4] = PyTuple_GET_ITEM(__pyx_args, 4);
     }
-    __pyx_v_index_list = __Pyx_PyObject_to_MemoryviewSlice_ds_int(values[0], PyBUF_WRITABLE); if (unlikely(!__pyx_v_index_list.memview)) __PYX_ERR(0, 293, __pyx_L3_error)
-    __pyx_v_interval_start = __Pyx_PyObject_to_MemoryviewSlice_ds_unsigned_int(values[1], PyBUF_WRITABLE); if (unlikely(!__pyx_v_interval_start.memview)) __PYX_ERR(0, 293, __pyx_L3_error)
-    __pyx_v_interval_end = __Pyx_PyObject_to_MemoryviewSlice_ds_unsigned_int(values[2], PyBUF_WRITABLE); if (unlikely(!__pyx_v_interval_end.memview)) __PYX_ERR(0, 294, __pyx_L3_error)
-    __pyx_v_start_list = __Pyx_PyObject_to_MemoryviewSlice_ds_int(values[3], PyBUF_WRITABLE); if (unlikely(!__pyx_v_start_list.memview)) __PYX_ERR(0, 294, __pyx_L3_error)
-    __pyx_v_end_list = __Pyx_PyObject_to_MemoryviewSlice_ds_int(values[4], PyBUF_WRITABLE); if (unlikely(!__pyx_v_end_list.memview)) __PYX_ERR(0, 294, __pyx_L3_error)
+    __pyx_v_index_list = __Pyx_PyObject_to_MemoryviewSlice_ds_int(values[0], PyBUF_WRITABLE); if (unlikely(!__pyx_v_index_list.memview)) __PYX_ERR(0, 295, __pyx_L3_error)
+    __pyx_v_interval_start = __Pyx_PyObject_to_MemoryviewSlice_ds_unsigned_int(values[1], PyBUF_WRITABLE); if (unlikely(!__pyx_v_interval_start.memview)) __PYX_ERR(0, 295, __pyx_L3_error)
+    __pyx_v_interval_end = __Pyx_PyObject_to_MemoryviewSlice_ds_unsigned_int(values[2], PyBUF_WRITABLE); if (unlikely(!__pyx_v_interval_end.memview)) __PYX_ERR(0, 296, __pyx_L3_error)
+    __pyx_v_start_list = __Pyx_PyObject_to_MemoryviewSlice_ds_int(values[3], PyBUF_WRITABLE); if (unlikely(!__pyx_v_start_list.memview)) __PYX_ERR(0, 296, __pyx_L3_error)
+    __pyx_v_end_list = __Pyx_PyObject_to_MemoryviewSlice_ds_int(values[4], PyBUF_WRITABLE); if (unlikely(!__pyx_v_end_list.memview)) __PYX_ERR(0, 296, __pyx_L3_error)
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("get_coverages", 1, 5, 5, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 293, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("get_coverages", 1, 5, 5, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 295, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("pyBedGraph.ignore_missing_bp.get_coverages", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -6064,8 +6092,8 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_12get_coverages(CYTHO
   size_t __pyx_t_11;
   int __pyx_t_12;
   size_t __pyx_t_13;
-  size_t __pyx_t_14;
-  int __pyx_t_15;
+  int __pyx_t_14;
+  size_t __pyx_t_15;
   size_t __pyx_t_16;
   size_t __pyx_t_17;
   size_t __pyx_t_18;
@@ -6073,7 +6101,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_12get_coverages(CYTHO
   size_t __pyx_t_20;
   __Pyx_RefNannySetupContext("get_coverages", 0);
 
-  /* "pyBedGraph/ignore_missing_bp.pyx":296
+  /* "pyBedGraph/ignore_missing_bp.pyx":298
  *                   unsigned int[:] interval_end, int[:] start_list, int[:] end_list):
  * 
  *     assert tuple(start_list.shape) == tuple(end_list.shape)             # <<<<<<<<<<<<<<
@@ -6082,89 +6110,89 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_12get_coverages(CYTHO
  */
   #ifndef CYTHON_WITHOUT_ASSERTIONS
   if (unlikely(!Py_OptimizeFlag)) {
-    __pyx_t_1 = __Pyx_carray_to_py_Py_ssize_t(__pyx_v_start_list.shape, 8); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 296, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_carray_to_py_Py_ssize_t(__pyx_v_start_list.shape, 8); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 298, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_2 = __Pyx_PySequence_Tuple(__pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 296, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PySequence_Tuple(__pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 298, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __pyx_t_1 = __Pyx_carray_to_py_Py_ssize_t(__pyx_v_end_list.shape, 8); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 296, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_carray_to_py_Py_ssize_t(__pyx_v_end_list.shape, 8); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 298, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_3 = __Pyx_PySequence_Tuple(__pyx_t_1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 296, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PySequence_Tuple(__pyx_t_1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 298, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __pyx_t_1 = PyObject_RichCompare(__pyx_t_2, __pyx_t_3, Py_EQ); __Pyx_XGOTREF(__pyx_t_1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 296, __pyx_L1_error)
+    __pyx_t_1 = PyObject_RichCompare(__pyx_t_2, __pyx_t_3, Py_EQ); __Pyx_XGOTREF(__pyx_t_1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 298, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __pyx_t_4 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_4 < 0)) __PYX_ERR(0, 296, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_4 < 0)) __PYX_ERR(0, 298, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     if (unlikely(!__pyx_t_4)) {
       PyErr_SetNone(PyExc_AssertionError);
-      __PYX_ERR(0, 296, __pyx_L1_error)
+      __PYX_ERR(0, 298, __pyx_L1_error)
     }
   }
   #endif
 
-  /* "pyBedGraph/ignore_missing_bp.pyx":298
+  /* "pyBedGraph/ignore_missing_bp.pyx":300
  *     assert tuple(start_list.shape) == tuple(end_list.shape)
  * 
  *     cdef size_t i, num_tests = start_list.size, start, end, current_start             # <<<<<<<<<<<<<<
  *     cdef size_t numb_intervals = interval_start.size
  *     cdef unsigned int numb_covered, temp_end, value_index
  */
-  __pyx_t_1 = __pyx_memoryview_fromslice(__pyx_v_start_list, 1, (PyObject *(*)(char *)) __pyx_memview_get_int, (int (*)(char *, PyObject *)) __pyx_memview_set_int, 0);; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 298, __pyx_L1_error)
+  __pyx_t_1 = __pyx_memoryview_fromslice(__pyx_v_start_list, 1, (PyObject *(*)(char *)) __pyx_memview_get_int, (int (*)(char *, PyObject *)) __pyx_memview_set_int, 0);; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 300, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_size); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 298, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_size); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 300, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_5 = __Pyx_PyInt_As_size_t(__pyx_t_3); if (unlikely((__pyx_t_5 == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 298, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyInt_As_size_t(__pyx_t_3); if (unlikely((__pyx_t_5 == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 300, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __pyx_v_num_tests = __pyx_t_5;
 
-  /* "pyBedGraph/ignore_missing_bp.pyx":299
+  /* "pyBedGraph/ignore_missing_bp.pyx":301
  * 
  *     cdef size_t i, num_tests = start_list.size, start, end, current_start
  *     cdef size_t numb_intervals = interval_start.size             # <<<<<<<<<<<<<<
  *     cdef unsigned int numb_covered, temp_end, value_index
  * 
  */
-  __pyx_t_3 = __pyx_memoryview_fromslice(__pyx_v_interval_start, 1, (PyObject *(*)(char *)) __pyx_memview_get_unsigned_int, (int (*)(char *, PyObject *)) __pyx_memview_set_unsigned_int, 0);; if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 299, __pyx_L1_error)
+  __pyx_t_3 = __pyx_memoryview_fromslice(__pyx_v_interval_start, 1, (PyObject *(*)(char *)) __pyx_memview_get_unsigned_int, (int (*)(char *, PyObject *)) __pyx_memview_set_unsigned_int, 0);; if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 301, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_size); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 299, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_size); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 301, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_5 = __Pyx_PyInt_As_size_t(__pyx_t_1); if (unlikely((__pyx_t_5 == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 299, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyInt_As_size_t(__pyx_t_1); if (unlikely((__pyx_t_5 == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 301, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_numb_intervals = __pyx_t_5;
 
-  /* "pyBedGraph/ignore_missing_bp.pyx":302
+  /* "pyBedGraph/ignore_missing_bp.pyx":304
  *     cdef unsigned int numb_covered, temp_end, value_index
  * 
  *     result = np.zeros(num_tests, dtype=np.float64)             # <<<<<<<<<<<<<<
  *     cdef double[:] result_view = result
  * 
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_np); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 302, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_np); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 304, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_zeros); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 302, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_zeros); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 304, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyInt_FromSize_t(__pyx_v_num_tests); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 302, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_FromSize_t(__pyx_v_num_tests); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 304, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = PyTuple_New(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 302, __pyx_L1_error)
+  __pyx_t_2 = PyTuple_New(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 304, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_GIVEREF(__pyx_t_1);
   PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_t_1);
   __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 302, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 304, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_np); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 302, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_np); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 304, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
-  __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_float64); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 302, __pyx_L1_error)
+  __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_float64); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 304, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_dtype, __pyx_t_7) < 0) __PYX_ERR(0, 302, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_dtype, __pyx_t_7) < 0) __PYX_ERR(0, 304, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-  __pyx_t_7 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_2, __pyx_t_1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 302, __pyx_L1_error)
+  __pyx_t_7 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_2, __pyx_t_1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 304, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
@@ -6172,19 +6200,19 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_12get_coverages(CYTHO
   __pyx_v_result = __pyx_t_7;
   __pyx_t_7 = 0;
 
-  /* "pyBedGraph/ignore_missing_bp.pyx":303
+  /* "pyBedGraph/ignore_missing_bp.pyx":305
  * 
  *     result = np.zeros(num_tests, dtype=np.float64)
  *     cdef double[:] result_view = result             # <<<<<<<<<<<<<<
  * 
  *     for i in range(num_tests):
  */
-  __pyx_t_8 = __Pyx_PyObject_to_MemoryviewSlice_ds_double(__pyx_v_result, PyBUF_WRITABLE); if (unlikely(!__pyx_t_8.memview)) __PYX_ERR(0, 303, __pyx_L1_error)
+  __pyx_t_8 = __Pyx_PyObject_to_MemoryviewSlice_ds_double(__pyx_v_result, PyBUF_WRITABLE); if (unlikely(!__pyx_t_8.memview)) __PYX_ERR(0, 305, __pyx_L1_error)
   __pyx_v_result_view = __pyx_t_8;
   __pyx_t_8.memview = NULL;
   __pyx_t_8.data = NULL;
 
-  /* "pyBedGraph/ignore_missing_bp.pyx":305
+  /* "pyBedGraph/ignore_missing_bp.pyx":307
  *     cdef double[:] result_view = result
  * 
  *     for i in range(num_tests):             # <<<<<<<<<<<<<<
@@ -6196,7 +6224,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_12get_coverages(CYTHO
   for (__pyx_t_10 = 0; __pyx_t_10 < __pyx_t_9; __pyx_t_10+=1) {
     __pyx_v_i = __pyx_t_10;
 
-    /* "pyBedGraph/ignore_missing_bp.pyx":306
+    /* "pyBedGraph/ignore_missing_bp.pyx":308
  * 
  *     for i in range(num_tests):
  *         numb_covered = 0             # <<<<<<<<<<<<<<
@@ -6205,7 +6233,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_12get_coverages(CYTHO
  */
     __pyx_v_numb_covered = 0;
 
-    /* "pyBedGraph/ignore_missing_bp.pyx":307
+    /* "pyBedGraph/ignore_missing_bp.pyx":309
  *     for i in range(num_tests):
  *         numb_covered = 0
  *         start = start_list[i]             # <<<<<<<<<<<<<<
@@ -6217,11 +6245,11 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_12get_coverages(CYTHO
     if (unlikely(__pyx_t_11 >= (size_t)__pyx_v_start_list.shape[0])) __pyx_t_12 = 0;
     if (unlikely(__pyx_t_12 != -1)) {
       __Pyx_RaiseBufferIndexError(__pyx_t_12);
-      __PYX_ERR(0, 307, __pyx_L1_error)
+      __PYX_ERR(0, 309, __pyx_L1_error)
     }
     __pyx_v_start = (*((int *) ( /* dim=0 */ (__pyx_v_start_list.data + __pyx_t_11 * __pyx_v_start_list.strides[0]) )));
 
-    /* "pyBedGraph/ignore_missing_bp.pyx":308
+    /* "pyBedGraph/ignore_missing_bp.pyx":310
  *         numb_covered = 0
  *         start = start_list[i]
  *         end = end_list[i]             # <<<<<<<<<<<<<<
@@ -6233,11 +6261,11 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_12get_coverages(CYTHO
     if (unlikely(__pyx_t_13 >= (size_t)__pyx_v_end_list.shape[0])) __pyx_t_12 = 0;
     if (unlikely(__pyx_t_12 != -1)) {
       __Pyx_RaiseBufferIndexError(__pyx_t_12);
-      __PYX_ERR(0, 308, __pyx_L1_error)
+      __PYX_ERR(0, 310, __pyx_L1_error)
     }
     __pyx_v_end = (*((int *) ( /* dim=0 */ (__pyx_v_end_list.data + __pyx_t_13 * __pyx_v_end_list.strides[0]) )));
 
-    /* "pyBedGraph/ignore_missing_bp.pyx":309
+    /* "pyBedGraph/ignore_missing_bp.pyx":311
  *         start = start_list[i]
  *         end = end_list[i]
  *         current_start = start             # <<<<<<<<<<<<<<
@@ -6246,35 +6274,35 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_12get_coverages(CYTHO
  */
     __pyx_v_current_start = __pyx_v_start;
 
-    /* "pyBedGraph/ignore_missing_bp.pyx":312
+    /* "pyBedGraph/ignore_missing_bp.pyx":314
  * 
  *         # get to an interval
- *         while index_list[current_start] == -1 and current_start < end:             # <<<<<<<<<<<<<<
+ *         while current_start < end and index_list[current_start] == -1:             # <<<<<<<<<<<<<<
  *             current_start += 1
  * 
  */
     while (1) {
-      __pyx_t_14 = __pyx_v_current_start;
-      __pyx_t_12 = -1;
-      if (unlikely(__pyx_t_14 >= (size_t)__pyx_v_index_list.shape[0])) __pyx_t_12 = 0;
-      if (unlikely(__pyx_t_12 != -1)) {
-        __Pyx_RaiseBufferIndexError(__pyx_t_12);
-        __PYX_ERR(0, 312, __pyx_L1_error)
-      }
-      __pyx_t_15 = (((*((int *) ( /* dim=0 */ (__pyx_v_index_list.data + __pyx_t_14 * __pyx_v_index_list.strides[0]) ))) == -1L) != 0);
-      if (__pyx_t_15) {
+      __pyx_t_14 = ((__pyx_v_current_start < __pyx_v_end) != 0);
+      if (__pyx_t_14) {
       } else {
-        __pyx_t_4 = __pyx_t_15;
+        __pyx_t_4 = __pyx_t_14;
         goto __pyx_L7_bool_binop_done;
       }
-      __pyx_t_15 = ((__pyx_v_current_start < __pyx_v_end) != 0);
-      __pyx_t_4 = __pyx_t_15;
+      __pyx_t_15 = __pyx_v_current_start;
+      __pyx_t_12 = -1;
+      if (unlikely(__pyx_t_15 >= (size_t)__pyx_v_index_list.shape[0])) __pyx_t_12 = 0;
+      if (unlikely(__pyx_t_12 != -1)) {
+        __Pyx_RaiseBufferIndexError(__pyx_t_12);
+        __PYX_ERR(0, 314, __pyx_L1_error)
+      }
+      __pyx_t_14 = (((*((int *) ( /* dim=0 */ (__pyx_v_index_list.data + __pyx_t_15 * __pyx_v_index_list.strides[0]) ))) == -1L) != 0);
+      __pyx_t_4 = __pyx_t_14;
       __pyx_L7_bool_binop_done:;
       if (!__pyx_t_4) break;
 
-      /* "pyBedGraph/ignore_missing_bp.pyx":313
+      /* "pyBedGraph/ignore_missing_bp.pyx":315
  *         # get to an interval
- *         while index_list[current_start] == -1 and current_start < end:
+ *         while current_start < end and index_list[current_start] == -1:
  *             current_start += 1             # <<<<<<<<<<<<<<
  * 
  *         if current_start == end:
@@ -6282,7 +6310,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_12get_coverages(CYTHO
       __pyx_v_current_start = (__pyx_v_current_start + 1);
     }
 
-    /* "pyBedGraph/ignore_missing_bp.pyx":315
+    /* "pyBedGraph/ignore_missing_bp.pyx":317
  *             current_start += 1
  * 
  *         if current_start == end:             # <<<<<<<<<<<<<<
@@ -6292,7 +6320,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_12get_coverages(CYTHO
     __pyx_t_4 = ((__pyx_v_current_start == __pyx_v_end) != 0);
     if (__pyx_t_4) {
 
-      /* "pyBedGraph/ignore_missing_bp.pyx":316
+      /* "pyBedGraph/ignore_missing_bp.pyx":318
  * 
  *         if current_start == end:
  *             continue             # <<<<<<<<<<<<<<
@@ -6301,7 +6329,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_12get_coverages(CYTHO
  */
       goto __pyx_L3_continue;
 
-      /* "pyBedGraph/ignore_missing_bp.pyx":315
+      /* "pyBedGraph/ignore_missing_bp.pyx":317
  *             current_start += 1
  * 
  *         if current_start == end:             # <<<<<<<<<<<<<<
@@ -6310,7 +6338,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_12get_coverages(CYTHO
  */
     }
 
-    /* "pyBedGraph/ignore_missing_bp.pyx":318
+    /* "pyBedGraph/ignore_missing_bp.pyx":320
  *             continue
  * 
  *         value_index = index_list[current_start]             # <<<<<<<<<<<<<<
@@ -6322,11 +6350,11 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_12get_coverages(CYTHO
     if (unlikely(__pyx_t_16 >= (size_t)__pyx_v_index_list.shape[0])) __pyx_t_12 = 0;
     if (unlikely(__pyx_t_12 != -1)) {
       __Pyx_RaiseBufferIndexError(__pyx_t_12);
-      __PYX_ERR(0, 318, __pyx_L1_error)
+      __PYX_ERR(0, 320, __pyx_L1_error)
     }
     __pyx_v_value_index = (*((int *) ( /* dim=0 */ (__pyx_v_index_list.data + __pyx_t_16 * __pyx_v_index_list.strides[0]) )));
 
-    /* "pyBedGraph/ignore_missing_bp.pyx":319
+    /* "pyBedGraph/ignore_missing_bp.pyx":321
  * 
  *         value_index = index_list[current_start]
  *         while current_start < end:             # <<<<<<<<<<<<<<
@@ -6337,7 +6365,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_12get_coverages(CYTHO
       __pyx_t_4 = ((__pyx_v_current_start < __pyx_v_end) != 0);
       if (!__pyx_t_4) break;
 
-      /* "pyBedGraph/ignore_missing_bp.pyx":320
+      /* "pyBedGraph/ignore_missing_bp.pyx":322
  *         value_index = index_list[current_start]
  *         while current_start < end:
  *             temp_end = interval_end[value_index]             # <<<<<<<<<<<<<<
@@ -6349,11 +6377,11 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_12get_coverages(CYTHO
       if (unlikely(__pyx_t_17 >= (size_t)__pyx_v_interval_end.shape[0])) __pyx_t_12 = 0;
       if (unlikely(__pyx_t_12 != -1)) {
         __Pyx_RaiseBufferIndexError(__pyx_t_12);
-        __PYX_ERR(0, 320, __pyx_L1_error)
+        __PYX_ERR(0, 322, __pyx_L1_error)
       }
       __pyx_v_temp_end = (*((unsigned int *) ( /* dim=0 */ (__pyx_v_interval_end.data + __pyx_t_17 * __pyx_v_interval_end.strides[0]) )));
 
-      /* "pyBedGraph/ignore_missing_bp.pyx":321
+      /* "pyBedGraph/ignore_missing_bp.pyx":323
  *         while current_start < end:
  *             temp_end = interval_end[value_index]
  *             if temp_end > end:             # <<<<<<<<<<<<<<
@@ -6363,7 +6391,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_12get_coverages(CYTHO
       __pyx_t_4 = ((__pyx_v_temp_end > __pyx_v_end) != 0);
       if (__pyx_t_4) {
 
-        /* "pyBedGraph/ignore_missing_bp.pyx":322
+        /* "pyBedGraph/ignore_missing_bp.pyx":324
  *             temp_end = interval_end[value_index]
  *             if temp_end > end:
  *                 temp_end = end             # <<<<<<<<<<<<<<
@@ -6372,7 +6400,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_12get_coverages(CYTHO
  */
         __pyx_v_temp_end = __pyx_v_end;
 
-        /* "pyBedGraph/ignore_missing_bp.pyx":321
+        /* "pyBedGraph/ignore_missing_bp.pyx":323
  *         while current_start < end:
  *             temp_end = interval_end[value_index]
  *             if temp_end > end:             # <<<<<<<<<<<<<<
@@ -6381,7 +6409,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_12get_coverages(CYTHO
  */
       }
 
-      /* "pyBedGraph/ignore_missing_bp.pyx":323
+      /* "pyBedGraph/ignore_missing_bp.pyx":325
  *             if temp_end > end:
  *                 temp_end = end
  *             numb_covered += (temp_end - current_start)             # <<<<<<<<<<<<<<
@@ -6390,7 +6418,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_12get_coverages(CYTHO
  */
       __pyx_v_numb_covered = (__pyx_v_numb_covered + (__pyx_v_temp_end - __pyx_v_current_start));
 
-      /* "pyBedGraph/ignore_missing_bp.pyx":325
+      /* "pyBedGraph/ignore_missing_bp.pyx":327
  *             numb_covered += (temp_end - current_start)
  * 
  *             value_index += 1             # <<<<<<<<<<<<<<
@@ -6399,7 +6427,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_12get_coverages(CYTHO
  */
       __pyx_v_value_index = (__pyx_v_value_index + 1);
 
-      /* "pyBedGraph/ignore_missing_bp.pyx":326
+      /* "pyBedGraph/ignore_missing_bp.pyx":328
  * 
  *             value_index += 1
  *             if value_index == numb_intervals:             # <<<<<<<<<<<<<<
@@ -6409,7 +6437,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_12get_coverages(CYTHO
       __pyx_t_4 = ((__pyx_v_value_index == __pyx_v_numb_intervals) != 0);
       if (__pyx_t_4) {
 
-        /* "pyBedGraph/ignore_missing_bp.pyx":327
+        /* "pyBedGraph/ignore_missing_bp.pyx":329
  *             value_index += 1
  *             if value_index == numb_intervals:
  *                 break             # <<<<<<<<<<<<<<
@@ -6418,7 +6446,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_12get_coverages(CYTHO
  */
         goto __pyx_L11_break;
 
-        /* "pyBedGraph/ignore_missing_bp.pyx":326
+        /* "pyBedGraph/ignore_missing_bp.pyx":328
  * 
  *             value_index += 1
  *             if value_index == numb_intervals:             # <<<<<<<<<<<<<<
@@ -6427,7 +6455,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_12get_coverages(CYTHO
  */
       }
 
-      /* "pyBedGraph/ignore_missing_bp.pyx":328
+      /* "pyBedGraph/ignore_missing_bp.pyx":330
  *             if value_index == numb_intervals:
  *                 break
  *             current_start = interval_start[value_index]             # <<<<<<<<<<<<<<
@@ -6439,13 +6467,13 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_12get_coverages(CYTHO
       if (unlikely(__pyx_t_18 >= (size_t)__pyx_v_interval_start.shape[0])) __pyx_t_12 = 0;
       if (unlikely(__pyx_t_12 != -1)) {
         __Pyx_RaiseBufferIndexError(__pyx_t_12);
-        __PYX_ERR(0, 328, __pyx_L1_error)
+        __PYX_ERR(0, 330, __pyx_L1_error)
       }
       __pyx_v_current_start = (*((unsigned int *) ( /* dim=0 */ (__pyx_v_interval_start.data + __pyx_t_18 * __pyx_v_interval_start.strides[0]) )));
     }
     __pyx_L11_break:;
 
-    /* "pyBedGraph/ignore_missing_bp.pyx":330
+    /* "pyBedGraph/ignore_missing_bp.pyx":332
  *             current_start = interval_start[value_index]
  * 
  *         if numb_covered > 0:             # <<<<<<<<<<<<<<
@@ -6455,7 +6483,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_12get_coverages(CYTHO
     __pyx_t_4 = ((__pyx_v_numb_covered > 0) != 0);
     if (__pyx_t_4) {
 
-      /* "pyBedGraph/ignore_missing_bp.pyx":331
+      /* "pyBedGraph/ignore_missing_bp.pyx":333
  * 
  *         if numb_covered > 0:
  *             result_view[i] = <double>numb_covered / (end - start)             # <<<<<<<<<<<<<<
@@ -6465,18 +6493,18 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_12get_coverages(CYTHO
       __pyx_t_19 = (__pyx_v_end - __pyx_v_start);
       if (unlikely(__pyx_t_19 == 0)) {
         PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-        __PYX_ERR(0, 331, __pyx_L1_error)
+        __PYX_ERR(0, 333, __pyx_L1_error)
       }
       __pyx_t_20 = __pyx_v_i;
       __pyx_t_12 = -1;
       if (unlikely(__pyx_t_20 >= (size_t)__pyx_v_result_view.shape[0])) __pyx_t_12 = 0;
       if (unlikely(__pyx_t_12 != -1)) {
         __Pyx_RaiseBufferIndexError(__pyx_t_12);
-        __PYX_ERR(0, 331, __pyx_L1_error)
+        __PYX_ERR(0, 333, __pyx_L1_error)
       }
       *((double *) ( /* dim=0 */ (__pyx_v_result_view.data + __pyx_t_20 * __pyx_v_result_view.strides[0]) )) = (((double)__pyx_v_numb_covered) / ((double)__pyx_t_19));
 
-      /* "pyBedGraph/ignore_missing_bp.pyx":330
+      /* "pyBedGraph/ignore_missing_bp.pyx":332
  *             current_start = interval_start[value_index]
  * 
  *         if numb_covered > 0:             # <<<<<<<<<<<<<<
@@ -6487,7 +6515,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_12get_coverages(CYTHO
     __pyx_L3_continue:;
   }
 
-  /* "pyBedGraph/ignore_missing_bp.pyx":333
+  /* "pyBedGraph/ignore_missing_bp.pyx":335
  *             result_view[i] = <double>numb_covered / (end - start)
  * 
  *     return result             # <<<<<<<<<<<<<<
@@ -6499,7 +6527,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_12get_coverages(CYTHO
   __pyx_r = __pyx_v_result;
   goto __pyx_L0;
 
-  /* "pyBedGraph/ignore_missing_bp.pyx":293
+  /* "pyBedGraph/ignore_missing_bp.pyx":295
  *     return result
  * 
  * def get_coverages(int[:] index_list, unsigned int[:] interval_start,             # <<<<<<<<<<<<<<
@@ -6530,7 +6558,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_12get_coverages(CYTHO
   return __pyx_r;
 }
 
-/* "pyBedGraph/ignore_missing_bp.pyx":335
+/* "pyBedGraph/ignore_missing_bp.pyx":337
  *     return result
  * 
  * def get_stds(double[:] value_map, int[:] index_list,             # <<<<<<<<<<<<<<
@@ -6582,35 +6610,35 @@ static PyObject *__pyx_pw_10pyBedGraph_17ignore_missing_bp_15get_stds(PyObject *
         case  1:
         if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_index_list)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("get_stds", 1, 6, 6, 1); __PYX_ERR(0, 335, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("get_stds", 1, 6, 6, 1); __PYX_ERR(0, 337, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  2:
         if (likely((values[2] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_interval_start)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("get_stds", 1, 6, 6, 2); __PYX_ERR(0, 335, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("get_stds", 1, 6, 6, 2); __PYX_ERR(0, 337, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  3:
         if (likely((values[3] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_interval_end)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("get_stds", 1, 6, 6, 3); __PYX_ERR(0, 335, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("get_stds", 1, 6, 6, 3); __PYX_ERR(0, 337, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  4:
         if (likely((values[4] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_start_list)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("get_stds", 1, 6, 6, 4); __PYX_ERR(0, 335, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("get_stds", 1, 6, 6, 4); __PYX_ERR(0, 337, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  5:
         if (likely((values[5] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_end_list)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("get_stds", 1, 6, 6, 5); __PYX_ERR(0, 335, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("get_stds", 1, 6, 6, 5); __PYX_ERR(0, 337, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "get_stds") < 0)) __PYX_ERR(0, 335, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "get_stds") < 0)) __PYX_ERR(0, 337, __pyx_L3_error)
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 6) {
       goto __pyx_L5_argtuple_error;
@@ -6622,16 +6650,16 @@ static PyObject *__pyx_pw_10pyBedGraph_17ignore_missing_bp_15get_stds(PyObject *
       values[4] = PyTuple_GET_ITEM(__pyx_args, 4);
       values[5] = PyTuple_GET_ITEM(__pyx_args, 5);
     }
-    __pyx_v_value_map = __Pyx_PyObject_to_MemoryviewSlice_ds_double(values[0], PyBUF_WRITABLE); if (unlikely(!__pyx_v_value_map.memview)) __PYX_ERR(0, 335, __pyx_L3_error)
-    __pyx_v_index_list = __Pyx_PyObject_to_MemoryviewSlice_ds_int(values[1], PyBUF_WRITABLE); if (unlikely(!__pyx_v_index_list.memview)) __PYX_ERR(0, 335, __pyx_L3_error)
-    __pyx_v_interval_start = __Pyx_PyObject_to_MemoryviewSlice_ds_unsigned_int(values[2], PyBUF_WRITABLE); if (unlikely(!__pyx_v_interval_start.memview)) __PYX_ERR(0, 336, __pyx_L3_error)
-    __pyx_v_interval_end = __Pyx_PyObject_to_MemoryviewSlice_ds_unsigned_int(values[3], PyBUF_WRITABLE); if (unlikely(!__pyx_v_interval_end.memview)) __PYX_ERR(0, 336, __pyx_L3_error)
-    __pyx_v_start_list = __Pyx_PyObject_to_MemoryviewSlice_ds_int(values[4], PyBUF_WRITABLE); if (unlikely(!__pyx_v_start_list.memview)) __PYX_ERR(0, 337, __pyx_L3_error)
-    __pyx_v_end_list = __Pyx_PyObject_to_MemoryviewSlice_ds_int(values[5], PyBUF_WRITABLE); if (unlikely(!__pyx_v_end_list.memview)) __PYX_ERR(0, 337, __pyx_L3_error)
+    __pyx_v_value_map = __Pyx_PyObject_to_MemoryviewSlice_ds_double(values[0], PyBUF_WRITABLE); if (unlikely(!__pyx_v_value_map.memview)) __PYX_ERR(0, 337, __pyx_L3_error)
+    __pyx_v_index_list = __Pyx_PyObject_to_MemoryviewSlice_ds_int(values[1], PyBUF_WRITABLE); if (unlikely(!__pyx_v_index_list.memview)) __PYX_ERR(0, 337, __pyx_L3_error)
+    __pyx_v_interval_start = __Pyx_PyObject_to_MemoryviewSlice_ds_unsigned_int(values[2], PyBUF_WRITABLE); if (unlikely(!__pyx_v_interval_start.memview)) __PYX_ERR(0, 338, __pyx_L3_error)
+    __pyx_v_interval_end = __Pyx_PyObject_to_MemoryviewSlice_ds_unsigned_int(values[3], PyBUF_WRITABLE); if (unlikely(!__pyx_v_interval_end.memview)) __PYX_ERR(0, 338, __pyx_L3_error)
+    __pyx_v_start_list = __Pyx_PyObject_to_MemoryviewSlice_ds_int(values[4], PyBUF_WRITABLE); if (unlikely(!__pyx_v_start_list.memview)) __PYX_ERR(0, 339, __pyx_L3_error)
+    __pyx_v_end_list = __Pyx_PyObject_to_MemoryviewSlice_ds_int(values[5], PyBUF_WRITABLE); if (unlikely(!__pyx_v_end_list.memview)) __PYX_ERR(0, 339, __pyx_L3_error)
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("get_stds", 1, 6, 6, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 335, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("get_stds", 1, 6, 6, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 337, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("pyBedGraph.ignore_missing_bp.get_stds", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -6676,8 +6704,8 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_14get_stds(CYTHON_UNU
   int __pyx_t_12;
   size_t __pyx_t_13;
   size_t __pyx_t_14;
-  size_t __pyx_t_15;
-  int __pyx_t_16;
+  int __pyx_t_15;
+  size_t __pyx_t_16;
   size_t __pyx_t_17;
   size_t __pyx_t_18;
   size_t __pyx_t_19;
@@ -6686,7 +6714,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_14get_stds(CYTHON_UNU
   size_t __pyx_t_22;
   __Pyx_RefNannySetupContext("get_stds", 0);
 
-  /* "pyBedGraph/ignore_missing_bp.pyx":339
+  /* "pyBedGraph/ignore_missing_bp.pyx":341
  *                  int[:] start_list, int[:] end_list):
  * 
  *     assert tuple(start_list.shape) == tuple(end_list.shape)             # <<<<<<<<<<<<<<
@@ -6695,59 +6723,59 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_14get_stds(CYTHON_UNU
  */
   #ifndef CYTHON_WITHOUT_ASSERTIONS
   if (unlikely(!Py_OptimizeFlag)) {
-    __pyx_t_1 = __Pyx_carray_to_py_Py_ssize_t(__pyx_v_start_list.shape, 8); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 339, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_carray_to_py_Py_ssize_t(__pyx_v_start_list.shape, 8); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 341, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_2 = __Pyx_PySequence_Tuple(__pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 339, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PySequence_Tuple(__pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 341, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __pyx_t_1 = __Pyx_carray_to_py_Py_ssize_t(__pyx_v_end_list.shape, 8); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 339, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_carray_to_py_Py_ssize_t(__pyx_v_end_list.shape, 8); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 341, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_3 = __Pyx_PySequence_Tuple(__pyx_t_1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 339, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PySequence_Tuple(__pyx_t_1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 341, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __pyx_t_1 = PyObject_RichCompare(__pyx_t_2, __pyx_t_3, Py_EQ); __Pyx_XGOTREF(__pyx_t_1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 339, __pyx_L1_error)
+    __pyx_t_1 = PyObject_RichCompare(__pyx_t_2, __pyx_t_3, Py_EQ); __Pyx_XGOTREF(__pyx_t_1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 341, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __pyx_t_4 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_4 < 0)) __PYX_ERR(0, 339, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_4 < 0)) __PYX_ERR(0, 341, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     if (unlikely(!__pyx_t_4)) {
       PyErr_SetNone(PyExc_AssertionError);
-      __PYX_ERR(0, 339, __pyx_L1_error)
+      __PYX_ERR(0, 341, __pyx_L1_error)
     }
   }
   #endif
 
-  /* "pyBedGraph/ignore_missing_bp.pyx":341
+  /* "pyBedGraph/ignore_missing_bp.pyx":343
  *     assert tuple(start_list.shape) == tuple(end_list.shape)
  * 
  *     cdef size_t i, num_tests = start_list.size, start, end, j             # <<<<<<<<<<<<<<
  * 
  *     result = np.full(num_tests, -1, dtype=np.float64)
  */
-  __pyx_t_1 = __pyx_memoryview_fromslice(__pyx_v_start_list, 1, (PyObject *(*)(char *)) __pyx_memview_get_int, (int (*)(char *, PyObject *)) __pyx_memview_set_int, 0);; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 341, __pyx_L1_error)
+  __pyx_t_1 = __pyx_memoryview_fromslice(__pyx_v_start_list, 1, (PyObject *(*)(char *)) __pyx_memview_get_int, (int (*)(char *, PyObject *)) __pyx_memview_set_int, 0);; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 343, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_size); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 341, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_size); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 343, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_5 = __Pyx_PyInt_As_size_t(__pyx_t_3); if (unlikely((__pyx_t_5 == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 341, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyInt_As_size_t(__pyx_t_3); if (unlikely((__pyx_t_5 == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 343, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __pyx_v_num_tests = __pyx_t_5;
 
-  /* "pyBedGraph/ignore_missing_bp.pyx":343
+  /* "pyBedGraph/ignore_missing_bp.pyx":345
  *     cdef size_t i, num_tests = start_list.size, start, end, j
  * 
  *     result = np.full(num_tests, -1, dtype=np.float64)             # <<<<<<<<<<<<<<
  *     cdef double[:] result_view = result
  *     cdef double std, difference, value
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_np); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 343, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_np); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 345, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_full); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 343, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_full); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 345, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_3 = __Pyx_PyInt_FromSize_t(__pyx_v_num_tests); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 343, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyInt_FromSize_t(__pyx_v_num_tests); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 345, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_2 = PyTuple_New(2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 343, __pyx_L1_error)
+  __pyx_t_2 = PyTuple_New(2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 345, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_GIVEREF(__pyx_t_3);
   PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_t_3);
@@ -6755,16 +6783,16 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_14get_stds(CYTHON_UNU
   __Pyx_GIVEREF(__pyx_int_neg_1);
   PyTuple_SET_ITEM(__pyx_t_2, 1, __pyx_int_neg_1);
   __pyx_t_3 = 0;
-  __pyx_t_3 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 343, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 345, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_np); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 343, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_np); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 345, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
-  __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_float64); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 343, __pyx_L1_error)
+  __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_float64); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 345, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-  if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_dtype, __pyx_t_7) < 0) __PYX_ERR(0, 343, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_dtype, __pyx_t_7) < 0) __PYX_ERR(0, 345, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-  __pyx_t_7 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 343, __pyx_L1_error)
+  __pyx_t_7 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 345, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
@@ -6772,50 +6800,50 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_14get_stds(CYTHON_UNU
   __pyx_v_result = __pyx_t_7;
   __pyx_t_7 = 0;
 
-  /* "pyBedGraph/ignore_missing_bp.pyx":344
+  /* "pyBedGraph/ignore_missing_bp.pyx":346
  * 
  *     result = np.full(num_tests, -1, dtype=np.float64)
  *     cdef double[:] result_view = result             # <<<<<<<<<<<<<<
  *     cdef double std, difference, value
  *     cdef unsigned int numb_value, interval_size, value_index, temp_end
  */
-  __pyx_t_8 = __Pyx_PyObject_to_MemoryviewSlice_ds_double(__pyx_v_result, PyBUF_WRITABLE); if (unlikely(!__pyx_t_8.memview)) __PYX_ERR(0, 344, __pyx_L1_error)
+  __pyx_t_8 = __Pyx_PyObject_to_MemoryviewSlice_ds_double(__pyx_v_result, PyBUF_WRITABLE); if (unlikely(!__pyx_t_8.memview)) __PYX_ERR(0, 346, __pyx_L1_error)
   __pyx_v_result_view = __pyx_t_8;
   __pyx_t_8.memview = NULL;
   __pyx_t_8.data = NULL;
 
-  /* "pyBedGraph/ignore_missing_bp.pyx":347
+  /* "pyBedGraph/ignore_missing_bp.pyx":349
  *     cdef double std, difference, value
  *     cdef unsigned int numb_value, interval_size, value_index, temp_end
  *     cdef size_t numb_intervals = interval_start.size             # <<<<<<<<<<<<<<
  * 
  *     cdef double[:] means = get_exact_means(value_map, index_list, interval_start,
  */
-  __pyx_t_7 = __pyx_memoryview_fromslice(__pyx_v_interval_start, 1, (PyObject *(*)(char *)) __pyx_memview_get_unsigned_int, (int (*)(char *, PyObject *)) __pyx_memview_set_unsigned_int, 0);; if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 347, __pyx_L1_error)
+  __pyx_t_7 = __pyx_memoryview_fromslice(__pyx_v_interval_start, 1, (PyObject *(*)(char *)) __pyx_memview_get_unsigned_int, (int (*)(char *, PyObject *)) __pyx_memview_set_unsigned_int, 0);; if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 349, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_7, __pyx_n_s_size); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 347, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_7, __pyx_n_s_size); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 349, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-  __pyx_t_5 = __Pyx_PyInt_As_size_t(__pyx_t_3); if (unlikely((__pyx_t_5 == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 347, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyInt_As_size_t(__pyx_t_3); if (unlikely((__pyx_t_5 == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 349, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __pyx_v_numb_intervals = __pyx_t_5;
 
-  /* "pyBedGraph/ignore_missing_bp.pyx":349
+  /* "pyBedGraph/ignore_missing_bp.pyx":351
  *     cdef size_t numb_intervals = interval_start.size
  * 
  *     cdef double[:] means = get_exact_means(value_map, index_list, interval_start,             # <<<<<<<<<<<<<<
  *                             interval_end, start_list, end_list)
  * 
  */
-  __pyx_t_3 = __pyx_f_10pyBedGraph_17ignore_missing_bp_get_exact_means(__pyx_v_value_map, __pyx_v_index_list, __pyx_v_interval_start, __pyx_v_interval_end, __pyx_v_start_list, __pyx_v_end_list, 0); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 349, __pyx_L1_error)
+  __pyx_t_3 = __pyx_f_10pyBedGraph_17ignore_missing_bp_get_exact_means(__pyx_v_value_map, __pyx_v_index_list, __pyx_v_interval_start, __pyx_v_interval_end, __pyx_v_start_list, __pyx_v_end_list, 0); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 351, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_8 = __Pyx_PyObject_to_MemoryviewSlice_ds_double(__pyx_t_3, PyBUF_WRITABLE); if (unlikely(!__pyx_t_8.memview)) __PYX_ERR(0, 349, __pyx_L1_error)
+  __pyx_t_8 = __Pyx_PyObject_to_MemoryviewSlice_ds_double(__pyx_t_3, PyBUF_WRITABLE); if (unlikely(!__pyx_t_8.memview)) __PYX_ERR(0, 351, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __pyx_v_means = __pyx_t_8;
   __pyx_t_8.memview = NULL;
   __pyx_t_8.data = NULL;
 
-  /* "pyBedGraph/ignore_missing_bp.pyx":352
+  /* "pyBedGraph/ignore_missing_bp.pyx":354
  *                             interval_end, start_list, end_list)
  * 
  *     for i in range(num_tests):             # <<<<<<<<<<<<<<
@@ -6827,7 +6855,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_14get_stds(CYTHON_UNU
   for (__pyx_t_10 = 0; __pyx_t_10 < __pyx_t_9; __pyx_t_10+=1) {
     __pyx_v_i = __pyx_t_10;
 
-    /* "pyBedGraph/ignore_missing_bp.pyx":353
+    /* "pyBedGraph/ignore_missing_bp.pyx":355
  * 
  *     for i in range(num_tests):
  *         mean = means[i]             # <<<<<<<<<<<<<<
@@ -6839,27 +6867,27 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_14get_stds(CYTHON_UNU
     if (unlikely(__pyx_t_11 >= (size_t)__pyx_v_means.shape[0])) __pyx_t_12 = 0;
     if (unlikely(__pyx_t_12 != -1)) {
       __Pyx_RaiseBufferIndexError(__pyx_t_12);
-      __PYX_ERR(0, 353, __pyx_L1_error)
+      __PYX_ERR(0, 355, __pyx_L1_error)
     }
-    __pyx_t_3 = PyFloat_FromDouble((*((double *) ( /* dim=0 */ (__pyx_v_means.data + __pyx_t_11 * __pyx_v_means.strides[0]) )))); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 353, __pyx_L1_error)
+    __pyx_t_3 = PyFloat_FromDouble((*((double *) ( /* dim=0 */ (__pyx_v_means.data + __pyx_t_11 * __pyx_v_means.strides[0]) )))); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 355, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_XDECREF_SET(__pyx_v_mean, __pyx_t_3);
     __pyx_t_3 = 0;
 
-    /* "pyBedGraph/ignore_missing_bp.pyx":354
+    /* "pyBedGraph/ignore_missing_bp.pyx":356
  *     for i in range(num_tests):
  *         mean = means[i]
  *         if mean == -1:             # <<<<<<<<<<<<<<
  *             continue
  * 
  */
-    __pyx_t_3 = __Pyx_PyInt_EqObjC(__pyx_v_mean, __pyx_int_neg_1, -1L, 0); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 354, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyInt_EqObjC(__pyx_v_mean, __pyx_int_neg_1, -1L, 0); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 356, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_4 = __Pyx_PyObject_IsTrue(__pyx_t_3); if (unlikely(__pyx_t_4 < 0)) __PYX_ERR(0, 354, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_IsTrue(__pyx_t_3); if (unlikely(__pyx_t_4 < 0)) __PYX_ERR(0, 356, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     if (__pyx_t_4) {
 
-      /* "pyBedGraph/ignore_missing_bp.pyx":355
+      /* "pyBedGraph/ignore_missing_bp.pyx":357
  *         mean = means[i]
  *         if mean == -1:
  *             continue             # <<<<<<<<<<<<<<
@@ -6868,7 +6896,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_14get_stds(CYTHON_UNU
  */
       goto __pyx_L3_continue;
 
-      /* "pyBedGraph/ignore_missing_bp.pyx":354
+      /* "pyBedGraph/ignore_missing_bp.pyx":356
  *     for i in range(num_tests):
  *         mean = means[i]
  *         if mean == -1:             # <<<<<<<<<<<<<<
@@ -6877,7 +6905,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_14get_stds(CYTHON_UNU
  */
     }
 
-    /* "pyBedGraph/ignore_missing_bp.pyx":357
+    /* "pyBedGraph/ignore_missing_bp.pyx":359
  *             continue
  * 
  *         start = start_list[i]             # <<<<<<<<<<<<<<
@@ -6889,11 +6917,11 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_14get_stds(CYTHON_UNU
     if (unlikely(__pyx_t_13 >= (size_t)__pyx_v_start_list.shape[0])) __pyx_t_12 = 0;
     if (unlikely(__pyx_t_12 != -1)) {
       __Pyx_RaiseBufferIndexError(__pyx_t_12);
-      __PYX_ERR(0, 357, __pyx_L1_error)
+      __PYX_ERR(0, 359, __pyx_L1_error)
     }
     __pyx_v_start = (*((int *) ( /* dim=0 */ (__pyx_v_start_list.data + __pyx_t_13 * __pyx_v_start_list.strides[0]) )));
 
-    /* "pyBedGraph/ignore_missing_bp.pyx":358
+    /* "pyBedGraph/ignore_missing_bp.pyx":360
  * 
  *         start = start_list[i]
  *         end = end_list[i]             # <<<<<<<<<<<<<<
@@ -6905,39 +6933,39 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_14get_stds(CYTHON_UNU
     if (unlikely(__pyx_t_14 >= (size_t)__pyx_v_end_list.shape[0])) __pyx_t_12 = 0;
     if (unlikely(__pyx_t_12 != -1)) {
       __Pyx_RaiseBufferIndexError(__pyx_t_12);
-      __PYX_ERR(0, 358, __pyx_L1_error)
+      __PYX_ERR(0, 360, __pyx_L1_error)
     }
     __pyx_v_end = (*((int *) ( /* dim=0 */ (__pyx_v_end_list.data + __pyx_t_14 * __pyx_v_end_list.strides[0]) )));
 
-    /* "pyBedGraph/ignore_missing_bp.pyx":361
+    /* "pyBedGraph/ignore_missing_bp.pyx":363
  * 
  *         # get to an interval
- *         while index_list[start] == -1 and start < end:             # <<<<<<<<<<<<<<
+ *         while start < end and index_list[start] == -1:             # <<<<<<<<<<<<<<
  *             start += 1
  * 
  */
     while (1) {
-      __pyx_t_15 = __pyx_v_start;
-      __pyx_t_12 = -1;
-      if (unlikely(__pyx_t_15 >= (size_t)__pyx_v_index_list.shape[0])) __pyx_t_12 = 0;
-      if (unlikely(__pyx_t_12 != -1)) {
-        __Pyx_RaiseBufferIndexError(__pyx_t_12);
-        __PYX_ERR(0, 361, __pyx_L1_error)
-      }
-      __pyx_t_16 = (((*((int *) ( /* dim=0 */ (__pyx_v_index_list.data + __pyx_t_15 * __pyx_v_index_list.strides[0]) ))) == -1L) != 0);
-      if (__pyx_t_16) {
+      __pyx_t_15 = ((__pyx_v_start < __pyx_v_end) != 0);
+      if (__pyx_t_15) {
       } else {
-        __pyx_t_4 = __pyx_t_16;
+        __pyx_t_4 = __pyx_t_15;
         goto __pyx_L8_bool_binop_done;
       }
-      __pyx_t_16 = ((__pyx_v_start < __pyx_v_end) != 0);
-      __pyx_t_4 = __pyx_t_16;
+      __pyx_t_16 = __pyx_v_start;
+      __pyx_t_12 = -1;
+      if (unlikely(__pyx_t_16 >= (size_t)__pyx_v_index_list.shape[0])) __pyx_t_12 = 0;
+      if (unlikely(__pyx_t_12 != -1)) {
+        __Pyx_RaiseBufferIndexError(__pyx_t_12);
+        __PYX_ERR(0, 363, __pyx_L1_error)
+      }
+      __pyx_t_15 = (((*((int *) ( /* dim=0 */ (__pyx_v_index_list.data + __pyx_t_16 * __pyx_v_index_list.strides[0]) ))) == -1L) != 0);
+      __pyx_t_4 = __pyx_t_15;
       __pyx_L8_bool_binop_done:;
       if (!__pyx_t_4) break;
 
-      /* "pyBedGraph/ignore_missing_bp.pyx":362
+      /* "pyBedGraph/ignore_missing_bp.pyx":364
  *         # get to an interval
- *         while index_list[start] == -1 and start < end:
+ *         while start < end and index_list[start] == -1:
  *             start += 1             # <<<<<<<<<<<<<<
  * 
  *         if start == end:
@@ -6945,7 +6973,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_14get_stds(CYTHON_UNU
       __pyx_v_start = (__pyx_v_start + 1);
     }
 
-    /* "pyBedGraph/ignore_missing_bp.pyx":364
+    /* "pyBedGraph/ignore_missing_bp.pyx":366
  *             start += 1
  * 
  *         if start == end:             # <<<<<<<<<<<<<<
@@ -6955,7 +6983,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_14get_stds(CYTHON_UNU
     __pyx_t_4 = ((__pyx_v_start == __pyx_v_end) != 0);
     if (__pyx_t_4) {
 
-      /* "pyBedGraph/ignore_missing_bp.pyx":365
+      /* "pyBedGraph/ignore_missing_bp.pyx":367
  * 
  *         if start == end:
  *             continue             # <<<<<<<<<<<<<<
@@ -6964,7 +6992,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_14get_stds(CYTHON_UNU
  */
       goto __pyx_L3_continue;
 
-      /* "pyBedGraph/ignore_missing_bp.pyx":364
+      /* "pyBedGraph/ignore_missing_bp.pyx":366
  *             start += 1
  * 
  *         if start == end:             # <<<<<<<<<<<<<<
@@ -6973,7 +7001,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_14get_stds(CYTHON_UNU
  */
     }
 
-    /* "pyBedGraph/ignore_missing_bp.pyx":367
+    /* "pyBedGraph/ignore_missing_bp.pyx":369
  *             continue
  * 
  *         std = 0             # <<<<<<<<<<<<<<
@@ -6982,7 +7010,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_14get_stds(CYTHON_UNU
  */
     __pyx_v_std = 0.0;
 
-    /* "pyBedGraph/ignore_missing_bp.pyx":368
+    /* "pyBedGraph/ignore_missing_bp.pyx":370
  * 
  *         std = 0
  *         numb_value = 0             # <<<<<<<<<<<<<<
@@ -6991,7 +7019,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_14get_stds(CYTHON_UNU
  */
     __pyx_v_numb_value = 0;
 
-    /* "pyBedGraph/ignore_missing_bp.pyx":370
+    /* "pyBedGraph/ignore_missing_bp.pyx":372
  *         numb_value = 0
  * 
  *         value_index = index_list[start]             # <<<<<<<<<<<<<<
@@ -7003,11 +7031,11 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_14get_stds(CYTHON_UNU
     if (unlikely(__pyx_t_17 >= (size_t)__pyx_v_index_list.shape[0])) __pyx_t_12 = 0;
     if (unlikely(__pyx_t_12 != -1)) {
       __Pyx_RaiseBufferIndexError(__pyx_t_12);
-      __PYX_ERR(0, 370, __pyx_L1_error)
+      __PYX_ERR(0, 372, __pyx_L1_error)
     }
     __pyx_v_value_index = (*((int *) ( /* dim=0 */ (__pyx_v_index_list.data + __pyx_t_17 * __pyx_v_index_list.strides[0]) )));
 
-    /* "pyBedGraph/ignore_missing_bp.pyx":371
+    /* "pyBedGraph/ignore_missing_bp.pyx":373
  * 
  *         value_index = index_list[start]
  *         while start < end:             # <<<<<<<<<<<<<<
@@ -7018,7 +7046,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_14get_stds(CYTHON_UNU
       __pyx_t_4 = ((__pyx_v_start < __pyx_v_end) != 0);
       if (!__pyx_t_4) break;
 
-      /* "pyBedGraph/ignore_missing_bp.pyx":372
+      /* "pyBedGraph/ignore_missing_bp.pyx":374
  *         value_index = index_list[start]
  *         while start < end:
  *             temp_end = interval_end[value_index]             # <<<<<<<<<<<<<<
@@ -7030,11 +7058,11 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_14get_stds(CYTHON_UNU
       if (unlikely(__pyx_t_18 >= (size_t)__pyx_v_interval_end.shape[0])) __pyx_t_12 = 0;
       if (unlikely(__pyx_t_12 != -1)) {
         __Pyx_RaiseBufferIndexError(__pyx_t_12);
-        __PYX_ERR(0, 372, __pyx_L1_error)
+        __PYX_ERR(0, 374, __pyx_L1_error)
       }
       __pyx_v_temp_end = (*((unsigned int *) ( /* dim=0 */ (__pyx_v_interval_end.data + __pyx_t_18 * __pyx_v_interval_end.strides[0]) )));
 
-      /* "pyBedGraph/ignore_missing_bp.pyx":373
+      /* "pyBedGraph/ignore_missing_bp.pyx":375
  *         while start < end:
  *             temp_end = interval_end[value_index]
  *             if temp_end > end:             # <<<<<<<<<<<<<<
@@ -7044,7 +7072,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_14get_stds(CYTHON_UNU
       __pyx_t_4 = ((__pyx_v_temp_end > __pyx_v_end) != 0);
       if (__pyx_t_4) {
 
-        /* "pyBedGraph/ignore_missing_bp.pyx":374
+        /* "pyBedGraph/ignore_missing_bp.pyx":376
  *             temp_end = interval_end[value_index]
  *             if temp_end > end:
  *                 temp_end = end             # <<<<<<<<<<<<<<
@@ -7053,7 +7081,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_14get_stds(CYTHON_UNU
  */
         __pyx_v_temp_end = __pyx_v_end;
 
-        /* "pyBedGraph/ignore_missing_bp.pyx":373
+        /* "pyBedGraph/ignore_missing_bp.pyx":375
  *         while start < end:
  *             temp_end = interval_end[value_index]
  *             if temp_end > end:             # <<<<<<<<<<<<<<
@@ -7062,7 +7090,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_14get_stds(CYTHON_UNU
  */
       }
 
-      /* "pyBedGraph/ignore_missing_bp.pyx":376
+      /* "pyBedGraph/ignore_missing_bp.pyx":378
  *                 temp_end = end
  * 
  *             interval_size = temp_end - start             # <<<<<<<<<<<<<<
@@ -7071,7 +7099,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_14get_stds(CYTHON_UNU
  */
       __pyx_v_interval_size = (__pyx_v_temp_end - __pyx_v_start);
 
-      /* "pyBedGraph/ignore_missing_bp.pyx":377
+      /* "pyBedGraph/ignore_missing_bp.pyx":379
  * 
  *             interval_size = temp_end - start
  *             difference = value_map[value_index] - mean             # <<<<<<<<<<<<<<
@@ -7083,18 +7111,18 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_14get_stds(CYTHON_UNU
       if (unlikely(__pyx_t_19 >= (size_t)__pyx_v_value_map.shape[0])) __pyx_t_12 = 0;
       if (unlikely(__pyx_t_12 != -1)) {
         __Pyx_RaiseBufferIndexError(__pyx_t_12);
-        __PYX_ERR(0, 377, __pyx_L1_error)
+        __PYX_ERR(0, 379, __pyx_L1_error)
       }
-      __pyx_t_3 = PyFloat_FromDouble((*((double *) ( /* dim=0 */ (__pyx_v_value_map.data + __pyx_t_19 * __pyx_v_value_map.strides[0]) )))); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 377, __pyx_L1_error)
+      __pyx_t_3 = PyFloat_FromDouble((*((double *) ( /* dim=0 */ (__pyx_v_value_map.data + __pyx_t_19 * __pyx_v_value_map.strides[0]) )))); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 379, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_3);
-      __pyx_t_7 = PyNumber_Subtract(__pyx_t_3, __pyx_v_mean); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 377, __pyx_L1_error)
+      __pyx_t_7 = PyNumber_Subtract(__pyx_t_3, __pyx_v_mean); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 379, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_7);
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-      __pyx_t_20 = __pyx_PyFloat_AsDouble(__pyx_t_7); if (unlikely((__pyx_t_20 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 377, __pyx_L1_error)
+      __pyx_t_20 = __pyx_PyFloat_AsDouble(__pyx_t_7); if (unlikely((__pyx_t_20 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 379, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
       __pyx_v_difference = __pyx_t_20;
 
-      /* "pyBedGraph/ignore_missing_bp.pyx":378
+      /* "pyBedGraph/ignore_missing_bp.pyx":380
  *             interval_size = temp_end - start
  *             difference = value_map[value_index] - mean
  *             std += difference * difference * interval_size             # <<<<<<<<<<<<<<
@@ -7103,7 +7131,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_14get_stds(CYTHON_UNU
  */
       __pyx_v_std = (__pyx_v_std + ((__pyx_v_difference * __pyx_v_difference) * __pyx_v_interval_size));
 
-      /* "pyBedGraph/ignore_missing_bp.pyx":379
+      /* "pyBedGraph/ignore_missing_bp.pyx":381
  *             difference = value_map[value_index] - mean
  *             std += difference * difference * interval_size
  *             numb_value += interval_size             # <<<<<<<<<<<<<<
@@ -7112,7 +7140,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_14get_stds(CYTHON_UNU
  */
       __pyx_v_numb_value = (__pyx_v_numb_value + __pyx_v_interval_size);
 
-      /* "pyBedGraph/ignore_missing_bp.pyx":381
+      /* "pyBedGraph/ignore_missing_bp.pyx":383
  *             numb_value += interval_size
  * 
  *             value_index += 1             # <<<<<<<<<<<<<<
@@ -7121,7 +7149,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_14get_stds(CYTHON_UNU
  */
       __pyx_v_value_index = (__pyx_v_value_index + 1);
 
-      /* "pyBedGraph/ignore_missing_bp.pyx":382
+      /* "pyBedGraph/ignore_missing_bp.pyx":384
  * 
  *             value_index += 1
  *             if value_index == numb_intervals:             # <<<<<<<<<<<<<<
@@ -7131,7 +7159,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_14get_stds(CYTHON_UNU
       __pyx_t_4 = ((__pyx_v_value_index == __pyx_v_numb_intervals) != 0);
       if (__pyx_t_4) {
 
-        /* "pyBedGraph/ignore_missing_bp.pyx":383
+        /* "pyBedGraph/ignore_missing_bp.pyx":385
  *             value_index += 1
  *             if value_index == numb_intervals:
  *                 break             # <<<<<<<<<<<<<<
@@ -7140,7 +7168,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_14get_stds(CYTHON_UNU
  */
         goto __pyx_L12_break;
 
-        /* "pyBedGraph/ignore_missing_bp.pyx":382
+        /* "pyBedGraph/ignore_missing_bp.pyx":384
  * 
  *             value_index += 1
  *             if value_index == numb_intervals:             # <<<<<<<<<<<<<<
@@ -7149,7 +7177,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_14get_stds(CYTHON_UNU
  */
       }
 
-      /* "pyBedGraph/ignore_missing_bp.pyx":384
+      /* "pyBedGraph/ignore_missing_bp.pyx":386
  *             if value_index == numb_intervals:
  *                 break
  *             start = interval_start[value_index]             # <<<<<<<<<<<<<<
@@ -7161,13 +7189,13 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_14get_stds(CYTHON_UNU
       if (unlikely(__pyx_t_21 >= (size_t)__pyx_v_interval_start.shape[0])) __pyx_t_12 = 0;
       if (unlikely(__pyx_t_12 != -1)) {
         __Pyx_RaiseBufferIndexError(__pyx_t_12);
-        __PYX_ERR(0, 384, __pyx_L1_error)
+        __PYX_ERR(0, 386, __pyx_L1_error)
       }
       __pyx_v_start = (*((unsigned int *) ( /* dim=0 */ (__pyx_v_interval_start.data + __pyx_t_21 * __pyx_v_interval_start.strides[0]) )));
     }
     __pyx_L12_break:;
 
-    /* "pyBedGraph/ignore_missing_bp.pyx":386
+    /* "pyBedGraph/ignore_missing_bp.pyx":388
  *             start = interval_start[value_index]
  * 
  *         if numb_value == 0:             # <<<<<<<<<<<<<<
@@ -7177,7 +7205,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_14get_stds(CYTHON_UNU
     __pyx_t_4 = ((__pyx_v_numb_value == 0) != 0);
     if (__pyx_t_4) {
 
-      /* "pyBedGraph/ignore_missing_bp.pyx":387
+      /* "pyBedGraph/ignore_missing_bp.pyx":389
  * 
  *         if numb_value == 0:
  *             continue             # <<<<<<<<<<<<<<
@@ -7186,7 +7214,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_14get_stds(CYTHON_UNU
  */
       goto __pyx_L3_continue;
 
-      /* "pyBedGraph/ignore_missing_bp.pyx":386
+      /* "pyBedGraph/ignore_missing_bp.pyx":388
  *             start = interval_start[value_index]
  * 
  *         if numb_value == 0:             # <<<<<<<<<<<<<<
@@ -7195,7 +7223,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_14get_stds(CYTHON_UNU
  */
     }
 
-    /* "pyBedGraph/ignore_missing_bp.pyx":389
+    /* "pyBedGraph/ignore_missing_bp.pyx":391
  *             continue
  * 
  *         std /= (numb_value)             # <<<<<<<<<<<<<<
@@ -7204,11 +7232,11 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_14get_stds(CYTHON_UNU
  */
     if (unlikely(__pyx_v_numb_value == 0)) {
       PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-      __PYX_ERR(0, 389, __pyx_L1_error)
+      __PYX_ERR(0, 391, __pyx_L1_error)
     }
     __pyx_v_std = (__pyx_v_std / __pyx_v_numb_value);
 
-    /* "pyBedGraph/ignore_missing_bp.pyx":390
+    /* "pyBedGraph/ignore_missing_bp.pyx":392
  * 
  *         std /= (numb_value)
  *         result_view[i] = sqrt(std)             # <<<<<<<<<<<<<<
@@ -7220,13 +7248,13 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_14get_stds(CYTHON_UNU
     if (unlikely(__pyx_t_22 >= (size_t)__pyx_v_result_view.shape[0])) __pyx_t_12 = 0;
     if (unlikely(__pyx_t_12 != -1)) {
       __Pyx_RaiseBufferIndexError(__pyx_t_12);
-      __PYX_ERR(0, 390, __pyx_L1_error)
+      __PYX_ERR(0, 392, __pyx_L1_error)
     }
     *((double *) ( /* dim=0 */ (__pyx_v_result_view.data + __pyx_t_22 * __pyx_v_result_view.strides[0]) )) = sqrt(__pyx_v_std);
     __pyx_L3_continue:;
   }
 
-  /* "pyBedGraph/ignore_missing_bp.pyx":392
+  /* "pyBedGraph/ignore_missing_bp.pyx":394
  *         result_view[i] = sqrt(std)
  * 
  *     return result             # <<<<<<<<<<<<<<
@@ -7236,7 +7264,7 @@ static PyObject *__pyx_pf_10pyBedGraph_17ignore_missing_bp_14get_stds(CYTHON_UNU
   __pyx_r = __pyx_v_result;
   goto __pyx_L0;
 
-  /* "pyBedGraph/ignore_missing_bp.pyx":335
+  /* "pyBedGraph/ignore_missing_bp.pyx":337
  *     return result
  * 
  * def get_stds(double[:] value_map, int[:] index_list,             # <<<<<<<<<<<<<<
@@ -21421,53 +21449,53 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __Pyx_GIVEREF(__pyx_tuple__23);
   __pyx_codeobj__24 = (PyObject*)__Pyx_PyCode_New(5, 0, 17, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__23, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_pyBedGraph_ignore_missing_bp_pyx, __pyx_n_s_get_approx_means, 106, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__24)) __PYX_ERR(0, 106, __pyx_L1_error)
 
-  /* "pyBedGraph/ignore_missing_bp.pyx":214
+  /* "pyBedGraph/ignore_missing_bp.pyx":216
  *     return result
  * 
  * def get_minimums(double[:] value_map, int[:] index_list,             # <<<<<<<<<<<<<<
  *                  unsigned int[:] interval_start, unsigned int[:] interval_end,
  *                  int[:] start_list, int[:] end_list):
  */
-  __pyx_tuple__25 = PyTuple_Pack(15, __pyx_n_s_value_map, __pyx_n_s_index_list, __pyx_n_s_interval_start, __pyx_n_s_interval_end, __pyx_n_s_start_list, __pyx_n_s_end_list, __pyx_n_s_i, __pyx_n_s_num_tests, __pyx_n_s_start, __pyx_n_s_end, __pyx_n_s_value_index, __pyx_n_s_numb_intervals, __pyx_n_s_minimum, __pyx_n_s_result, __pyx_n_s_result_view); if (unlikely(!__pyx_tuple__25)) __PYX_ERR(0, 214, __pyx_L1_error)
+  __pyx_tuple__25 = PyTuple_Pack(15, __pyx_n_s_value_map, __pyx_n_s_index_list, __pyx_n_s_interval_start, __pyx_n_s_interval_end, __pyx_n_s_start_list, __pyx_n_s_end_list, __pyx_n_s_i, __pyx_n_s_num_tests, __pyx_n_s_start, __pyx_n_s_end, __pyx_n_s_value_index, __pyx_n_s_numb_intervals, __pyx_n_s_minimum, __pyx_n_s_result, __pyx_n_s_result_view); if (unlikely(!__pyx_tuple__25)) __PYX_ERR(0, 216, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__25);
   __Pyx_GIVEREF(__pyx_tuple__25);
-  __pyx_codeobj__26 = (PyObject*)__Pyx_PyCode_New(6, 0, 15, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__25, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_pyBedGraph_ignore_missing_bp_pyx, __pyx_n_s_get_minimums, 214, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__26)) __PYX_ERR(0, 214, __pyx_L1_error)
+  __pyx_codeobj__26 = (PyObject*)__Pyx_PyCode_New(6, 0, 15, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__25, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_pyBedGraph_ignore_missing_bp_pyx, __pyx_n_s_get_minimums, 216, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__26)) __PYX_ERR(0, 216, __pyx_L1_error)
 
-  /* "pyBedGraph/ignore_missing_bp.pyx":253
+  /* "pyBedGraph/ignore_missing_bp.pyx":255
  *     return result
  * 
  * def get_maximums(double[:] value_map, int[:] index_list,             # <<<<<<<<<<<<<<
  *                  unsigned int[:] interval_start, unsigned int[:] interval_end,
  *                  int[:] start_list, int[:] end_list):
  */
-  __pyx_tuple__27 = PyTuple_Pack(16, __pyx_n_s_value_map, __pyx_n_s_index_list, __pyx_n_s_interval_start, __pyx_n_s_interval_end, __pyx_n_s_start_list, __pyx_n_s_end_list, __pyx_n_s_i, __pyx_n_s_num_tests, __pyx_n_s_start, __pyx_n_s_end, __pyx_n_s_value_index, __pyx_n_s_numb_intervals, __pyx_n_s_maximum, __pyx_n_s_value, __pyx_n_s_result, __pyx_n_s_result_view); if (unlikely(!__pyx_tuple__27)) __PYX_ERR(0, 253, __pyx_L1_error)
+  __pyx_tuple__27 = PyTuple_Pack(16, __pyx_n_s_value_map, __pyx_n_s_index_list, __pyx_n_s_interval_start, __pyx_n_s_interval_end, __pyx_n_s_start_list, __pyx_n_s_end_list, __pyx_n_s_i, __pyx_n_s_num_tests, __pyx_n_s_start, __pyx_n_s_end, __pyx_n_s_value_index, __pyx_n_s_numb_intervals, __pyx_n_s_maximum, __pyx_n_s_value, __pyx_n_s_result, __pyx_n_s_result_view); if (unlikely(!__pyx_tuple__27)) __PYX_ERR(0, 255, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__27);
   __Pyx_GIVEREF(__pyx_tuple__27);
-  __pyx_codeobj__28 = (PyObject*)__Pyx_PyCode_New(6, 0, 16, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__27, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_pyBedGraph_ignore_missing_bp_pyx, __pyx_n_s_get_maximums, 253, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__28)) __PYX_ERR(0, 253, __pyx_L1_error)
+  __pyx_codeobj__28 = (PyObject*)__Pyx_PyCode_New(6, 0, 16, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__27, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_pyBedGraph_ignore_missing_bp_pyx, __pyx_n_s_get_maximums, 255, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__28)) __PYX_ERR(0, 255, __pyx_L1_error)
 
-  /* "pyBedGraph/ignore_missing_bp.pyx":293
+  /* "pyBedGraph/ignore_missing_bp.pyx":295
  *     return result
  * 
  * def get_coverages(int[:] index_list, unsigned int[:] interval_start,             # <<<<<<<<<<<<<<
  *                   unsigned int[:] interval_end, int[:] start_list, int[:] end_list):
  * 
  */
-  __pyx_tuple__29 = PyTuple_Pack(16, __pyx_n_s_index_list, __pyx_n_s_interval_start, __pyx_n_s_interval_end, __pyx_n_s_start_list, __pyx_n_s_end_list, __pyx_n_s_i, __pyx_n_s_num_tests, __pyx_n_s_start, __pyx_n_s_end, __pyx_n_s_current_start, __pyx_n_s_numb_intervals, __pyx_n_s_numb_covered, __pyx_n_s_temp_end, __pyx_n_s_value_index, __pyx_n_s_result, __pyx_n_s_result_view); if (unlikely(!__pyx_tuple__29)) __PYX_ERR(0, 293, __pyx_L1_error)
+  __pyx_tuple__29 = PyTuple_Pack(16, __pyx_n_s_index_list, __pyx_n_s_interval_start, __pyx_n_s_interval_end, __pyx_n_s_start_list, __pyx_n_s_end_list, __pyx_n_s_i, __pyx_n_s_num_tests, __pyx_n_s_start, __pyx_n_s_end, __pyx_n_s_current_start, __pyx_n_s_numb_intervals, __pyx_n_s_numb_covered, __pyx_n_s_temp_end, __pyx_n_s_value_index, __pyx_n_s_result, __pyx_n_s_result_view); if (unlikely(!__pyx_tuple__29)) __PYX_ERR(0, 295, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__29);
   __Pyx_GIVEREF(__pyx_tuple__29);
-  __pyx_codeobj__30 = (PyObject*)__Pyx_PyCode_New(5, 0, 16, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__29, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_pyBedGraph_ignore_missing_bp_pyx, __pyx_n_s_get_coverages, 293, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__30)) __PYX_ERR(0, 293, __pyx_L1_error)
+  __pyx_codeobj__30 = (PyObject*)__Pyx_PyCode_New(5, 0, 16, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__29, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_pyBedGraph_ignore_missing_bp_pyx, __pyx_n_s_get_coverages, 295, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__30)) __PYX_ERR(0, 295, __pyx_L1_error)
 
-  /* "pyBedGraph/ignore_missing_bp.pyx":335
+  /* "pyBedGraph/ignore_missing_bp.pyx":337
  *     return result
  * 
  * def get_stds(double[:] value_map, int[:] index_list,             # <<<<<<<<<<<<<<
  *                  unsigned int[:] interval_start, unsigned int[:] interval_end,
  *                  int[:] start_list, int[:] end_list):
  */
-  __pyx_tuple__31 = PyTuple_Pack(23, __pyx_n_s_value_map, __pyx_n_s_index_list, __pyx_n_s_interval_start, __pyx_n_s_interval_end, __pyx_n_s_start_list, __pyx_n_s_end_list, __pyx_n_s_i, __pyx_n_s_num_tests, __pyx_n_s_start, __pyx_n_s_end, __pyx_n_s_j, __pyx_n_s_result, __pyx_n_s_result_view, __pyx_n_s_std, __pyx_n_s_difference, __pyx_n_s_value, __pyx_n_s_numb_value, __pyx_n_s_interval_size, __pyx_n_s_value_index, __pyx_n_s_temp_end, __pyx_n_s_numb_intervals, __pyx_n_s_means, __pyx_n_s_mean); if (unlikely(!__pyx_tuple__31)) __PYX_ERR(0, 335, __pyx_L1_error)
+  __pyx_tuple__31 = PyTuple_Pack(23, __pyx_n_s_value_map, __pyx_n_s_index_list, __pyx_n_s_interval_start, __pyx_n_s_interval_end, __pyx_n_s_start_list, __pyx_n_s_end_list, __pyx_n_s_i, __pyx_n_s_num_tests, __pyx_n_s_start, __pyx_n_s_end, __pyx_n_s_j, __pyx_n_s_result, __pyx_n_s_result_view, __pyx_n_s_std, __pyx_n_s_difference, __pyx_n_s_value, __pyx_n_s_numb_value, __pyx_n_s_interval_size, __pyx_n_s_value_index, __pyx_n_s_temp_end, __pyx_n_s_numb_intervals, __pyx_n_s_means, __pyx_n_s_mean); if (unlikely(!__pyx_tuple__31)) __PYX_ERR(0, 337, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__31);
   __Pyx_GIVEREF(__pyx_tuple__31);
-  __pyx_codeobj__32 = (PyObject*)__Pyx_PyCode_New(6, 0, 23, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__31, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_pyBedGraph_ignore_missing_bp_pyx, __pyx_n_s_get_stds, 335, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__32)) __PYX_ERR(0, 335, __pyx_L1_error)
+  __pyx_codeobj__32 = (PyObject*)__Pyx_PyCode_New(6, 0, 23, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__31, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_pyBedGraph_ignore_missing_bp_pyx, __pyx_n_s_get_stds, 337, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__32)) __PYX_ERR(0, 337, __pyx_L1_error)
 
   /* "View.MemoryView":286
  *         return self.name
@@ -21918,52 +21946,52 @@ if (!__Pyx_RefNanny) {
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_get_approx_means, __pyx_t_1) < 0) __PYX_ERR(0, 106, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "pyBedGraph/ignore_missing_bp.pyx":214
+  /* "pyBedGraph/ignore_missing_bp.pyx":216
  *     return result
  * 
  * def get_minimums(double[:] value_map, int[:] index_list,             # <<<<<<<<<<<<<<
  *                  unsigned int[:] interval_start, unsigned int[:] interval_end,
  *                  int[:] start_list, int[:] end_list):
  */
-  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_10pyBedGraph_17ignore_missing_bp_9get_minimums, NULL, __pyx_n_s_pyBedGraph_ignore_missing_bp); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 214, __pyx_L1_error)
+  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_10pyBedGraph_17ignore_missing_bp_9get_minimums, NULL, __pyx_n_s_pyBedGraph_ignore_missing_bp); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 216, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_get_minimums, __pyx_t_1) < 0) __PYX_ERR(0, 214, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_get_minimums, __pyx_t_1) < 0) __PYX_ERR(0, 216, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "pyBedGraph/ignore_missing_bp.pyx":253
+  /* "pyBedGraph/ignore_missing_bp.pyx":255
  *     return result
  * 
  * def get_maximums(double[:] value_map, int[:] index_list,             # <<<<<<<<<<<<<<
  *                  unsigned int[:] interval_start, unsigned int[:] interval_end,
  *                  int[:] start_list, int[:] end_list):
  */
-  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_10pyBedGraph_17ignore_missing_bp_11get_maximums, NULL, __pyx_n_s_pyBedGraph_ignore_missing_bp); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 253, __pyx_L1_error)
+  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_10pyBedGraph_17ignore_missing_bp_11get_maximums, NULL, __pyx_n_s_pyBedGraph_ignore_missing_bp); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 255, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_get_maximums, __pyx_t_1) < 0) __PYX_ERR(0, 253, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_get_maximums, __pyx_t_1) < 0) __PYX_ERR(0, 255, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "pyBedGraph/ignore_missing_bp.pyx":293
+  /* "pyBedGraph/ignore_missing_bp.pyx":295
  *     return result
  * 
  * def get_coverages(int[:] index_list, unsigned int[:] interval_start,             # <<<<<<<<<<<<<<
  *                   unsigned int[:] interval_end, int[:] start_list, int[:] end_list):
  * 
  */
-  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_10pyBedGraph_17ignore_missing_bp_13get_coverages, NULL, __pyx_n_s_pyBedGraph_ignore_missing_bp); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 293, __pyx_L1_error)
+  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_10pyBedGraph_17ignore_missing_bp_13get_coverages, NULL, __pyx_n_s_pyBedGraph_ignore_missing_bp); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 295, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_get_coverages, __pyx_t_1) < 0) __PYX_ERR(0, 293, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_get_coverages, __pyx_t_1) < 0) __PYX_ERR(0, 295, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "pyBedGraph/ignore_missing_bp.pyx":335
+  /* "pyBedGraph/ignore_missing_bp.pyx":337
  *     return result
  * 
  * def get_stds(double[:] value_map, int[:] index_list,             # <<<<<<<<<<<<<<
  *                  unsigned int[:] interval_start, unsigned int[:] interval_end,
  *                  int[:] start_list, int[:] end_list):
  */
-  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_10pyBedGraph_17ignore_missing_bp_15get_stds, NULL, __pyx_n_s_pyBedGraph_ignore_missing_bp); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 335, __pyx_L1_error)
+  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_10pyBedGraph_17ignore_missing_bp_15get_stds, NULL, __pyx_n_s_pyBedGraph_ignore_missing_bp); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 337, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_get_stds, __pyx_t_1) < 0) __PYX_ERR(0, 335, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_get_stds, __pyx_t_1) < 0) __PYX_ERR(0, 337, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
   /* "pyBedGraph/ignore_missing_bp.pyx":1

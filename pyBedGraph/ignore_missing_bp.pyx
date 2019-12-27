@@ -121,7 +121,7 @@ def get_approx_means(double[:] bin_list, unsigned int[:] bin_coverage_list,
         end = end_list[i]
 
         bin_index = <unsigned int>(start / max_bin_size)
-        bin_end = <unsigned int>(end / max_bin_size)
+        bin_end = <unsigned int>((end - 1) / max_bin_size)
 
         # special case where interval is within a single bin
         if bin_index == bin_end:
@@ -154,6 +154,8 @@ def get_approx_means(double[:] bin_list, unsigned int[:] bin_coverage_list,
         weight = bin_coverage_list[bin_index]
         if weight > 0:
             fraction = <double>(end % max_bin_size) / max_bin_size
+            if fraction == 0:
+                fraction = 1
             total += bin_list[bin_index] * fraction
             numb_value += weight * fraction
 
@@ -185,7 +187,7 @@ cpdef get_exact_means(double[:] value_map, int[:] index_list,
         end = end_list[i]
 
         # get to an interval
-        while index_list[start] == -1 and start < end:
+        while start < end and index_list[start] == -1:
             start += 1
 
         if start == end:
@@ -230,7 +232,7 @@ def get_minimums(double[:] value_map, int[:] index_list,
         end = end_list[i]
 
         # get to an interval
-        while index_list[start] == -1 and start < end:
+        while start < end and index_list[start] == -1:
             start += 1
 
         if start == end:
@@ -269,7 +271,7 @@ def get_maximums(double[:] value_map, int[:] index_list,
         end = end_list[i]
 
         # get to an interval
-        while index_list[start] == -1 and start < end:
+        while start < end and index_list[start] == -1:
             start += 1
 
         if start == end:
@@ -309,7 +311,7 @@ def get_coverages(int[:] index_list, unsigned int[:] interval_start,
         current_start = start
 
         # get to an interval
-        while index_list[current_start] == -1 and current_start < end:
+        while current_start < end and index_list[current_start] == -1:
             current_start += 1
 
         if current_start == end:
@@ -358,7 +360,7 @@ def get_stds(double[:] value_map, int[:] index_list,
         end = end_list[i]
 
         # get to an interval
-        while index_list[start] == -1 and start < end:
+        while start < end and index_list[start] == -1:
             start += 1
 
         if start == end:
