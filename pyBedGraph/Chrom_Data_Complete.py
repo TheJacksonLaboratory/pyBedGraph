@@ -10,15 +10,38 @@ MIN_BIN_SIZE = 2
 
 
 class Chrom_Data_Complete(Chrom_Data):
+    """
+    Class that holds the information of a single chromosome. Does not ignore
+    missing base pairs when finding statistics.
+    """
 
     def __init__(self, name, size, min_value, debug):
+        """
+        Parameters
+        ----------
+        name : str
+            Name of this chromosome
+        size : int
+            Size of this chromosome
+        min_value : int
+            Minimum value of interval to keep
+        debug : bool
+        """
         super().__init__(name, size, min_value, debug)
 
         # coverage is not used in this class
         self.bins_list_coverages = None
 
-    # load only set of bins for now
     def load_bins(self, max_bin_size):
+        """
+        Loads bins to approximate mean. Smaller bin is slower but more accurate.
+        Larger bin is faster but less accurate.
+
+        Parameters
+        ----------
+        max_bin_size : int
+            Size of the maximum bin to use
+        """
 
         if max_bin_size is None:
             log.error("Did not specify max_bin_size")

@@ -17,12 +17,38 @@ log = logging.getLogger()
 
 
 class BedGraph:
+    """
+    Class that holds the information of the entire loaded (bigwig or bedgraph)
+    file.
+    """
 
-    """
-    min_value only works when loading bedgraphs
-    """
     def __init__(self, chrom_size_file_name, data_file_name, chroms_to_load=None,
                  ignore_missing_bp=True, min_value=-1, debug=False):
+        """
+        Parameters
+        ----------
+        chrom_size_file_name : str
+            Name of the file containing chromosome sizes
+        data_file_name : str
+            Name of the bedgraph or bigwig file to read
+        chroms_to_load : list
+            List of chromosomes to load (Default is all)
+        ignore_missing_bp : bool
+            Whether to ignore spaces in between intervals from data file
+            Example:
+                data_file:
+                0   1   1
+                3   4   2
+
+                (Default is True) mean from 0 -> 4: (1 + 2) / 2
+
+                if ignored:
+                (ignore_missing_bp is False) mean from 0 -> 4: (1 + 0 + 0 + 2) / 4
+        min_value : int
+            Minimum value of interval to keep (Default is -1)
+        debug: bool
+            (Default is False)
+        """
 
         file_parts = os.path.basename(data_file_name).split('.')
         using_bigwig = (file_parts[-1].lower() == 'bigwig')
@@ -101,6 +127,8 @@ class BedGraph:
 
         else:
             # start_time = time.time()
+
+            # Use pyBigWig to read in the bigwig file
             import pyBigWig
             bw = pyBigWig.open(data_file_name)
 
@@ -136,6 +164,7 @@ class BedGraph:
 
             # print(time.time() - start_time)
 
+        # Check that all chroms that were specified were successfully loaded
         if chroms_to_load:
             for chrom_name in chroms_to_load:
                 if chrom_name not in self.chromosome_map:
@@ -146,21 +175,76 @@ class BedGraph:
                     raise RuntimeError(error_msg)
 
     def get_chrom(self, chrom_name):
+        """
+        Parameters
+        ----------
+        chrom_name : str
+            Name of chromosome to get
+
+        Returns
+        -------
+        Chrom_Data
+            Specified Chrom_Data object with given name
+        """
         return self.chromosome_map[chrom_name]
 
     def has_chrom(self, chrom_name):
+        """
+        Parameters
+        ----------
+        chrom_name : str
+            Name of chromosome to check
+
+        Returns
+        -------
+        bool
+            Whether the chromosome is in this object
+        """
         return chrom_name in self.chromosome_map
 
     def load_chrom_data(self, chrom_name):
+        """
+        Parameters
+        ----------
+        chrom_name : str
+            Name of chromosome to load index array
+        """
         self.chromosome_map[chrom_name].load_index_array()
 
     def load_chrom_bins(self, chrom_name, max_bins_size):
+        """
+        Parameters
+        ----------
+        chrom_name : str
+            Name of chromosome to load bins
+        """
         self.chromosome_map[chrom_name].load_bins(max_bins_size)
 
     def free_chrom_data(self, chrom_name):
+        """
+        Parameters
+        ----------
+        chrom_name : str
+            Name of chromosome to free index array memory
+        """
         self.chromosome_map[chrom_name].free_index_list()
 
     def get_method(self, chrom_name, stat):
+        """
+        Parses correct method from given string
+
+        Parameters
+        ----------
+        chrom_name : str
+            Name of chromosome to find a statistic
+        stat : str
+            Name of statistic to find
+
+        Returns
+        -------
+        Function
+            The function to call that finds the statistic of a given chromosome
+        """
 
         if chrom_name not in self.chromosome_map:
             log.error(f"{chrom_name} is not a valid chromosome")
@@ -175,9 +259,23 @@ class BedGraph:
 
         return chrom.get_method(stat)
 
-    # change the shape of intervals to be two lists: start_list, end_list
     @staticmethod
     def change_shape(intervals):
+        """
+        Changes the shape of intervals to be two lists: start_list, end_list
+
+        Parameters
+        ----------
+        intervals : list of len=3 lists
+            List of intervals to convert
+
+        Returns
+        -------
+        list
+            list of the start indexes of intervals
+        list
+            list of the end indexes of intervals
+        """
         num_tests = len(intervals)
         start_list = np.zeros(num_tests, dtype=np.int32)
         end_list = np.zeros(num_tests, dtype=np.int32)
@@ -194,9 +292,31 @@ class BedGraph:
 
         return start_list, end_list
 
-    # can only search one chromosome at a time
     def stats(self, stat="mean", intervals=None, start_list=None,
               end_list=None, chrom_name=None):
+        """
+        Finds a statistic for a given chromosome. Can only search one chromosome
+        at a time. Must be given either intervals or (start_list, end_list,
+        chrom_name).
+
+        Parameters
+        ----------
+        stat : str
+            Name of statistic to search for (Default is mean)
+        intervals : list of lists of length=3
+            List of intervals to search
+        start_list : list
+            List of start indexes of intervals
+        end_list : list
+            List of end indexes of intervals
+        chrom_name :
+            Name of chromosome to search
+
+        Returns
+        -------
+        numpy array
+            list containing results of given statistic
+        """
 
         # convert intervals to start_list, end_list
         if intervals is not None:
@@ -226,8 +346,24 @@ class BedGraph:
         # log.info(f"Time for {stat}:", time.time() - start_time)
         return result
 
-    # output to output_file if given, otherwise return a list of results
     def stats_from_file(self, interval_file, output_to_file=True, stat="mean"):
+        """
+        Reads intervals from a file
+
+        Parameters
+        ----------
+        interval_file : str
+            File to read intervals from
+        output_to_file : bool
+            Whether to output to file (Default is True)
+        stat : str
+            Name of statistic to search for (Default is mean)
+
+        Returns
+        -------
+        numpy array
+            list containing results of given statistic
+        """
         results = {}
         test_intervals = {}
 
