@@ -16,8 +16,23 @@ MIN_BIN_SIZE = 2
 
 
 class Chrom_Data:
+    """
+    Class that holds the information of a single chromosome. Ignores
+    missing base pairs when finding statistics.
+    """
 
     def __init__(self, name, size, min_value, debug):
+        """
+        Parameters
+        ----------
+        name : str
+            Name of this chromosome
+        size : int
+            Size of this chromosome
+        min_value : int
+            Minimum value of interval to keep
+        debug : bool
+        """
         self.name = name
         self.size = size
         self.min_value = min_value
@@ -53,6 +68,15 @@ class Chrom_Data:
         log.info(f"Reading in {name} ...")
 
     def add_data(self, data):
+        """
+        Adds the interval to this chromosome.
+
+        Parameters
+        ----------
+        data : list
+            Holds the start, end, and value of interval
+        """
+
         value = float(data[VALUE_INDEX])
 
         if value < self.min_value:
@@ -72,6 +96,15 @@ class Chrom_Data:
             self.total_coverage += (end - start)
 
     def add_bigwig_data(self, interval_data_list):
+        """
+        Adds the intervals from pyBigWig to this chromosome.
+
+        Parameters
+        ----------
+        interval_data_list : list of lists of length=3
+            The output from calling pyBigWig.intervals()
+        """
+
         # value = data[VALUE_INDEX]
         #
         # if value < self.min_value:
@@ -105,8 +138,17 @@ class Chrom_Data:
                 self.num_samples += self.value_map[i] * interval_size
                 self.total_coverage += interval_size
 
-    # shorten length to # of intervals in bedGraph file for the chromosome
     def trim_extra_space(self):
+        """
+        Since the number of intervals is not known at initialization time, a
+        large numpy array was created to contain the max possible number of
+        arrays. This will free unused memory in the arrays.
+
+        Also records some statistics regarding the chromosome.
+
+        Will raise an error if an interval end index is greater than stated
+        chromosome size.
+        """
         self.value_map = self.value_map[:self.num_intervals]
         self.intervals[0] = self.intervals[0][:self.num_intervals]
         self.intervals[1] = self.intervals[1][:self.num_intervals]
@@ -130,6 +172,15 @@ class Chrom_Data:
             raise RuntimeError(error_msg)
 
     def remove_intervals(self, interval_index_list):
+        """
+        Remove intervals from this chromosome
+
+        Parameters
+        ----------
+        interval_index_list : list
+            list of indexes to the interval list in this chromosome
+        """
+
         for interval_index in interval_index_list:
             start = self.intervals[0][interval_index]
             end = self.intervals[1][interval_index]
@@ -143,11 +194,17 @@ class Chrom_Data:
 
     # assume that missing space in bedGraph file is different from value of 0
     def initialize_index_array(self):
+        """
+        Initialize index array as a numpy array filled with -1
+        """
+
         # self.value_list = np.full(self.size, -1, dtype=np.float64)
         self.index_list = np.full(self.size, -1, dtype=np.int32)
 
-    # fill the value array for fast indexing
     def load_index_array(self):
+        """
+        Populate the index array for fast indexing
+        """
 
         log.info(f"Loading {self.name} ...")
 
@@ -165,11 +222,17 @@ class Chrom_Data:
         self.loaded_chrom = True
 
     def free_index_list(self):
+        """
+        Frees the memory used by the index list for this chromosome
+        """
         self.index_list = None
         self.loaded_chrom = False
         log.info(f"Freed memory for {self.name}'s index_list")
 
     def free_bin_list(self):
+        """
+        Frees the memory used by the bin list for this chromosome
+        """
         self.bins_list.clear()
         if self.bins_list_coverages is not None:
             self.bins_list_coverages.clear()
@@ -179,8 +242,16 @@ class Chrom_Data:
         self.loaded_bins = False
         log.info(f"Freed memory for {self.name}'s bins")
 
-    # load only set of bins for now
     def load_bins(self, max_bin_size):
+        """
+        Loads bins to approximate mean. Smaller bin is slower but more accurate.
+        Larger bin is faster but less accurate.
+
+        Parameters
+        ----------
+        max_bin_size : int
+            Size of the maximum bin to use
+        """
 
         if max_bin_size is None:
             log.error("Did not specify max_bin_size")
@@ -252,8 +323,20 @@ class Chrom_Data:
                     exit(-1)
             bin_size *= 2'''
 
-    # get the specific stat to search for
     def get_method(self, stat):
+        """
+        Get the function of the specific stat to search for.
+
+        Parameters
+        ----------
+        stat : str
+            Name of statistic to search for
+
+        Returns
+        -------
+        Function
+            The function to call that finds the statistic of a given chromosome
+        """
         if stat == "mean":
             return self.get_exact_mean
         elif stat == "approx_mean":
