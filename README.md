@@ -228,7 +228,7 @@ for key in result:
 Some tests are provided in `test/test.py`. Additional bedgraph and bigwig files for ENCFF376VCU are needed to run extensive_test.py. Build badge comes from a forked repository, [https://github.com/c0ver/pyBedGraph](https://github.com/c0ver/pyBedGraph), that has the same version as this repository.
 
 ## Reference 
-[pyBedGraph: a Python package for fast operations on 1-dimensional genomic signal tracks](https://www.biorxiv.org/content/10.1101/709683v1), Zhang et al., bioRxiv, 2019
+[pyBedGraph: a Python package for fast operations on 1-dimensional genomic signal tracks](https://academic.oup.com/bioinformatics/advance-article/doi/10.1093/bioinformatics/btaa061/5733724), Zhang et al., Bioinformatics, 2020
 
 ## Common Errors
 ```
@@ -237,6 +237,9 @@ pyBedGraph/include_missing_bp.pyx in pyBedGraph.include_missing_bp.get_exact_mea
 IndexError: Out of bounds on buffer access (axis 0)
 ```
 This is frequently caused by giving an interval that is outside the chromosome size.
+
+Note that bedgraph files need to be sorted.  To do so, try
+``` sort -k1,1 -k2,2 example.bedgraph > example.sorted.bedgraph```
 
 ## Bug reports
 To report bugs, contact Henry (henrybzhang.99@gmail.com) and Minji (minji.kim@jax.org) or visit the [Issues](https://github.com/TheJacksonLaboratory/pyBedGraph/issues) page. 
