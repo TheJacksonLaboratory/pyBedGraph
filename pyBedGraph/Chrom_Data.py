@@ -356,6 +356,8 @@ class Chrom_Data:
             return self.get_min
         elif stat == "coverage":
             return self.get_coverage
+        elif stat == "sum":
+            return self.get_sum
         elif stat == "std":
             return self.get_std
         else:
@@ -398,6 +400,10 @@ class Chrom_Data:
         return get_max_indexes(self.value_map, self.index_list,
                                self.intervals[0], self.intervals[1],
                                start_list, end_list)
+
+    def get_sum(self, start_list, end_list):
+        return get_sum(self.value_map, self.index_list, self.intervals[0],
+                          self.intervals[1], start_list, end_list)
 
     def get_min(self, start_list, end_list):
         return get_minimums(self.value_map, self.index_list, self.intervals[0],

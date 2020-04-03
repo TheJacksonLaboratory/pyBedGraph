@@ -84,6 +84,11 @@ result = bedGraph.stats('std', test_intervals)
 for i in range(len(result)):
     assert abs(result[i] - correct[i]) < 0.00001
 
+correct = [0, 0.9, 0.1, 0, 4.1, 6.5]
+result = bedGraph.stats('sum', test_intervals)
+for i in range(len(result)):
+    assert abs(result[i] - correct[i]) < 0.00001
+
 correct = [0, 0.3, 0.025, 0, 0.82, 13/60]
 result = inclusive_bedGraph.stats('mean', test_intervals)
 for i in range(len(result)):
@@ -111,6 +116,11 @@ for i in range(len(result)):
 
 correct = [0, 0.42426407, 0.04330127, 0, 0.09797959, 0.36431061]
 result = inclusive_bedGraph.stats('std', test_intervals)
+for i in range(len(result)):
+    assert abs(result[i] - correct[i]) < 0.00001
+
+correct = [0, 0.9, 0.1, 0, 4.1, 6.5]
+result = inclusive_bedGraph.stats('sum', test_intervals)
 for i in range(len(result)):
     assert abs(result[i] - correct[i]) < 0.00001
 
