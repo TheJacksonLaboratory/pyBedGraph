@@ -84,6 +84,7 @@ inclusive_bedGraph.load_chrom_bins('chr1', 3)
   - `'min'`
   - `'coverage'`
   - `'std'` - (population standard deviation)
+  - `'sum'`
 
 ### Search from a list of intervals:
 ```python
