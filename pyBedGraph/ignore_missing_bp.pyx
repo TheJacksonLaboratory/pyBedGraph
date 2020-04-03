@@ -69,7 +69,7 @@ def load_bins(double[:] prev_bin_level_mean, unsigned int[:] prev_bin_level_cove
 
     return bins, bins_coverage
 
-cdef get_values(double[:] value_map, int[:] index_list,
+def get_values(double[:] value_map, int[:] index_list,
                 unsigned int[:] interval_start, unsigned int[:] interval_end,
                 unsigned int start, unsigned int end):
 
@@ -100,6 +100,50 @@ cdef get_values(double[:] value_map, int[:] index_list,
         start = interval_start[value_index]
 
     return total, coverage
+
+
+def get_sum(double[:] value_map, int[:] index_list,
+            unsigned int[:] interval_start, unsigned int[:] interval_end,
+            int[:] start_list, int[:] end_list):
+
+    assert tuple(start_list.shape) == tuple(end_list.shape)
+
+    cdef size_t i, num_tests = start_list.size, start, end, value_index
+    cdef size_t numb_intervals = interval_start.size
+    cdef double sum
+    cdef unsigned int temp_end, interval_size
+
+    result = np.full(num_tests, 0, dtype=np.float64)
+    cdef double[:] result_view = result
+
+    for i in range(num_tests):
+        sum = 0
+        start = start_list[i]
+        end = end_list[i]
+
+        # get to an interval
+        while start < end and index_list[start] == -1:
+            start += 1
+
+        if start == end:
+            continue
+
+        value_index = index_list[start]
+        while start < end and start < interval_end[value_index]:
+            temp_end = interval_end[value_index]
+            if temp_end > end:
+                temp_end = end
+            interval_size = temp_end - start
+            sum += value_map[value_index] * interval_size
+
+            value_index += 1
+            if value_index == numb_intervals:
+                break
+            start = interval_start[value_index]
+
+        result_view[i] = sum
+
+    return result
 
 @cython.cdivision(True)
 @cython.boundscheck(False)

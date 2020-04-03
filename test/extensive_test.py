@@ -31,7 +31,7 @@ if DEBUG:
     }
 
     for chrom in avg_interval_sizes:
-        assert abs(bedGraph.chromosome_map[chrom].avg_interval_size - avg_interval_sizes[chrom]) < 0.00001
+        assert abs(bedGraph.chromosome_map[chrom].avg_interval_size - avg_interval_sizes[chrom]) < 0.0001
 
 test_intervals = [
     ['chr1', 0, 3000000],
@@ -42,27 +42,32 @@ test_intervals = [
 correct = [0.0, 0.2783213414900005, 0.37037220081612465, 0.733430027961731]
 result = bedGraph.stats('mean', test_intervals)
 for i in range(len(result)):
-    assert abs(result[i] - correct[i]) < 0.00001
+    assert abs(result[i] - correct[i]) < 0.0001
 
 correct = [0, 0.27832134, 0.3703722, 0.61754806]
 result = bedGraph.stats('approx_mean', test_intervals)
 for i in range(len(result)):
-    assert abs(result[i] - correct[i]) < 0.00001
+    assert abs(result[i] - correct[i]) < 0.0001
 
 correct = [0.0, 4.400169849395752, 5.133600234985352, 0.733430027961731]
 result = bedGraph.stats('max', test_intervals)
 for i in range(len(result)):
-    assert abs(result[i] - correct[i]) < 0.00001
+    assert abs(result[i] - correct[i]) < 0.0001
 
 correct = [0.0, 0.0, 0.0, 0.733430027961731]
 result = bedGraph.stats('min', test_intervals)
 for i in range(len(result)):
-    assert abs(result[i] - correct[i]) < 0.00001
+    assert abs(result[i] - correct[i]) < 0.0001
 
 correct = [0.0, 0.5458894746933545, 0.645887192684785, 0.0]
 result = bedGraph.stats('std', test_intervals)
 for i in range(len(result)):
-    assert abs(result[i] - correct[i]) < 0.00001
+    assert abs(result[i] - correct[i]) < 0.0001
+
+correct = [0.0, 27832.1338, 37037.21976, 66.0087]
+result = bedGraph.stats('sum', test_intervals)
+for i in range(len(result)):
+    assert abs(result[i] - correct[i]) < 0.0001
 
 test_intervals = [
     ['chr4', 0, 50000],
@@ -73,27 +78,32 @@ test_intervals = [
 correct = [0.0, 0.16491732227414846, 0.028100075026154518, 0.4027400016784668]
 result = bedGraph.stats('mean', test_intervals)
 for i in range(len(result)):
-    assert abs(result[i] - correct[i]) < 0.00001
+    assert abs(result[i] - correct[i]) < 0.0001
 
 correct = [0, 0.16491732, 0.02810007, 0.213423]
 result = bedGraph.stats('approx_mean', test_intervals)
 for i in range(len(result)):
-    assert abs(result[i] - correct[i]) < 0.00001
+    assert abs(result[i] - correct[i]) < 0.0001
 
 correct = [0.0, 2.8125500679016113, 2.200079917907715, 0.4027400016784668]
 result = bedGraph.stats('max', test_intervals)
 for i in range(len(result)):
-    assert abs(result[i] - correct[i]) < 0.00001
+    assert abs(result[i] - correct[i]) < 0.0001
 
 correct = [0.0, 0.0, 0.0, 0.4027400016784668]
 result = bedGraph.stats('min', test_intervals)
 for i in range(len(result)):
-    assert abs(result[i] - correct[i]) < 0.00001
+    assert abs(result[i] - correct[i]) < 0.0001
 
 correct = [0.0, 0.3551471309944084, 0.15098161797799015, 0.0]
 result = bedGraph.stats('std', test_intervals)
 for i in range(len(result)):
-    assert abs(result[i] - correct[i]) < 0.00001
+    assert abs(result[i] - correct[i]) < 0.0001
+
+correct = [0.0, 16491.7322, 2810.00742, 7.24932]
+result = bedGraph.stats('sum', test_intervals)
+for i in range(len(result)):
+    assert abs(result[i] - correct[i]) < 0.0001
 
 print("Passed all bedgraph tests!")
 
@@ -115,7 +125,7 @@ if DEBUG:
     }
 
     for chrom in avg_interval_sizes:
-        assert abs(bedGraph.chromosome_map[chrom].avg_interval_size - avg_interval_sizes[chrom]) < 0.00001
+        assert abs(bedGraph.chromosome_map[chrom].avg_interval_size - avg_interval_sizes[chrom]) < 0.0001
 
 test_intervals = [
     ['chr1', 0, 3000000],
@@ -126,27 +136,33 @@ test_intervals = [
 correct = [0.0, 0.2783213414900005, 0.37037220081612465, 0.733430027961731]
 result = bedGraph.stats('mean', test_intervals)
 for i in range(len(result)):
-    assert abs(result[i] - correct[i]) < 0.00001
+    assert abs(result[i] - correct[i]) < 0.0001
 
 correct = [0, 0.27832134, 0.3703722, 0.61754806]
 result = bedGraph.stats('approx_mean', test_intervals)
 for i in range(len(result)):
-    assert abs(result[i] - correct[i]) < 0.00001
+    assert abs(result[i] - correct[i]) < 0.0001
 
 correct = [0.0, 4.400169849395752, 5.133600234985352, 0.733430027961731]
 result = bedGraph.stats('max', test_intervals)
 for i in range(len(result)):
-    assert abs(result[i] - correct[i]) < 0.00001
+    assert abs(result[i] - correct[i]) < 0.0001
 
 correct = [0.0, 0.0, 0.0, 0.733430027961731]
 result = bedGraph.stats('min', test_intervals)
 for i in range(len(result)):
-    assert abs(result[i] - correct[i]) < 0.00001
+    assert abs(result[i] - correct[i]) < 0.0001
 
 correct = [0.0, 0.5458894746933545, 0.645887192684785, 0.0]
 result = bedGraph.stats('std', test_intervals)
 for i in range(len(result)):
-    assert abs(result[i] - correct[i]) < 0.00001
+    assert abs(result[i] - correct[i]) < 0.0001
+
+# LOWERED STANDARD FOR ROUNDING PROBLEMS
+correct = [0.0, 27832.1338, 37037.21976, 66.0087]
+result = bedGraph.stats('sum', test_intervals)
+for i in range(len(result)):
+    assert abs(result[i] - correct[i]) < 0.1
 
 test_intervals = [
     ['chr4', 0, 50000],
@@ -157,27 +173,32 @@ test_intervals = [
 correct = [0.0, 0.16491732227414846, 0.028100075026154518, 0.4027400016784668]
 result = bedGraph.stats('mean', test_intervals)
 for i in range(len(result)):
-    assert abs(result[i] - correct[i]) < 0.00001
+    assert abs(result[i] - correct[i]) < 0.0001
 
 correct = [0, 0.16491732, 0.02810007, 0.213423]
 result = bedGraph.stats('approx_mean', test_intervals)
 for i in range(len(result)):
-    assert abs(result[i] - correct[i]) < 0.00001
+    assert abs(result[i] - correct[i]) < 0.0001
 
 correct = [0.0, 2.8125500679016113, 2.200079917907715, 0.4027400016784668]
 result = bedGraph.stats('max', test_intervals)
 for i in range(len(result)):
-    assert abs(result[i] - correct[i]) < 0.00001
+    assert abs(result[i] - correct[i]) < 0.0001
 
 correct = [0.0, 0.0, 0.0, 0.4027400016784668]
 result = bedGraph.stats('min', test_intervals)
 for i in range(len(result)):
-    assert abs(result[i] - correct[i]) < 0.00001
+    assert abs(result[i] - correct[i]) < 0.0001
 
 correct = [0.0, 0.3551471309944084, 0.15098161797799015, 0.0]
 result = bedGraph.stats('std', test_intervals)
 for i in range(len(result)):
-    assert abs(result[i] - correct[i]) < 0.00001
+    assert abs(result[i] - correct[i]) < 0.0001
+
+correct = [0.0, 16491.7322, 2810.00742, 7.24932]
+result = bedGraph.stats('sum', test_intervals)
+for i in range(len(result)):
+    assert abs(result[i] - correct[i]) < 0.0001
 
 print("Passed all bigwig tests!")
 print("Passed all extensive tests!")
